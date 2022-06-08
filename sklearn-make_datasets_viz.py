@@ -11,11 +11,11 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 
 # frontend ui section
-st.title('Visualizing make moons dataset')
+st.title('Visualizing different sklearn generated dataset')
 
 st.write("""
-### Checking the influence of noise on sample data points on the built-in make moons dataset from scikit-learn.
-Make moons is an scikit-learns's generated dataset which creates two interleaving half circles.
+#### Checking the influence of various parameters/arguments on the sample data points on the built-in make_datasets from scikit-learn.
+make_moons, make_circles & make_classification are scikit-learns's generated dataset which creates two interleaving data points for classification purposes.
 Used to visualize clustering and classification algorithms.
 """)
 
@@ -25,16 +25,16 @@ d_name = st.sidebar.selectbox("Select sklearn dataset", ("moons", "circles", "cl
 def add_params(d_name):
     params = dict()
     if d_name == "moons":
-        noise = st.sidebar.slider("noise", 0.01, 1.00)
         n_samples = st.sidebar.slider("no. of samples", 1, 100)
-        params["noise"] = noise
+        noise = st.sidebar.slider("noise", 0.01, 1.00)
         params["n_samples"] = n_samples
+        params["noise"] = noise
     elif d_name == "circles":
-        noise = st.sidebar.slider("noise", 0.01, 1.00)
         n_samples = st.sidebar.slider("no. of samples", 1, 100)
+        noise = st.sidebar.slider("noise", 0.01, 1.00)
         factor = st.sidebar.slider("factor", 0.01, 1.00)
-        params["noise"] = noise
         params["n_samples"] = n_samples
+        params["noise"] = noise
         params["factor"] = factor
     else:
         n_samples = st.sidebar.slider("no. of samples", 1, 100)
