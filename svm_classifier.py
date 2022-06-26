@@ -2,6 +2,7 @@
 import streamlit as st
 import numpy as np
 import seaborn as sns
+import plotly.express as px
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from sklearn.model_selection import train_test_split
@@ -11,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 # seaborn theme applied
-sns.set_theme()
+#sns.set_theme()
 
 # site configurations
 st.set_page_config(
@@ -71,5 +72,10 @@ plt.ylabel(r"$x_2$", fontsize=20, rotation=0)
 plt.contourf(x0, x1, y_prediction, cmap=color_map, alpha=alpha_prediction)
 plt.contourf(x0, x1, y_decision, cmap=color_map, alpha=alpha_decision)
 
+fig2 = px.scatter(x=X[:, 0][y==0], y=X[:, 1][y==0])
+fig3 = px.scatter(x=X[:, 0][y==1], y=X[:, 1][y==1])
+
 # streamlit pyplot show
 st.pyplot(fig)
+st.plotly_chart(fig2)
+st.plotly_chart(fig3)
