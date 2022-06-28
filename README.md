@@ -13,6 +13,6 @@
 ![image](https://user-images.githubusercontent.com/63915540/172681434-6e51ab66-c7e1-4a1f-8a1e-909d427d35cf.png)
 
 ### Linear SVM classifier in action  
-* To checking real-time implementation of Linear SVM classifier using polynomial features on the sklearn generated dataset: make_moons.
+* To check real-time implementation of Linear SVM classifier using polynomial features on the sklearn generated dataset: make_moons.
 
 ![image](https://user-images.githubusercontent.com/63915540/175644112-51f01738-3168-4c55-8017-463b70680cb8.png)
