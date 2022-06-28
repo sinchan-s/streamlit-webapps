@@ -10,6 +10,7 @@ from sklearn.svm import LinearSVC
 from sklearn.datasets import make_moons
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+import plotly.graph_objects as go
 
 # seaborn theme applied
 #sns.set_theme()
@@ -63,8 +64,10 @@ alpha_decision = st.sidebar.slider("Decision Boundary", 0.0, 1.0)
 
 # plotting section
 fig = plt.figure()
-plt.plot(X[:, 0][y==0], X[:, 1][y==0], "bo")
-plt.plot(X[:, 0][y==1], X[:, 1][y==1], "rs")
+X1, X2 = X[:, 0][y==0], X[:, 0][y==1]
+Y1, Y2 = X[:, 1][y==0], X[:, 1][y==1]
+plt.plot(X1, Y1, "bo")
+plt.plot(X2, Y2, "rD")
 plt.axis([-1.5, 2.5, -1, 1.5])
 plt.grid(True, which='both')
 plt.xlabel(r"$x_1$", fontsize=20)
@@ -72,10 +75,5 @@ plt.ylabel(r"$x_2$", fontsize=20, rotation=0)
 plt.contourf(x0, x1, y_prediction, cmap=color_map, alpha=alpha_prediction)
 plt.contourf(x0, x1, y_decision, cmap=color_map, alpha=alpha_decision)
 
-fig2 = px.scatter(x=X[:, 0][y==0], y=X[:, 1][y==0])
-fig3 = px.scatter(x=X[:, 0][y==1], y=X[:, 1][y==1])
-
 # streamlit pyplot show
 st.pyplot(fig)
-st.plotly_chart(fig2)
-st.plotly_chart(fig3)
