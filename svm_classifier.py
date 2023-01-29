@@ -41,7 +41,6 @@ polynomial_svm_clf = Pipeline([
     ("poly_features", PolynomialFeatures(degree=3)),
     ("scaler", StandardScaler()),
     ("svm_clf", LinearSVC(C=10, loss="hinge", random_state=42))])
-
 polynomial_svm_clf.fit(X, y)
 
 # prediction & decision function
@@ -51,8 +50,6 @@ x0, x1 = np.meshgrid(x0s, x1s)
 X_concat = np.c_[x0.ravel(), x1.ravel()]
 y_prediction = polynomial_svm_clf.predict(X_concat).reshape(x0.shape)
 y_decision = polynomial_svm_clf.decision_function(X_concat).reshape(x0.shape)
-
-
 
 # contour alpha value sliders
 st.sidebar.header("Contour alpha sliders:")
