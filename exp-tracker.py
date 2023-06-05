@@ -1,8 +1,12 @@
 import calendar
 from datetime import datetime
+
 import streamlit as st
 from streamlit_option_menu import option_menu
 import plotly.graph_objects as go
+
+import database as db
+
 
 #! settings
 incomes = ["Salary", "Dividend", "Invest Return"]
@@ -17,8 +21,14 @@ st.set_page_config(page_title=page_title, page_icon=page_icon, layout=layout)
 st.title(page_title + " " + page_icon)
 
 #! dropdown for date
-years = [datetime.today().year - 1, datetime.today().year, datetime.today().year + 1]
+years = [datetime.today().year, datetime.today().year + 1]
 months = list(calendar.month_name[1:])
+
+#! database interface
+def get_all_periods():
+    items = db.fetch_all_periods()
+    periods = [item["key"] for item in items]
+    return periods
 
 #! clean streamlit styling
 hide_default_format = """
@@ -59,20 +69,20 @@ if selected == 'Transaction entry':
             period = str(st.session_state["year"]) + "_" + str(st.session_state["month"])
             incomes = {income: st.session_state[income] for income in incomes}
             expenses = {expense: st.session_state[expense] for expense in expenses}
-            st.write(f'incomes: {incomes}')
-            st.write(f'expenses: {expenses}')
+            db.insert_period(period, incomes, expenses, comment)
             st.success('Data saved!')
 
 #! plotting
 if selected == 'Visualize expense':
     st.header("Period-wise Visualization")
     with st.form("saved_periods"):
-        period = st.selectbox("Select Period:", ["2023_March"])
+        period = st.selectbox("Select Period:", get_all_periods())
         submitted = st.form_submit_button("Plot period")
         if submitted:
-            comment = "some comment"
-            incomes = {'Salary': 1500, 'Dividend': 500, 'Invest Return': 100}
-            expenses = {'Food': 200, 'Loan': 300, 'CC Bill': 30}
+            period_data = db.get_period(period)
+            comment = period_data.get("comment")
+            expenses = period_data.get("expenses")
+            incomes = period_data.get("incomes")
 
             total_income = sum(incomes.values())
             total_expense = sum(expenses.values())
