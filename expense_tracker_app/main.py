@@ -2,7 +2,7 @@ import calendar
 from datetime import datetime
 
 import streamlit as st
-from streamlit_option_menu import option_menu
+from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 import plotly.graph_objects as go
 
 import database as db
@@ -101,7 +101,7 @@ if selected == 'Visualize expense':
 
             #! data to dict & dict to sankey
             link = dict(source=source, target=target, value=value)
-            node = dict(label=label, pad=20, thickness=30, color="#E684FF")
+            node = dict(label=label, pad=20, thickness=30)
             data = go.Sankey(link=link, node=node)
 
             #! plotting
