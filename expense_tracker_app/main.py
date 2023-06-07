@@ -101,7 +101,7 @@ if selected == 'Visualize expense':
 
             #! data to dict & dict to sankey
             link = dict(source=source, target=target, value=value)
-            node = dict(label=label, pad=20, thickness=30)
+            node = dict(label=label, pad=20, thickness=30, color='blue')
             data = go.Sankey(link=link, node=node)
 
             #! plotting
