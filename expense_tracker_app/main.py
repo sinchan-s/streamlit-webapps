@@ -100,8 +100,8 @@ if selected == 'Visualize expense':
             value = list(incomes.values()) + list(expenses.values())
 
             #! data to dict & dict to sankey
-            link = dict(source=source, target=target, value=value)
-            node = dict(label=label, pad=20, thickness=30, color='blue')
+            link = dict(source=source, target=target, value=value, color = ['#98cc9b','#98cc9b','#98cc9b','#e18685','#e18685','#e18685','#e18685'])
+            node = dict(label=label, pad=20, thickness=30, color = ['#2ba02b','#2ba02b','#2ba02b','#2ba02b','#cc0202','#cc0202','#cc0202','#cc0202'])
             data = go.Sankey(link=link, node=node)
 
             #! plotting
