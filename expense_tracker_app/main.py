@@ -101,10 +101,10 @@ if selected == 'Visualize expense':
 
             #! data to dict & dict to sankey
             link = dict(source=source, target=target, value=value, color = ['#98cc9b','#98cc9b','#98cc9b','#e18685','#e18685','#e18685','#e18685'])
-            node = dict(label=label, pad=20, thickness=30, color = ['#2ba02b','#2ba02b','#2ba02b','#2ba02b','#cc0202','#cc0202','#cc0202','#cc0202'])
+            node = dict(label=label, pad=90, thickness=13, color = ['#2ba02b','#2ba02b','#2ba02b','#2ba02b','#cc0202','#cc0202','#cc0202','#cc0202'])
             data = go.Sankey(link=link, node=node)
 
             #! plotting
             fig = go.Figure(data)
-            fig.update_layout(margin=dict(l=0, r=0, t=5, b=5))
+            fig.update_layout(margin=dict(l=15, r=15, t=25, b=25))
             st.plotly_chart(fig, use_container_width=True)
