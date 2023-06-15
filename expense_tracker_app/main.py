@@ -1,6 +1,9 @@
 import calendar
+import sqlite3
+import datetime
 from datetime import datetime
 
+import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 import plotly.graph_objects as go
@@ -43,9 +46,10 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 #! nav menu
 selected = option_menu(
     menu_title=None, 
-    options=['Transaction entry', 'Visualize expense'],
-    icons=['pencil-fill', 'bar-chart-fill'],
+    options=['Transaction entry', 'Visualize expense', 'My Wallet Viewer'],
+    icons=['pencil-fill', 'bar-chart-fill', 'wallet2'],
     orientation='horizontal')
+
 
 #! input & save periods
 if selected == 'Transaction entry':
@@ -108,3 +112,40 @@ if selected == 'Visualize expense':
             fig = go.Figure(data)
             fig.update_layout(margin=dict(l=15, r=15, t=25, b=25))
             st.plotly_chart(fig, use_container_width=True)
+
+#! my wallet
+if selected == 'My Wallet Viewer':
+    st.header("Date-wise Visualization")
+    #! my wallet db access
+    dbfile = 'ignore/wallet-database.db'
+    con = sqlite3.connect(dbfile)
+    cur = con.cursor()
+    table_list = [a for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
+    df = pd.read_sql_query('SELECT * FROM trans', con)
+    con.close()
+    #! data pre-processing
+    df['amount'] = df['amount'].div(100).round(2)
+    df['trans_amount'] = df['trans_amount'].div(100).round(2)
+    df['type'] = df['type'].replace([0, 1, 2], ['inc', 'exp', 'tran'])
+    df.drop(['id', 'fee_id', 'account_id', 'debt_id', 'debt_trans_id', 'memo'], axis = 1, inplace = True)
+    df['date_time'] = pd.to_datetime(df["date_time"], unit='ms').dt.date
+    df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
+    with st.expander('Wallet data'):
+        st.dataframe(df)
+    
+    # with st.form("saved_periods"):
+    #     period = st.selectbox("Select Period:", get_all_periods())
+    #     submitted = st.form_submit_button("Plot period")
+    #     if submitted:
+    #         period_data = db.get_period(period)
+    #         comment = period_data.get("comment")
+    #         expenses = period_data.get("expenses")
+    #         incomes = period_data.get("incomes")
+
+    #         total_income = sum(incomes.values())
+    #         total_expense = sum(expenses.values())
+    #         savings = total_income - total_expense
+    #         col1, col2, col3 = st.columns(3)
+    #         col1.metric("Total income", f'{currency} {total_income}')
+    #         col2.metric("Total expense", f'{currency} {total_expense}')
+    #         col3.metric("Savings", f'{currency} {savings}')
