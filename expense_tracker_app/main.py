@@ -122,6 +122,7 @@ if selected == 'My Wallet Viewer':
     cur = con.cursor()
     table_list = [a for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
     df = pd.read_sql_query('SELECT * FROM trans', con)
+    walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)
     con.close()
     #! data pre-processing
     df['amount'] = df['amount'].div(100).round(2)
@@ -132,6 +133,9 @@ if selected == 'My Wallet Viewer':
     df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
     with st.expander('Wallet data'):
         st.dataframe(df)
+    # combi_df = df.join(walletId_df, on=['wallet_id', 'id'], how='left')
+    with st.expander('Wallet ID data'):
+        st.dataframe(walletId_df)
     
     # with st.form("saved_periods"):
     #     period = st.selectbox("Select Period:", get_all_periods())
