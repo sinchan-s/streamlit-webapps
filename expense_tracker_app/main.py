@@ -121,8 +121,9 @@ if selected == 'My Wallet Viewer':
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
     table_list = [a for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
-    df = pd.read_sql_query('SELECT * FROM trans', con)
-    walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)
+    df = pd.read_sql_query('SELECT * FROM trans', con)  #? all transactions table
+    walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)    #? all wallet ids table
+    category_df = pd.read_sql_query('SELECT * FROM category', con)    #? all category ids table
     con.close()
     #! data pre-processing
     df['amount'] = df['amount'].div(100).round(2)
@@ -131,11 +132,13 @@ if selected == 'My Wallet Viewer':
     df.drop(['id', 'fee_id', 'account_id', 'debt_id', 'debt_trans_id', 'memo'], axis = 1, inplace = True)
     df['date_time'] = pd.to_datetime(df["date_time"], unit='ms').dt.date
     df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
-    with st.expander('Wallet data'):
+    #! replace wallet-id with wallet-name & category-id with category-name
+    df['wallet_id'] = df['wallet_id'].replace(list(walletId_df['id'].unique()), list(walletId_df['name']))
+    df['category_id'] = df['category_id'].replace(list(category_df['id'].unique()), list(category_df['name']))
+    with st.expander('Wallet data', expanded=False):
         st.dataframe(df)
-    # combi_df = df.join(walletId_df, on=['wallet_id', 'id'], how='left')
-    with st.expander('Wallet ID data'):
-        st.dataframe(walletId_df)
+    #! selectors
+    # st.select_slider()
 
     #?----SankeyChart wrapper function from https://medium.com/kenlok/how-to-create-sankey-diagrams-from-dataframes-in-python-e221c1b4d6b0
     def genSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
@@ -201,7 +204,7 @@ if selected == 'My Wallet Viewer':
         fig = dict(data=[data], layout=layout)
         return fig
     
-    fig = genSankey(df, cat_cols=['wallet_id','category_id'], value_cols='amount',title='My Wallet Expenses')
+    fig = genSankey(df, cat_cols=['wallet_id','category_id'], value_cols='amount',title='My Expenses flow')
     st.plotly_chart(fig, use_container_width=True)
     # with st.form("saved_periods"):
     #     period = st.selectbox("Select Period:", get_all_periods())
