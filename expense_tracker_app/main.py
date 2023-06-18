@@ -116,15 +116,19 @@ if selected == 'Visualize expense':
 #! my wallet
 if selected == 'My Wallet Viewer':
     st.header("Date-wise Visualization")
+    
     #! my wallet db access
     dbfile = 'ignore/wallet-database.db'
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
     table_list = [a for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
-    df = pd.read_sql_query('SELECT * FROM trans', con)  #? all transactions table
-    walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)    #? all wallet ids table
-    category_df = pd.read_sql_query('SELECT * FROM category', con)    #? all category ids table
+    transaction_df = pd.read_sql_query('SELECT * FROM trans', con)          #? all transactions table
+    df = transaction_df.copy()
+    walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)            #? all wallet ids table
+    category_df = pd.read_sql_query('SELECT * FROM category', con)          #? all category ids table
+    subcategory_df = pd.read_sql_query('SELECT * FROM subcategory', con)    #? all subcategory ids table
     con.close()
+
     #! data pre-processing
     df['amount'] = df['amount'].div(100).round(2)
     df['trans_amount'] = df['trans_amount'].div(100).round(2)
@@ -132,18 +136,46 @@ if selected == 'My Wallet Viewer':
     df.drop(['id', 'fee_id', 'account_id', 'debt_id', 'debt_trans_id', 'memo'], axis = 1, inplace = True)
     df['date_time'] = pd.to_datetime(df["date_time"], unit='ms').dt.date
     df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
+
+    #! categorization of exp-inc
+    category_df.at[32, 'name'] = 'Cash received'
+    category_df.at[0, 'name'] = 'Bills'
+    category_df.at[1, 'name'] = 'Clothing'
+    category_df.at[2, 'name'] = 'Education'
+    category_df.at[5, 'name'] = 'Food'
+    category_df.at[6, 'name'] = 'Gifts'
+    category_df.at[7, 'name'] = 'Medicine'
+    category_df.at[10, 'name'] = 'Shopping'
+    category_df.at[11, 'name'] = 'Transportation'
+    category_df.at[12, 'name'] = 'Travel'
+    category_df.at[13, 'name'] = 'Others'
+    category_df.at[14, 'name'] = 'Adjustments'
+    category_df.at[21, 'name'] = 'Investment returns'
+    category_df.at[23, 'name'] = 'Salary'
+    category_df.at[25, 'name'] = 'Others received'
+    category_df.at[26, 'name'] = 'Adjustment'
+    
     #! replace wallet-id with wallet-name & category-id with category-name
     df['wallet_id'] = df['wallet_id'].replace(list(walletId_df['id'].unique()), list(walletId_df['name']))
     df['category_id'] = df['category_id'].replace(list(category_df['id'].unique()), list(category_df['name']))
-    with st.expander('Wallet data', expanded=False):
-        st.dataframe(df)
+    df['subcategory_id'] = df['subcategory_id'].replace(list(subcategory_df['id'].unique()), list(subcategory_df['name']))
+    
     #! selectors
-    # st.select_slider()
+    # from_date_selector = st.date_input('From date:', datetime.date(2020, 1, 1))
+    # to_date_selector = st.date_input('To date:', datetime.date.today())
+    wallet_selector = st.selectbox('Select Wallet', list(df['wallet_id']))
+    selected_df = df.loc[(df['wallet_id']==wallet_selector)]
+    category_selector = st.selectbox('Select Category', list(selected_df['category_id'].unique()))
+    selected_df = df.loc[(df['category_id']==category_selector)]
+    # subcategory_selector = st.selectbox('Select SubCategory', list(subcategory_df['name']))
+    with st.expander('Wallet data', expanded=False):
+        st.dataframe(selected_df)
 
     #?----SankeyChart wrapper function from https://medium.com/kenlok/how-to-create-sankey-diagrams-from-dataframes-in-python-e221c1b4d6b0
+
     def genSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
         # maximum of 6 value cols -> 6 colors
-        colorPalette = ['#4B8BBE','#306998','#FFE873','#FFD43B','#646464']
+        colorPalette = ['#7FD000','#FF2861','#FFE873','#FFD43B','#646464']
         labelList = []
         colorNumList = []
         for catCol in cat_cols:
