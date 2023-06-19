@@ -138,7 +138,6 @@ if selected == 'My Wallet Viewer':
     df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
 
     #! categorization of exp-inc
-    category_df.at[32, 'name'] = 'Cash received'
     category_df.at[0, 'name'] = 'Bills'
     category_df.at[1, 'name'] = 'Clothing'
     category_df.at[2, 'name'] = 'Education'
@@ -154,6 +153,7 @@ if selected == 'My Wallet Viewer':
     category_df.at[23, 'name'] = 'Salary'
     category_df.at[25, 'name'] = 'Others received'
     category_df.at[26, 'name'] = 'Adjustment'
+    category_df.at[32, 'name'] = 'Cash received'
     
     #! replace wallet-id with wallet-name & category-id with category-name
     df['wallet_id'] = df['wallet_id'].replace(list(walletId_df['id'].unique()), list(walletId_df['name']))
@@ -175,7 +175,7 @@ if selected == 'My Wallet Viewer':
 
     def genSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
         # maximum of 6 value cols -> 6 colors
-        colorPalette = ['#7FD000','#FF2861','#FFE873','#FFD43B','#646464']
+        colorPalette = ['#7FD000','#8c5f23','#FFE873','#FFD43B','#646464']
         labelList = []
         colorNumList = []
         for catCol in cat_cols:
@@ -236,7 +236,7 @@ if selected == 'My Wallet Viewer':
         fig = dict(data=[data], layout=layout)
         return fig
     
-    fig = genSankey(df, cat_cols=['wallet_id','category_id'], value_cols='amount',title='My Expenses flow')
+    fig = genSankey(df, cat_cols=['category_id','wallet_id'], value_cols='amount',title='My Expenses flow')
     st.plotly_chart(fig, use_container_width=True)
     # with st.form("saved_periods"):
     #     period = st.selectbox("Select Period:", get_all_periods())
