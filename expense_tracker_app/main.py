@@ -151,31 +151,37 @@ if selected == 'My Wallet Viewer':
     category_df.at[14, 'name'] = 'Adjustments'
     category_df.at[21, 'name'] = 'Investment returns'
     category_df.at[23, 'name'] = 'Salary'
-    category_df.at[25, 'name'] = 'Others received'
+    category_df.at[25, 'name'] = 'Received: Others'
     category_df.at[26, 'name'] = 'Adjustment'
-    category_df.at[32, 'name'] = 'Cash received'
-    
+    category_df.at[32, 'name'] = 'Received: Cash'
+
     #! replace wallet-id with wallet-name & category-id with category-name
     df['wallet_id'] = df['wallet_id'].replace(list(walletId_df['id'].unique()), list(walletId_df['name']))
+    df['transfer_wallet_id'] = df['transfer_wallet_id'].replace(list(walletId_df['id'].unique()), list(walletId_df['name'].str.upper()))
     df['category_id'] = df['category_id'].replace(list(category_df['id'].unique()), list(category_df['name']))
     df['subcategory_id'] = df['subcategory_id'].replace(list(subcategory_df['id'].unique()), list(subcategory_df['name']))
-    
+    transfer_df = df[df['category_id'] == 0]
+    # expenses_df = df[df['amount'] == 1]
+    df = df[df['category_id'] != 0]
+    # st.dataframe(expenses_df)
+
     #! selectors
     # from_date_selector = st.date_input('From date:', datetime.date(2020, 1, 1))
     # to_date_selector = st.date_input('To date:', datetime.date.today())
-    wallet_selector = st.selectbox('Select Wallet', list(df['wallet_id']))
+    wallet_selector = st.selectbox('Select Wallet', sorted(list(df['wallet_id'].unique())))
     selected_df = df.loc[(df['wallet_id']==wallet_selector)]
     category_selector = st.selectbox('Select Category', list(selected_df['category_id'].unique()))
     selected_df = df.loc[(df['category_id']==category_selector)]
     # subcategory_selector = st.selectbox('Select SubCategory', list(subcategory_df['name']))
     with st.expander('Wallet data', expanded=False):
         st.dataframe(selected_df)
+        st.metric('Total', f'₹ {selected_df.amount.sum():,}')
 
     #?----SankeyChart wrapper function from https://medium.com/kenlok/how-to-create-sankey-diagrams-from-dataframes-in-python-e221c1b4d6b0
 
     def genSankey(df,cat_cols=[],value_cols='',title='Sankey Diagram'):
         # maximum of 6 value cols -> 6 colors
-        colorPalette = ['#7FD000','#8c5f23','#FFE873','#FFD43B','#646464']
+        colorPalette = ['#7FD000','#8c5f23  ','#FFE873','#FFD43B','#646464']
         labelList = []
         colorNumList = []
         for catCol in cat_cols:
@@ -236,8 +242,11 @@ if selected == 'My Wallet Viewer':
         fig = dict(data=[data], layout=layout)
         return fig
     
-    fig = genSankey(df, cat_cols=['category_id','wallet_id'], value_cols='amount',title='My Expenses flow')
+    fig = genSankey(df, cat_cols=['category_id','wallet_id'], value_cols='amount',title='Income flow')
     st.plotly_chart(fig, use_container_width=True)
+    fig2 = genSankey(transfer_df, cat_cols=['wallet_id','transfer_wallet_id'], value_cols='amount',title='Transfer flow')
+    st.plotly_chart(fig2, use_container_width=True)
+
     # with st.form("saved_periods"):
     #     period = st.selectbox("Select Period:", get_all_periods())
     #     submitted = st.form_submit_button("Plot period")
