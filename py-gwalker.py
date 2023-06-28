@@ -34,11 +34,6 @@ if user_file is None:
     # @st.cache_data
     st.warning('No File uploaded: You can still play with demo-data')
     df = pd.read_csv('tips.csv')
-    # dbfile = 'expense_tracker_app/ignore/wallet-database.db'
-    # con = sqlite3.connect(dbfile)
-    # cur = con.cursor()
-    # df = pd.read_sql_query('SELECT * FROM trans', con)
-    # con.close()
 else:
     st.success('File uploaded')
     df = pd.read_csv(user_file)
