@@ -1,0 +1,50 @@
+#! Code bt Sven Bosau @ https://github.com/Sven-Bo/PyGWalker-Guide-for-Streamlit-and-Jupyter/blob/main/app.py
+import streamlit as st
+import pandas as pd
+import pygwalker as pyg
+import sqlite3
+
+#! Set page configuration
+st.set_page_config(
+    page_title="Online Data Viz app",
+    page_icon=":chart:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+#! clean streamlit styling
+hide_default_format = """
+       <style>
+       #MainMenu {visibility: hidden;}
+       footer {visibility: hidden;}
+       header {visibility: hidden;}
+       </style>
+       """
+st.markdown(hide_default_format, unsafe_allow_html=True)
+
+
+#! Set title and subtitle
+st.title('Interactive Data Visualization app')
+# st.subheader('On-the-go Data Visualizing & Analyzing')
+
+#! upload & read user data
+user_file = st.file_uploader("Upload a CSV file")
+
+if user_file is None:
+    # @st.cache_data
+    st.warning('No File uploaded: You can still play with demo-data')
+    df = pd.read_csv('tips.csv')
+    # dbfile = 'expense_tracker_app/ignore/wallet-database.db'
+    # con = sqlite3.connect(dbfile)
+    # cur = con.cursor()
+    # df = pd.read_sql_query('SELECT * FROM trans', con)
+    # con.close()
+else:
+    st.success('File uploaded')
+    df = pd.read_csv(user_file)
+
+#! basic app settings
+theme = st.radio("Choose your theme", ["light", "dark"])
+
+#! Display PyGWalker
+pyg.walk(df, env='Streamlit', dark=theme)
