@@ -36,7 +36,7 @@ if user_file is None:
     df = pd.read_csv('tips.csv')
 else:
     st.success('File uploaded')
-    df = pd.read_csv(user_file)
+    df = pd.read_csv(user_file, encoding="ansi")
 
 #! basic app settings
 theme = st.radio("Choose your theme", ["light", "dark"])
