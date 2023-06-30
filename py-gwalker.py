@@ -1,4 +1,4 @@
-#! Code bt Sven Bosau @ https://github.com/Sven-Bo/PyGWalker-Guide-for-Streamlit-and-Jupyter/blob/main/app.py
+#! Code inspired from Sven Bosau @ https://github.com/Sven-Bo/PyGWalker-Guide-for-Streamlit-and-Jupyter/blob/main/app.py
 import streamlit as st
 import pandas as pd
 import pygwalker as pyg
@@ -36,7 +36,12 @@ if user_file is None:
     df = pd.read_csv('tips.csv')
 else:
     st.success('File uploaded')
-    df = pd.read_csv(user_file, encoding="ansi")
+    col1, col2, col3, col4 = st.columns(4)
+    enco = col1.selectbox("Change CSV encoding", ['utf-8', 'ascii', 'big5', 'utf-16', 'utf-32'])
+    try:
+        df = pd.read_csv(user_file, encoding="ansi")
+    except:
+        col2.warning('Try different CSV encoding')
 
 #! basic app settings
 theme = st.radio("Choose your theme", ["light", "dark"])
