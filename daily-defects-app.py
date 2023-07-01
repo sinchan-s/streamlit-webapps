@@ -1,5 +1,6 @@
 import calendar
 from datetime import datetime
+from PIL import Image
 from deta import Deta
 import pandas as pd
 import streamlit as st
@@ -30,14 +31,26 @@ db = deta.Base("defects_db")
 
 #! set title and subtitle
 st.title('Daily Defects observation app')
-# st.subheader('On-the-go Data Visualizing & Analyzing')
 
 #! image display-upload area
 try:
-    placeholder_img = "place_h.jpg"
-    col1, col2 = st.columns(2)
-    cam_img = col1.camera_input("Take defect image")
-    user_imgs = col2.file_uploader("Choose photos to upload", accept_multiple_files=True, type=['png', 'jpeg', 'jpg'])
+    placeholder_img = Image.open('place_h.jpg')
+    col1, col2, col3 = st.columns(3)
+    cam_button = col1.button(label='Use System Camera')
+    if cam_button:  
+        cam_img = col1.camera_input("Take defect image")
+        st.image(cam_img)
+    user_imgs = col2.file_uploader("Choose photos to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+    up_imgs = Image.open(user_imgs)
+    # st.image(up_imgs)
+    with col3.expander('image preview'):
+        if cam_img is None:
+            st.image(up_imgs)
+        elif up_imgs is None:
+            st.image(cam_img.getvalue())
+        else:
+            st.image(placeholder_img, caption='Placeholder image')
+
     st.set_option('deprecation.showfileUploaderEncoding', False)    #? Enabling the automatic file decoder
     submit_button = st.button(label='Upload Images')         #? Submit button
     pic_names = []                                           #? Later used for deleting the local files after being uploaded
@@ -95,3 +108,5 @@ if fetch_button:
     df = pd.DataFrame(defects_data)
     df = df[['date', 'time', 'defect_type', 'details']]
     st.table(df)
+    for i in range(df.shape[0]):
+        st.image(df.loc[i, 'image_data'])
