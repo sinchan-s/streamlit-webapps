@@ -106,12 +106,25 @@ if upload_button:
 fetch_button = st.button(label='Fetch Data')
 if fetch_button:
     defects_data = fetch_all_data()
-    st.json(defects_data)
-    st.success("Data getting fetched !!")
+    st.success("Data fetched !!")
     df = pd.DataFrame(defects_data)
-    # df = df[['date', 'time', 'defect_type', 'details']]
+    df = df[['date', 'time', 'defect_type', 'details']]
+    # st.success("Dataframed !!")
+    #! downloading...
+    def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+        return df.to_csv().encode('utf-8')
+
+    csv = convert_df(df)
+    st.download_button(
+        label="Download data as CSV",
+        data=csv, file_name='defects_df.csv',
+        mime='text/csv',) 
+    #! data display
+    "Data display"
+    st.json(defects_data)
     st.dataframe(df)
-    st.success("Data dataframed !!")
+    st.success("Data displayed !!")
 
     # for i in range(df.shape[0]):
     #     st.image(df.loc[i, 'image_data'])
