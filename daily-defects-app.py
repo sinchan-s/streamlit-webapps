@@ -8,10 +8,11 @@ from streamlit_option_menu import option_menu  #pip install streamlit-option-men
 
 #! page configuration
 st.set_page_config(
-    page_title="Daily defects observation app",
-    page_icon="▲",
-    layout="wide",
-    initial_sidebar_state="expanded",
+    page_title="Daily defects observation • web-app",
+    page_icon=":stop_sign:",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+    menu_items=None
 )
 
 #! clean streamlit styling
@@ -42,7 +43,6 @@ try:
         st.image(cam_img)
     user_imgs = col2.file_uploader("Choose photos to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
     up_imgs = Image.open(user_imgs)
-    # st.image(up_imgs)
     with col3.expander('image preview'):
         if cam_img is None:
             st.image(up_imgs)
@@ -75,7 +75,7 @@ col1, col2, col3 = st.columns(3)
 defects = col1.multiselect("Defect Type", ['Slubs', 'Splices', 'Warp lining'])
 customer = col2.text_input("Customer details")
 po_no = col2.text_input("Input PO No.")
-k1 = col3.text_input("Imput Article")
+k1 = col3.text_input("Input Article")
 qty = col1.number_input("Defect quantity observed")
 
 #! db functions
@@ -101,12 +101,17 @@ if upload_button:
         defect_type.append(defects[i])
     details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
     upload_data(image_data, defect_type, details)
+    st.success("Data Uploaded successfully !!")
 
 fetch_button = st.button(label='Fetch Data')
 if fetch_button:
     defects_data = fetch_all_data()
+    st.json(defects_data)
+    st.success("Data getting fetched !!")
     df = pd.DataFrame(defects_data)
-    df = df[['date', 'time', 'defect_type', 'details']]
-    st.table(df)
-    for i in range(df.shape[0]):
-        st.image(df.loc[i, 'image_data'])
+    # df = df[['date', 'time', 'defect_type', 'details']]
+    st.dataframe(df)
+    st.success("Data dataframed !!")
+
+    # for i in range(df.shape[0]):
+    #     st.image(df.loc[i, 'image_data'])
