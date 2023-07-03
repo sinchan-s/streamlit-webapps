@@ -10,7 +10,7 @@ from streamlit_option_menu import option_menu  #pip install streamlit-option-men
 st.set_page_config(
     page_title="Daily defects observation • web-app",
     page_icon=":stop_sign:",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed",
     menu_items=None
 )
@@ -36,43 +36,42 @@ st.title('Daily Defects observation app')
 #! image display-upload area
 try:
     placeholder_img = Image.open('place_h.jpg')
-    col1, col2, col3 = st.columns(3)
-    cam_button = col1.button(label='Use System Camera')
-    if cam_button:  
-        cam_img = col1.camera_input("Take defect image")
-        st.image(cam_img)
+    col1, col2, col3 = st.columns(3) 
+    cam_img = col1.camera_input("Take defect image")
     user_imgs = col2.file_uploader("Choose photos to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
-    up_imgs = Image.open(user_imgs)
+    # up_imgs = Image.open(user_imgs)
+    # st.image(up_imgs)
     with col3.expander('image preview'):
         if cam_img is None:
-            st.image(up_imgs)
-        elif up_imgs is None:
-            st.image(cam_img.getvalue())
+            st.image(user_imgs)
+        elif user_imgs is None:
+            st.image(cam_img)
         else:
             st.image(placeholder_img, caption='Placeholder image')
 
     st.set_option('deprecation.showfileUploaderEncoding', False)    #? Enabling the automatic file decoder
-    submit_button = st.button(label='Upload Images')         #? Submit button
-    pic_names = []                                           #? Later used for deleting the local files after being uploaded
-    for uploaded_file in user_imgs:                          #? Iterating over each file uploaded
-        file = uploaded_file.read()                          #? Read the data
-        image_result = open(uploaded_file.name, 'wb')        #? creates a writable image and later we can write the decoded result
-        image_result.write(file)                             #? Saves the file with the name uploaded_file.name to the root path('./')
-        pic_names.append(uploaded_file.name)                 #? Append the name of image to the list
-        image_result.close()                                 #? Close the file pointer
+    submit_button = st.button(label='Upload Images')                #? Submit button
+    pic_names = []                                                  #? Later used for deleting the local files after being uploaded
+    for uploaded_file in user_imgs:                                 #? Iterating over each file uploaded
+        file = uploaded_file.read()                                 #? Read the data
+        image_result = open(uploaded_file.name, 'wb')               #? creates a writable image and later we can write the decoded result
+        image_result.write(file)                                    #? Saves the file with the name uploaded_file.name to the root path('./')
+        pic_names.append(uploaded_file.name)                        #? Append the name of image to the list
+        image_result.close()                                        #? Close the file pointer
     if submit_button:
-        for i in range(len(pic_names)):                      #? Iterating over each file name
-            name = pic_names[i]                              #? Getting the name of current file
-            path ='./'+pic_names[i]                          #? Creating path string which is basically ["./image.jpg"]
-            drive.put(name, path=path)                       #? so, we have our file name and path, so uploading images to the drive
-            os.remove(pic_names[i])                          #? Finally deleting it from root folder
-        st.success('Uploaded!')                              #? Success message
+        for i in range(len(pic_names)):                             #? Iterating over each file name
+            name = pic_names[i]                                     #? Getting the name of current file
+            path ='./'+pic_names[i]                                 #? Creating path string which is basically ["./image.jpg"]
+            drive.put(name, path=path)                              #? so, we have our file name and path, so uploading images to the drive
+            os.remove(pic_names[i])                                 #? Finally deleting it from root folder
+        st.success('Uploaded!')                                     #? Success message
 except:
     print("An exception occurred")
 
 #! details add-on
+defects_list = ['Slubs', 'Splices', 'Warp lining']
 col1, col2, col3 = st.columns(3)
-defects = col1.multiselect("Defect Type", ['Slubs', 'Splices', 'Warp lining'])
+defects = col1.multiselect("Defect Type", defects_list)
 customer = col2.text_input("Customer details")
 po_no = col2.text_input("Input PO No.")
 k1 = col3.text_input("Input Article")
@@ -109,22 +108,20 @@ if fetch_button:
     st.success("Data fetched !!")
     df = pd.DataFrame(defects_data)
     df = df[['date', 'time', 'defect_type', 'details']]
-    # st.success("Dataframed !!")
+
     #! downloading...
     def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
         return df.to_csv().encode('utf-8')
 
     csv = convert_df(df)
     st.download_button(
         label="Download data as CSV",
-        data=csv, file_name='defects_df.csv',
-        mime='text/csv',) 
+        data=csv,
+        file_name='defects_df.csv',
+        mime='text/csv',)
+
     #! data display
-    "Data display"
+    "Data display:"
     st.json(defects_data)
     st.dataframe(df)
     st.success("Data displayed !!")
-
-    # for i in range(df.shape[0]):
-    #     st.image(df.loc[i, 'image_data'])
