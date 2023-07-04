@@ -1,4 +1,4 @@
-import calendar, base64, json
+import calendar, base64, json, time
 from datetime import datetime
 from PIL import Image
 from deta import Deta
@@ -106,13 +106,17 @@ if upload_button:
     for i in range(len(defects)):
         defect_type.append(defects[i])
     details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
+    prog_bar = st.progress(0)
     upload_data(image_data, defect_type, details)
     st.success("Data Uploaded successfully !!")
+    prog_bar.progress(100)
 
 #! data fetch button
 fetch_button = st.button(label='Fetch Data')
 if fetch_button:
+    prog_bar = st.progress(0)
     defects_data = fetch_all_data()
+    prog_bar.progress(100)
     st.success("Data fetched !!")
     df = pd.DataFrame(defects_data)
     df = df[['date', 'time', 'defect_type', 'details']]
