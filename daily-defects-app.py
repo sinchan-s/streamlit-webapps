@@ -24,16 +24,18 @@ hide_default_format = """
        </style>
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
+key = str(datetime.now().timestamp())
 
-#! initialize deta db
+#! initialize deta Base & Drive
 DETA_KEY = st.secrets["DETA_KEY"]
 deta = Deta(DETA_KEY)
 db = deta.Base("defects_db")
+img_drive = deta.Drive("defects_imgs")
 
 #! set title and subtitle
 st.title('Daily Defects observation app')
 
-#! image display-upload area
+#! image display-upload
 try:
     placeholder_img = Image.open('place_h.jpg')
     col1, col2, col3 = st.columns(3) 
@@ -42,15 +44,17 @@ try:
 
     with col3.expander('image preview'):
         if cam_img is None:
-            st.image(user_imgs)
+            st.image(user_imgs, caption=key)
             image_data = user_imgs.getvalue()
         elif user_imgs is None:
-            st.image(cam_img)
+            st.image(cam_img, caption=key)
             image_data = cam_img.getvalue()
         else:
             st.image(placeholder_img, caption='Placeholder image')
+except:
+    print("An exception occurred")
 
-    # image_d = base64.decodestring(json.dumps(image_data))
+# Below code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
 
     # st.set_option('deprecation.showfileUploaderEncoding', False)    #? Enabling the automatic file decoder
     # submit_button = st.button(label='Upload Images')                #? Submit button
@@ -68,8 +72,6 @@ try:
     #         drive.put(name, path=path)                              #? so, we have our file name and path, so uploading images to the drive
     #         os.remove(pic_names[i])                                 #? Finally deleting it from root folder
     #     st.success('Uploaded!')                                     #? Success message
-except:
-    print("An exception occurred")
 
 #! details add-on
 defects_list = ['Slubs', 'Splices', 'Warp lining']
@@ -84,11 +86,15 @@ k1 = col3.text_input("Input Article")
 qty = col3.number_input("Defect quantity observed")
 
 #! db functions
-def upload_data(image_data, defect_type, details):
+def upload_data(image_name, defect_type, details):
     date_time = datetime.now()
     date = date_time.strftime("%m/%d/%Y")
     time = date_time.strftime("%H:%M:%S")
-    return db.put({"key": str(date_time.timestamp()), "date": date, "time": time, "image_data": image_data, "defect_type": defect_type, "details": details})
+    return db.put({"key": key, "date": date, "time": time, "image_name": key, "defect_type": defect_type, "details": details})
+
+def upload_img(image_name, image_data):
+    # path = './'+ image_name
+    return img_drive.put(image_name, data=image_data)
 
 def fetch_data(period):
     return db.get(period)
@@ -97,29 +103,36 @@ def fetch_all_data():
     res = db.fetch()
     return res.items
 
-#! upload button function
+#! upload button
 upload_button = st.button(label='Upload Data')                          #? Upload button
+image_name = key
 if upload_button:
-    if image_data is not None:
-        image_data = 'no-image-found'
-    defect_type = []
+    if image_data is None:
+        st.error("No image uploaded")
+    defect_type = ""
     for i in range(len(defects)):
-        defect_type.append(defects[i])
+        defect_type = defects[i] + ", "
     details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
     prog_bar = st.progress(0)
-    upload_data(image_data, defect_type, details)
+    upload_data(image_name, defect_type, details)
+    upload_img(image_name, image_data)
     st.success("Data Uploaded successfully !!")
     prog_bar.progress(100)
 
-#! data fetch button
-fetch_button = st.button(label='Fetch Data')
+#! fetch button
+fetch_button = st.button(label='Fetch All Data')
 if fetch_button:
     prog_bar = st.progress(0)
     defects_data = fetch_all_data()
+    # img_select = st.selectbox("All Defects:", img_files)
     prog_bar.progress(100)
     st.success("Data fetched !!")
     df = pd.DataFrame(defects_data)
-    df = df[['date', 'time', 'defect_type', 'details']]
+    defect_select = st.selectbox('Select previous defect:', df.defect_type)
+    img_key = df[df.defect_type.str.contains(defect_select)].key[0]
+    # st.write(img_key)
+    st.image(img_drive.get(img_key).read(), width=450)
+    df = df[['date', 'time', 'defect_type', 'details', 'image_name']]
 
     #! downloading...
     def convert_df(df):
@@ -133,10 +146,9 @@ if fetch_button:
         mime='text/csv',)
 
     #! data display
-    with st.expander('Data Preview:'):
+    with st.expander('Raw Data Preview:'):
         st.json(defects_data)
     try:
         st.dataframe(df)
-        st.success("Data displayed !!")
     except:
         st.error("An error occured while dataframing...🙁")
