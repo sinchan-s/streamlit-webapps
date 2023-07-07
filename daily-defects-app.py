@@ -26,6 +26,16 @@ hide_default_format = """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 key = str(datetime.now().timestamp())
 
+#! set title and subtitle
+st.title('Daily Defects observation app')
+
+#! nav menu
+selected = option_menu(
+    menu_title=None, 
+    options=['Defects Entry', 'Defects History'],
+    icons=['card-list', 'clipboard2-data'],
+    orientation='horizontal')
+
 #! initialize deta Base & Drive
 DETA_KEY = st.secrets["DETA_KEY"]
 deta = Deta(DETA_KEY)
@@ -51,94 +61,93 @@ def fetch_all_data():
     res = defects_db.fetch()
     return res.items
 
-#! set title and subtitle
-st.title('Daily Defects observation app')
 
-#! image display-upload
-placeholder_img = Image.open('place_h.jpg')
-col1, col2, col3 = st.columns(3) 
-cam_img = col1.camera_input("Take defect image")
-user_imgs = col2.file_uploader("Choose defect image to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+if selected=='Defects Entry':
+    #! image display-upload
+    placeholder_img = Image.open('place_h.jpg')
+    col1, col2, col3 = st.columns(3) 
+    cam_img = col1.camera_input("Take defect image")
+    user_imgs = col2.file_uploader("Choose defect image to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
 
-#! image preview panel
-# Some code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
-with col3.expander('image preview'):
-    if cam_img is None and user_imgs is None:
-        st.image(placeholder_img, caption='Placeholder image')
-        image_data = placeholder_img.getvalue()
-    elif user_imgs is None:
-        st.image(cam_img, caption=key)
-        image_data = cam_img.getvalue()
-    else:
-        st.image(user_imgs, caption=key)
-        image_data = user_imgs.getvalue()
+    #! image preview panel
+    # Some code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
+    with col3.expander('image preview'):
+        if cam_img is None and user_imgs is None:
+            st.image(placeholder_img, caption='Placeholder image')
+            image_data = placeholder_img
+        elif user_imgs is None:
+            st.image(cam_img, caption=key)
+            image_data = cam_img.getvalue()
+        else:
+            st.image(user_imgs, caption=key)
+            image_data = user_imgs.getvalue()
 
-#! details add-on
-defects_list = ['Slubs', 'Splices', 'Warp lining']
-col1, col2, col3 = st.columns(3)
-defects = col1.multiselect("Defect Type", defects_list)
-m_defects = col1.text_input("Manually enter defect type:")
-customer = col2.text_input("Customer details")
-po_no = col2.text_input("Input PO No.")
-k1 = col3.text_input("Input Article")
-qty = col3.number_input("Defect quantity observed")
+    #! details add-on
+    defects_list = ['Slubs', 'Splices', 'Warp lining']
+    col1, col2, col3 = st.columns(3)
+    defects = col1.multiselect("Defect Type", defects_list)
+    m_defects = col1.text_input("Manually enter defect type:")
+    customer = col2.text_input("Customer details:")
+    po_no = col2.text_input("PO No:")
+    k1 = col3.text_input("Article:")
+    qty = col3.number_input("Defect quantity observed:")
 
-#! data validate conditions
-if not defects:
-    defects = m_defects
-
-
-#! upload button
-upload_button = st.button(label='Upload Data')                          #? Upload button
-image_name = key
-if upload_button:
-    defect_type = ""
+    #! data validate conditions
     if defects:
         for i in range(len(defects)):
             defect_type = defects[i] + ", "
-    details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
-    prog_bar = st.progress(0)
-    upload_data(defect_type, details)
-    upload_img(image_name, image_data)
-    st.success("Data Uploaded successfully !!")
-    prog_bar.progress(100)
+    else:
+        defects = m_defects
+    st.write(defects)
 
-#! fetch button
-fetch_button = st.button(label='Fetch All Data')
-if fetch_button:
-    prog_bar = st.progress(0)
-    defects_data = fetch_all_data()
-    prog_bar.progress(100)
-    df = pd.DataFrame(defects_data)
-    
-    st.success("Data fetched !!")
-        
-    img_key = st.selectbox("All Defect images:", df.key)
-    # defect_select = st.selectbox('Select defect:', df.defect_type)
-    # img_key = df[df.defect_type.str.contains(defect_select)].key[0]
-    # st.write('img_key:  '+ img_key)
+    #! upload button
+    upload_button = st.button(label='Upload Data')                          #? Upload button
+    image_name = key
+    if upload_button:
+        details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
+        prog_bar = st.progress(0)
+        upload_data(defect_type, details)                                   #? button for text data upload
+        upload_img(image_name, image_data)                                  #? button for only ref. image upload
+        st.success("Data Uploaded successfully !!")                         #? upload successful..
+        prog_bar.progress(100)
 
-    try:
-        st.image(Image.open(imgs_drive.get(img_key)))
-    except:
-        st.error("Image can't be displayed")
-    df = df[['date', 'time', 'defect_type', 'details', 'image_name']]
+if selected=='Defects History':
+    #! fetch button
+    fetch_button = st.button(label='Fetch All Data')
+    if fetch_button:
+        prog_bar = st.progress(0)
+        global defects_data
+        defects_data = fetch_all_data()
+        prog_bar.progress(100)
+        df = pd.DataFrame(defects_data)
+        st.success("Data fetched !!")
+            
+        img_key = st.selectbox("All Defects:", df.key)
+        # defect_select = st.selectbox('Select defect:', df.defect_type)
+        # img_key = df[df.defect_type.str.contains(defect_select)].key[0]
+        # st.write('img_key:  '+ img_key)
 
-    #! data downloading...
-    def convert_df(df):
-        return df.to_csv().encode('utf-8')
+        try:
+            st.image(Image.open(imgs_drive.get(img_key)))
+        except:
+            st.error("No Image available !!")
+        df = df[['date', 'time', 'defect_type', 'details', 'image_name', 'key']]
 
-    csv = convert_df(df)
-    st.download_button(
-        label="Download data as CSV",
-        data=csv,
-        file_name='defects_df.csv',
-        mime='text/csv',)
+        #! data downloading...
+        def convert_df(df):
+            return df.to_csv().encode('utf-8')
 
-    #! data display
-    with st.expander('Raw Data Preview:'):
-        st.json(defects_data)
-    try:
-        st.table(df)
-    except:
-        st.error("An error occured while dataframing...🙁")
+        csv = convert_df(df)
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name='defects_df.csv',
+            mime='text/csv',)
+
+        #! data display
+        with st.expander('Raw Data Preview:'):
+            st.json(defects_data)
+        try:
+            st.table(df)
+        except:
+            st.error("An error occured while dataframing...🙁")
