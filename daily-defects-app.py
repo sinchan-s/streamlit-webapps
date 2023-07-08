@@ -48,8 +48,7 @@ def upload_data(defect_type, details):
     date = date_time.strftime("%m/%d/%Y")
     time = date_time.strftime("%H:%M:%S")
     return defects_db.put({"key": key, "date": date, "time": time, 
-                    "defect_type": defect_type, 
-                    "details": details})
+                    "defect_type": defect_type, "details": details, "remarks": remarks})
 
 def upload_img(image_name, image_data):
     return imgs_drive.put(image_name, data=image_data)
@@ -60,6 +59,9 @@ def fetch_data(period):
 def fetch_all_data():
     res = defects_db.fetch()
     return res.items
+
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
 
 
 if selected=='Defects Entry':
@@ -91,63 +93,68 @@ if selected=='Defects Entry':
     po_no = col2.text_input("PO No:")
     k1 = col3.text_input("Article:")
     qty = col3.number_input("Defect quantity observed:")
+    remrk = col3.text_area("Additional Remarks")
+    st.divider()
 
     #! data validate conditions
     if defects:
         for i in range(len(defects)):
             defect_type = defects[i] + ", "
     else:
-        defects = m_defects
-    st.write(defects)
+        defect_type = m_defects
 
     #! upload button
-    upload_button = st.button(label='Upload Data')                          #? Upload button
+    col1, col2, col3 = st.columns(3)
+    upload_button = col1.button(label='Upload Data')                          #? Upload button
     image_name = key
     if upload_button:
         details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
-        prog_bar = st.progress(0)
+        prog_bar = col2.progress(0)
         upload_data(defect_type, details)                                   #? button for text data upload
         upload_img(image_name, image_data)                                  #? button for only ref. image upload
-        st.success("Data Uploaded successfully !!")                         #? upload successful..
+        col3.success("Data Uploaded successfully !!")                         #? upload successful..
         prog_bar.progress(100)
 
 if selected=='Defects History':
+    col1, col2 = st.columns(2)
     #! fetch button
-    fetch_button = st.button(label='Fetch All Data')
+    fetch_button = col1.button(label='Fetch/Refresh')
+    if 'defects_data' not in st.session_state:
+        st.session_state.defects_data = 0
     if fetch_button:
-        prog_bar = st.progress(0)
-        global defects_data
-        defects_data = fetch_all_data()
-        prog_bar.progress(100)
-        df = pd.DataFrame(defects_data)
-        st.success("Data fetched !!")
-            
-        img_key = st.selectbox("All Defects:", df.key)
-        # defect_select = st.selectbox('Select defect:', df.defect_type)
-        # img_key = df[df.defect_type.str.contains(defect_select)].key[0]
-        # st.write('img_key:  '+ img_key)
+        with col2:
+            prog_bar = st.progress(0)
+            st.session_state.defects_data = fetch_all_data()
+            prog_bar.progress(100)
+    df = pd.DataFrame(st.session_state.defects_data)
+        
+    omni_key = col1.selectbox("All Defects:", df.key)
+    # defect_select = st.selectbox('Select defect:', df.defect_type)
+    # omni_key = df[df.defect_type.str.contains(defect_select)].key[0]
+    # st.write('omni_key:  '+ omni_key)
 
-        try:
-            st.image(Image.open(imgs_drive.get(img_key)))
-        except:
-            st.error("No Image available !!")
-        df = df[['date', 'time', 'defect_type', 'details', 'image_name', 'key']]
+    try:
+        col1.image(Image.open(imgs_drive.get(omni_key)))
+    except:
+        col1.error("No Image available !!")
+    df = df[['key', 'date', 'time', 'defect_type', 'details']].set_index('key')
 
-        #! data downloading...
-        def convert_df(df):
-            return df.to_csv().encode('utf-8')
+    #! data downloading...
+    csv = convert_df(df)
+    st.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv',)
 
-        csv = convert_df(df)
-        st.download_button(
-            label="Download data as CSV",
-            data=csv,
-            file_name='defects_df.csv',
-            mime='text/csv',)
+    #! data display
+    with st.expander('Raw Data Preview:'):
+        st.json(st.session_state.defects_data)
+    try:
+        st.table(df)
+    except:
+        st.error("An error occured while dataframing...🙁")
 
-        #! data display
-        with st.expander('Raw Data Preview:'):
-            st.json(defects_data)
-        try:
-            st.table(df)
-        except:
-            st.error("An error occured while dataframing...🙁")
+    #! delete entry
+    delete_button = st.button(label=f'Delete entry: {omni_key}')
+    # st.write(omni_key)
+    if delete_button:
+        prog_bar = st.progress(100)
+        defects_db.delete(omni_key)
+        prog_bar.progress(0)
