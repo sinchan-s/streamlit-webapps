@@ -133,16 +133,23 @@ if selected=='Defects History':
     df = pd.DataFrame(st.session_state.defects_data)
     df = df[['key', 'date', 'time', 'defect_type', 'details', 'remarks']].set_index('key')
         
-    omni_key = col1.selectbox("Defects key:", df.index)
-
-    try:
-        col1.image(Image.open(imgs_drive.get(omni_key)))
-    except:
-        col1.error("No Image available !!")
+    omni_key = col1.selectbox("Select Defect(key):", df.index)
 
     #! data downloading...
     csv = convert_df(df)
     col2.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv',)
+    
+    sel_defect = df[df.index==omni_key]
+    # st.write(sel_defect.details[0]['Qty'])
+
+    #! selected defect details preview
+    with st.expander(label='Defect details', expanded=True):
+        col1, col2 = st.columns(2)
+        try:
+            col1.image(Image.open(imgs_drive.get(omni_key)), caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']} of  {sel_defect.details[0]['Customer']} fabric")
+        except:
+            col1.error("No Image available !!")
+        col2.dataframe(sel_defect)
 
     #! data display
     st.divider()
