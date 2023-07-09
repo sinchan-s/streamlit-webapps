@@ -118,7 +118,6 @@ if selected=='Defects Entry':
 #*------------------------------------------------------------------------------------------*# NAV-2
 if selected=='Defects History':
     col1, col2 = st.columns(2)
-    
     #! fetch button
     fetch_button = col1.button(label='Fetch / Refresh Data')
     if 'defects_data' not in st.session_state:
@@ -128,43 +127,47 @@ if selected=='Defects History':
             prog_bar = st.progress(0) #?progress=0%
             st.session_state.defects_data = fetch_all_data()
             prog_bar.progress(100) #?progress=100%
+    try:
+        #! dataframing the json data
+        df = pd.DataFrame(st.session_state.defects_data)
+        df = df[['key', 'date', 'time', 'defect_type', 'details', 'remarks']].set_index('key')
+            
+        omni_key = col1.selectbox("Select Defect(key):", df.index)
 
-    #! dataframing the json data
-    df = pd.DataFrame(st.session_state.defects_data)
-    df = df[['key', 'date', 'time', 'defect_type', 'details', 'remarks']].set_index('key')
+        #! data downloading...
+        csv = convert_df(df)
+        col2.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv',)
         
-    omni_key = col1.selectbox("Select Defect(key):", df.index)
+        sel_defect = df[df.index==omni_key]
+        # st.write(sel_defect.details[0]['Qty'])
 
-    #! data downloading...
-    csv = convert_df(df)
-    col2.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv',)
-    
-    sel_defect = df[df.index==omni_key]
-    # st.write(sel_defect.details[0]['Qty'])
+        #! selected defect details preview
+        with st.expander(label='Defect details', expanded=True):
+            col1, col2 = st.columns(2)
+            defect_img = Image.open(imgs_drive.get(omni_key))
+            if not defect_img:
+                col1.error("No Image available !!")
+            col1.image(defect_img, caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']}m of {sel_defect.details[0]['Customer']} fabric")
+            col2.dataframe(sel_defect)
 
-    #! selected defect details preview
-    with st.expander(label='Defect details', expanded=True):
+        #! data display
+        st.divider()
+        with st.expander('All Defects Data'):
+            # st.json(st.session_state.defects_data)
+            try:
+                st.dataframe(df)
+            except:
+                st.error("An error occured while dataframing...🙁")
+
+        #! delete entry
         col1, col2 = st.columns(2)
-        try:
-            col1.image(Image.open(imgs_drive.get(omni_key)), caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']} of  {sel_defect.details[0]['Customer']} fabric")
-        except:
-            col1.error("No Image available !!")
-        col2.dataframe(sel_defect)
-
-    #! data display
-    st.divider()
-    with st.expander('All Defects Data'):
-        # st.json(st.session_state.defects_data)
-        try:
-            st.dataframe(df)
-        except:
-            st.error("An error occured while dataframing...🙁")
-
-    #! delete entry
-    col1, col2 = st.columns(2)
-    delete_key = col1.selectbox("Select entry to delete:", df.index)
-    delete_button = col2.button(label='Delete this entry')
-    if delete_button:
-        prog_bar = st.progress(0) #?progress=0%
-        defects_db.delete(omni_key)
-        prog_bar.progress(100) #?progress=100%
+        delete_key = col1.selectbox("Select entry to delete:", df.index)
+        delete_button = col2.button(label='Delete this entry')
+        if delete_button:
+            prog_bar = st.progress(0) #?progress=0%
+            defects_db.delete(omni_key)
+            prog_bar.progress(100) #?progress=100%
+    except ValueError:
+        st.write('Please refresh !!')
+    # except:
+    #     st.write('Some error occured..🙁')
