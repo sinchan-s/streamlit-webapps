@@ -151,7 +151,7 @@ if selected=='Defects History':
             col2.dataframe(sel_defect)
 
         #! data display
-        st.divider()
+        # st.divider()
         with st.expander('All Defects Data'):
             # st.json(st.session_state.defects_data)
             try:
