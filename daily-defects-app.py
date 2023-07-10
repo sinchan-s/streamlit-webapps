@@ -76,13 +76,13 @@ if selected=='Defects Entry':
     # Some code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
     with col3.expander('image preview'):
         if cam_img is None and user_img is None:
-            st.image(placeholder_img, caption='Placeholder image')
+            st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
             image_data = placeholder_img
         elif user_img is None:
-            st.image(cam_img, caption=key)
+            st.image(cam_img, caption=key, width=350)
             image_data = cam_img.getvalue()
         else:
-            st.image(user_img, caption=key)
+            st.image(user_img, caption=key, width=350)
             image_data = user_img.getvalue()
 
     #! details add-on
@@ -147,7 +147,7 @@ if selected=='Defects History':
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
                 col1.error("No Image available !!")
-            col1.image(defect_img, caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']}m of {sel_defect.details[0]['Customer']} fabric")
+            col1.image(defect_img, caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']}m of {sel_defect.details[0]['Customer']} fabric", width=300, use_column_width='always')
             col2.dataframe(sel_defect)
 
         #! data display
@@ -162,7 +162,7 @@ if selected=='Defects History':
         #! delete entry
         col1, col2 = st.columns(2)
         delete_key = col1.selectbox("Select entry to delete:", df.index)
-        delete_button = col2.button(label='Delete this entry')
+        delete_button = col2.button(label='Delete this entry', disabled=True)
         if delete_button:
             prog_bar = st.progress(0) #?progress=0%
             defects_db.delete(omni_key)
