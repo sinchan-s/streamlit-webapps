@@ -108,7 +108,7 @@ if selected=='Defects Entry':
 
     #! upload button
     col1, col2, col3 = st.columns(3)
-    upload_button = col1.button(label='Upload Data')                          #? Upload button
+    upload_button = col1.button(label='Upload Data', use_container_width=True)                          #? Upload button
     if upload_button:
         details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
         prog_bar = col2.progress(0) #?progress=0%
@@ -121,7 +121,7 @@ if selected=='Defects Entry':
 if selected=='Defects History':
     col1, col2 = st.columns(2)
     #! fetch button
-    fetch_button = col1.button(label='Fetch / Refresh Data')
+    fetch_button = col1.button(label='Fetch / Refresh Data', use_container_width=True)
     if 'defects_data' not in st.session_state:
         st.session_state.defects_data = {'key':0, }
     if fetch_button:
@@ -138,7 +138,7 @@ if selected=='Defects History':
 
         #! data downloading...
         csv = convert_df(df)
-        col2.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv',)
+        col2.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         sel_defect = df[df.index==omni_key]
         # st.write(sel_defect.details[0]['Qty'])
@@ -164,7 +164,7 @@ if selected=='Defects History':
         #! delete entry
         col1, col2 = st.columns(2)
         delete_key = col1.selectbox("Select entry to delete:", df.index)
-        delete_button = col2.button(label='Delete this entry', disabled=True)
+        delete_button = col2.button(label='Delete this entry', disabled=True, use_container_width=True)
         if delete_button:
             prog_bar = st.progress(0) #?progress=0%
             defects_db.delete(omni_key)
