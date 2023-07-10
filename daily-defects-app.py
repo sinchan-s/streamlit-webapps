@@ -95,7 +95,7 @@ if selected=='Defects Entry':
     k1 = col3.text_input("Article:")
     qty = col3.number_input("Defect quantity observed:")
     remarks = col3.text_area("Additional Remarks")
-    st.divider()
+    # st.divider()
 
     #! data validate conditions
     if defects:
