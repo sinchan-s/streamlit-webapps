@@ -74,7 +74,7 @@ if selected=='Defects Entry':
 
     #! image preview panel
     # Some code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
-    with col3.expander('image preview'):
+    with col3.expander('Image Preview'):
         if cam_img is None and user_img is None:
             st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
             image_data = placeholder_img
@@ -82,8 +82,10 @@ if selected=='Defects Entry':
             st.image(cam_img, caption=key, width=350)
             image_data = cam_img.getvalue()
         else:
+            user_img = Image.open(user_img)
+            user_img.thumbnail((500, 500))
             st.image(user_img, caption=key, width=350)
-            image_data = user_img.getvalue()
+            image_data = user_img#.getvalue()
 
     #! details add-on
     defects_list = ['Slubs', 'Splices', 'Warp lining']
