@@ -45,8 +45,6 @@ imgs_drive = deta.Drive("defects_imgs")
 #*------------------------------------------------------------------------------------------*# DETA functions
 #! defects_db functions
 def upload_data(defect_type, details, remarks):
-    date_time = datetime.now()
-    date = date_time.strftime("%d-%m-%Y")
     time = date_time.strftime("%H:%M:%S")
     return defects_db.put({"key": key, "date": date, "time": time, 
                     "defect_type": defect_type, "details": details, "remarks": remarks})
@@ -66,9 +64,10 @@ def convert_df(df):
 
 #*------------------------------------------------------------------------------------------*# NAV-1
 if selected=='Defects Entry':
+
     #! image display-upload
+    col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    col1, col2, col3 = st.columns(3)
     cam_img = col1.camera_input("Take defect image")
     user_img = col2.file_uploader("Choose defect image to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
 
@@ -88,15 +87,17 @@ if selected=='Defects Entry':
             image_data = user_img#.getvalue()
 
     #! details add-on
-    defects_list = ['Slubs', 'Splices', 'Warp lining']
-    col1, col2, col3 = st.columns(3)
-    defects = col1.multiselect("Defect Type", defects_list)
-    m_defects = col1.text_input("Manually enter defect type:")
+    defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps']
+    col1, col2, col3 = st.columns(3, gap="large")
+    date_time = col1.date_input('Select date:', datetime.now())
+    date = date_time.strftime("%d-%m-%Y")
+    defects = col1.multiselect("Defect Type:", defects_list)
+    m_defects = col1.text_input("Manually enter Defect type:")
     customer = col2.text_input("Customer details:")
     po_no = col2.text_input("PO No:")
     k1 = col3.text_input("Article:")
     qty = col3.number_input("Defect quantity observed:")
-    remarks = col3.text_area("Additional Remarks")
+    remarks = col3.text_area("Additional Remarks:")
     st.divider()
 
     #! data validate conditions
@@ -107,7 +108,7 @@ if selected=='Defects Entry':
         defect_type = m_defects
 
     #! upload button
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3, gap="large")
     upload_button = col1.button(label='Upload Data', use_container_width=True)                          #? Upload button
     if upload_button:
         details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
@@ -119,7 +120,7 @@ if selected=='Defects Entry':
 
 #*------------------------------------------------------------------------------------------*# NAV-2
 if selected=='Defects History':
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="large")
     #! fetch button
     fetch_button = col1.button(label='Fetch / Refresh Data', use_container_width=True)
     if 'defects_data' not in st.session_state:
@@ -132,25 +133,25 @@ if selected=='Defects History':
     try:
         #! dataframing the json data
         df = pd.DataFrame(st.session_state.defects_data)
-        df = df[['key', 'date', 'time', 'defect_type', 'details', 'remarks']].set_index('key')
+        df = df[['key', 'date', 'defect_type', 'details', 'remarks']].set_index('key')
             
         omni_key = col1.selectbox("Select Defect(key):", df.index)
 
         #! data downloading...
         csv = convert_df(df)
-        col2.download_button(label="Download data as CSV", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
+        col2.download_button(label="Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         sel_defect = df[df.index==omni_key]
         # st.write(sel_defect.details[0]['Qty'])
 
         #! selected defect details preview
         with st.expander(label='Defect details', expanded=True):
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2, gap="large")
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
                 col1.error("No Image available !!")
             col1.image(defect_img, caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']}m of {sel_defect.details[0]['Customer']} fabric", width=300, use_column_width='always')
-            col2.dataframe(sel_defect)
+            col2.dataframe(sel_defect.T)
 
         #! data display
         st.divider()
@@ -162,12 +163,14 @@ if selected=='Defects History':
                 st.error("An error occured while dataframing...🙁")
 
         #! delete entry
-        col1, col2 = st.columns(2)
+        st.divider()
+        col1, col2 = st.columns(2, gap="large")
         delete_key = col1.selectbox("Select entry to delete:", df.index)
         delete_button = col2.button(label='Delete this entry', disabled=True, use_container_width=True)
         if delete_button:
             prog_bar = st.progress(0) #?progress=0%
             defects_db.delete(omni_key)
+            imgs_drive.delete(omni_key)
             prog_bar.progress(100) #?progress=100%
     except ValueError:
         st.write('Please refresh !!')
