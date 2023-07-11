@@ -151,7 +151,15 @@ if selected=='Defects History':
             if not defect_img:
                 col1.error("No Image available !!")
             col1.image(defect_img, caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']}m of {sel_defect.details[0]['Customer']} fabric", width=300, use_column_width='always')
-            col2.dataframe(sel_defect.T)
+            disp_df = {
+                'Defect Type': sel_defect.defect_type,
+                'Customer': sel_defect.details[0]['Customer'],
+                'Quantity': sel_defect.details[0]['Qty'],
+                'Article': sel_defect.details[0]['K1'],
+                'PO': sel_defect.details[0]['PO'],
+                'Remarks': sel_defect.remarks,
+            }
+            col2.table(pd.DataFrame(disp_df).T)
 
         #! data display
         st.divider()
