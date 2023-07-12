@@ -68,8 +68,8 @@ if selected=='Defects Entry':
     #! image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_img = col1.camera_input("Take defect image")
-    user_img = col2.file_uploader("Choose defect image to upload", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+    cam_img = col1.camera_input("Take defect image 📷")
+    user_img = col2.file_uploader("Choose defect image to upload 📂", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
 
     #! image preview panel
     # Some code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
@@ -81,15 +81,13 @@ if selected=='Defects Entry':
             st.image(cam_img, caption=key, width=350)
             image_data = cam_img.getvalue()
         else:
-            user_img = Image.open(user_img)
-            user_img.thumbnail((500, 500))
             st.image(user_img, caption=key, width=350)
-            image_data = user_img#.getvalue()
+            image_data = user_img.getvalue()
 
     #! details add-on
     defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps']
     col1, col2, col3 = st.columns(3, gap="large")
-    date_time = col1.date_input('Select date:', datetime.now())
+    date_time = col1.date_input('Select date 📅:', datetime.now())
     date = date_time.strftime("%d-%m-%Y")
     defects = col1.multiselect("Defect Type:", defects_list)
     m_defects = col1.text_input("Manually enter Defect type:")
@@ -109,7 +107,7 @@ if selected=='Defects Entry':
 
     #! upload button
     col1, col2, col3 = st.columns(3, gap="large")
-    upload_button = col1.button(label='Upload Data', use_container_width=True)                          #? Upload button
+    upload_button = col1.button(label='Upload Data ⬆️', use_container_width=True)                          #? Upload button
     if upload_button:
         details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
         prog_bar = col2.progress(0) #?progress=0%
@@ -122,7 +120,7 @@ if selected=='Defects Entry':
 if selected=='Defects History':
     col1, col2 = st.columns(2, gap="large")
     #! fetch button
-    fetch_button = col1.button(label='Fetch / Refresh Data', use_container_width=True)
+    fetch_button = col1.button(label='Fetch / Refresh Data  🔄', use_container_width=True)
     if 'defects_data' not in st.session_state:
         st.session_state.defects_data = {'key':0, }
     if fetch_button:
@@ -139,7 +137,7 @@ if selected=='Defects History':
 
         #! data downloading...
         csv = convert_df(df)
-        col2.download_button(label="Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
+        col2.download_button(label="Download Data (.csv)  📥", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         sel_defect = df[df.index==omni_key]
         # st.write(sel_defect.details[0]['Qty'])
@@ -161,12 +159,16 @@ if selected=='Defects History':
             }
             col2.table(pd.DataFrame(disp_df).T)
 
-        #! data display
+        #! all defects data expander
         st.divider()
         with st.expander('All Defects Data'):
             # st.json(st.session_state.defects_data)
             try:
-                st.dataframe(df)
+                st.session_state.transpose_df_view = st.checkbox('Transpose View')
+                if st.session_state.transpose_df_view:
+                    st.dataframe(df.T)
+                else:
+                    st.dataframe(df)
             except:
                 st.error("An error occured while dataframing...🙁")
 
