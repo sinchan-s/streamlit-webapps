@@ -24,6 +24,8 @@ hide_default_format = """
        </style>
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
+
+#! unique key generator
 key = str(datetime.now().timestamp())
 
 #! set title and subtitle
@@ -37,24 +39,34 @@ selected = option_menu(
     orientation='horizontal')
 
 #! initialize deta Base & Drive
-DETA_KEY = st.secrets["DETA_KEY"]
-deta = Deta(DETA_KEY)
-defects_db = deta.Base("defects_db")
-imgs_drive = deta.Drive("defects_imgs")
+@st.cache_resource
+def load_data():
+    DETA_KEY = st.secrets["DETA_KEY"]
+    deta = Deta(DETA_KEY)
+    db = deta.Base("defects_db")
+    drive = deta.Drive("defects_imgs")
+    return db, drive
+
+conn = load_data()
+defects_db = conn[0]
+imgs_drive = conn[1]
 
 #*------------------------------------------------------------------------------------------*# DETA functions
 #! defects_db functions
+@st.cache_data
 def upload_data(defect_type, details, remarks):
     time = date_time.strftime("%H:%M:%S")
     return defects_db.put({"key": key, "date": date, "time": time, 
                     "defect_type": defect_type, "details": details, "remarks": remarks})
-
+@st.cache_data
 def upload_img(image_name, image_data):
     return imgs_drive.put(image_name, data=image_data)
 
+@st.cache_data
 def fetch_data(key):
     return defects_db.get(key)
 
+@st.cache_data
 def fetch_all_data():
     res = defects_db.fetch()
     return res.items
@@ -166,22 +178,26 @@ if selected=='Defects History':
             try:
                 st.session_state.transpose_df_view = st.checkbox('Transpose View')
                 if st.session_state.transpose_df_view:
-                    st.dataframe(df.T)
+                    st.dataframe(df.T, use_container_width=True)
                 else:
-                    st.dataframe(df)
+                    st.dataframe(df, use_container_width=True)
             except:
                 st.error("An error occured while dataframing...🙁")
 
         #! delete entry
         st.divider()
-        col1, col2 = st.columns(2, gap="large")
-        delete_key = col1.selectbox("Select entry to delete:", df.index)
-        delete_button = col2.button(label='Delete this entry', disabled=True, use_container_width=True)
-        if delete_button:
-            prog_bar = st.progress(0) #?progress=0%
-            defects_db.delete(omni_key)
-            imgs_drive.delete(omni_key)
-            prog_bar.progress(100) #?progress=100%
+        del_pass = st.secrets["DEL_PASS"]
+        input_pass = st.text_input('Enter Password to delete entry:')
+        
+        if input_pass==del_pass:    #? getting delete access
+            col1, col2 = st.columns(2, gap="large")
+            delete_key = col1.selectbox("Select entry to delete:", df.index)
+            delete_button = col2.button(label='Delete this entry', disabled=False, use_container_width=True)
+            if delete_button:
+                prog_bar = st.progress(0) #?progress=0%
+                defects_db.delete(omni_key)
+                imgs_drive.delete(omni_key)
+                prog_bar.progress(100) #?progress=100%
     except ValueError:
         st.write('Please refresh !!')
     # except:
