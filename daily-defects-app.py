@@ -39,7 +39,7 @@ selected = option_menu(
     orientation='horizontal')
 
 #! initialize deta Base & Drive
-@st.cache_resource
+# @st.cache_resource(ttl=3600)
 def load_data():
     DETA_KEY = st.secrets["DETA_KEY"]
     deta = Deta(DETA_KEY)
@@ -53,20 +53,18 @@ imgs_drive = conn[1]
 
 #*------------------------------------------------------------------------------------------*# DETA functions
 #! defects_db functions
-@st.cache_data
-def upload_data(defect_type, details, remarks):
-    time = date_time.strftime("%H:%M:%S")
-    return defects_db.put({"key": key, "date": date, "time": time, 
-                    "defect_type": defect_type, "details": details, "remarks": remarks})
-@st.cache_data
+# @st.cache_data(ttl=3600, show_spinner="uploading...")
+def upload_data(defect_type, customer, article, po_no, qty, remarks):
+    return defects_db.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
+# @st.cache_data(ttl=3600)
 def upload_img(image_name, image_data):
     return imgs_drive.put(image_name, data=image_data)
 
-@st.cache_data
+# @st.cache_data(ttl=3600)
 def fetch_data(key):
     return defects_db.get(key)
 
-@st.cache_data
+# @st.cache_data(ttl=3600, show_spinner="fetching...")
 def fetch_all_data():
     res = defects_db.fetch()
     return res.items
@@ -121,10 +119,9 @@ if selected=='Defects Entry':
     col1, col2, col3 = st.columns(3, gap="large")
     upload_button = col1.button(label='Upload Data ⬆️', use_container_width=True)                          #? Upload button
     if upload_button:
-        details = {'Customer': customer, 'PO': po_no, 'K1': k1, 'Qty': qty}
         prog_bar = col2.progress(0) #?progress=0%
         upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
-        upload_data(defect_type, details, remarks)                            #? button for text data upload
+        upload_data(defect_type=defect_type, customer=customer, article=k1, po_no=po_no, qty=qty, remarks=remarks)                            #? button for text data upload
         col3.success("Data Uploaded successfully !!")                         #? upload successful..
         prog_bar.progress(100) #?progress=100%
 
@@ -143,7 +140,7 @@ if selected=='Defects History':
     try:
         #! dataframing the json data
         df = pd.DataFrame(st.session_state.defects_data)
-        df = df[['key', 'date', 'defect_type', 'details', 'remarks']].set_index('key')
+        df = df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
             
         omni_key = col1.selectbox("Select Defect(key):", df.index)
 
@@ -160,14 +157,14 @@ if selected=='Defects History':
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
                 col1.error("No Image available !!")
-            col1.image(defect_img, caption=f"{sel_defect.defect_type[0]} in {sel_defect.details[0]['Qty']}m of {sel_defect.details[0]['Customer']} fabric", width=300, use_column_width='always')
+            col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", width=300, use_column_width='always')
             disp_df = {
-                'Defect Type': sel_defect.defect_type,
-                'Customer': sel_defect.details[0]['Customer'],
-                'Quantity': sel_defect.details[0]['Qty'],
-                'Article': sel_defect.details[0]['K1'],
-                'PO': sel_defect.details[0]['PO'],
-                'Remarks': sel_defect.remarks,
+                'Defect Type': sel_defect.Defect_type,
+                'Customer': sel_defect.Customer,
+                'Quantity': sel_defect.Quantity,
+                'Article': sel_defect.Article,
+                'PO': sel_defect.PO,
+                'Remarks': sel_defect.Remarks,
             }
             col2.table(pd.DataFrame(disp_df).T)
 
@@ -184,20 +181,33 @@ if selected=='Defects History':
             except:
                 st.error("An error occured while dataframing...🙁")
 
+            
+        st.divider()
+        common_key = st.selectbox("Select entry to update/delete:", df.index)
+        
+        #! update entry
+        col1, col2 = st.columns(2, gap="large")
+        u_key = col1.selectbox('Select Field:', ['Defect_type', 'Customer', 'K1', 'PO', 'Qty', 'Remarks'])
+        u_value = col2.text_input('New Value:')
+        update_button = col1.button(label='Update this entry', disabled=True, use_container_width=True)
+        if update_button:
+            prog_bar = st.progress(0) #?progress=0%
+            defects_db.update({u_key: u_value},common_key)
+            prog_bar.progress(100) #?progress=100%
+
         #! delete entry
         st.divider()
         del_pass = st.secrets["DEL_PASS"]
         input_pass = st.text_input('Enter Password to delete entry:')
-        
         if input_pass==del_pass:    #? getting delete access
             col1, col2 = st.columns(2, gap="large")
-            delete_key = col1.selectbox("Select entry to delete:", df.index)
-            delete_button = col2.button(label='Delete this entry', disabled=False, use_container_width=True)
+            delete_button = col2.button(label='Delete this entry', use_container_width=True)
             if delete_button:
                 prog_bar = st.progress(0) #?progress=0%
-                defects_db.delete(omni_key)
-                imgs_drive.delete(omni_key)
+                defects_db.delete(common_key)
+                imgs_drive.delete(common_key)
                 prog_bar.progress(100) #?progress=100%
+
     except ValueError:
         st.write('Please refresh !!')
     # except:
