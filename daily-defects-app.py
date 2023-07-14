@@ -141,7 +141,7 @@ if selected=='Defects History':
         #! dataframing the json data
         df = pd.DataFrame(st.session_state.defects_data)
         df = df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
-            
+        df = df.sort_values(by='key',ascending=False)
         omni_key = col1.selectbox("Select Defect(key):", df.index)
 
         #! data downloading...
