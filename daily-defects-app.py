@@ -192,6 +192,12 @@ if selected=='Defects History':
             if input_pass==upd_pass:    #? getting delete access
                 upd_status = False
             update_button = col2.button(label='Update this entry', disabled=upd_status, use_container_width=True)
+            upd_status = True
+            upd_pass = st.secrets["DEL_PASS"]
+            input_pass = col2.text_input('Enter Password to update entry:')
+            if input_pass==upd_pass:    #? getting delete access
+                upd_status = False
+            update_button = col2.button(label='Update this entry', disabled=upd_status, use_container_width=True)
             if update_button:
                 prog_bar = st.progress(0) #?progress=0%
                 defects_db.update({u_key: u_value},omni_key)
