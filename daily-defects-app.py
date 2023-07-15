@@ -151,6 +151,18 @@ if selected=='Defects History':
         sel_defect = df[df.index==omni_key]
         # st.write(sel_defect.details[0]['Qty'])
 
+        #! all defects data expander
+        with st.expander('View All Defects Data'):
+            # st.json(st.session_state.defects_data)
+            try:
+                st.session_state.transpose_df_view = st.checkbox('Transpose View')
+                if st.session_state.transpose_df_view:
+                    st.dataframe(df.T, use_container_width=True)
+                else:
+                    st.dataframe(df, use_container_width=True)
+            except:
+                st.error("An error occured while dataframing...🙁")
+
         #! selected defect details preview
         with st.expander(label='Defect details', expanded=True):
             col1, col2 = st.columns(2, gap="large")
@@ -168,44 +180,37 @@ if selected=='Defects History':
             }
             col2.table(pd.DataFrame(disp_df).T)
 
-        #! all defects data expander
-        st.divider()
-        with st.expander('All Defects Data'):
-            # st.json(st.session_state.defects_data)
-            try:
-                st.session_state.transpose_df_view = st.checkbox('Transpose View')
-                if st.session_state.transpose_df_view:
-                    st.dataframe(df.T, use_container_width=True)
-                else:
-                    st.dataframe(df, use_container_width=True)
-            except:
-                st.error("An error occured while dataframing...🙁")
-
-            
-        st.divider()
-        common_key = st.selectbox("Select entry to update/delete:", df.index)
-        
         #! update entry
-        col1, col2 = st.columns(2, gap="large")
-        u_key = col1.selectbox('Select Field:', ['Defect_type', 'Customer', 'K1', 'PO', 'Qty', 'Remarks'])
-        u_value = col2.text_input('New Value:')
-        update_button = col1.button(label='Update this entry', disabled=True, use_container_width=True)
-        if update_button:
-            prog_bar = st.progress(0) #?progress=0%
-            defects_db.update({u_key: u_value},common_key)
-            prog_bar.progress(100) #?progress=100%
+        with st.expander('Update entry'):
+            st.write(f'Selected entry: {omni_key}')
+            col1, col2 = st.columns(2, gap="large")
+            u_key = col1.selectbox('Select Field:', ['Defect_type', 'Customer', 'K1', 'PO', 'Qty', 'Remarks'])
+            u_value = col1.text_input('New Value:')
+            upd_status = True
+            upd_pass = st.secrets["DEL_PASS"]
+            input_pass = col2.text_input('Enter Password to update entry:')
+            if input_pass==upd_pass:    #? getting delete access
+                upd_status = False
+            update_button = col2.button(label='Update this entry', disabled=upd_status, use_container_width=True)
+            if update_button:
+                prog_bar = st.progress(0) #?progress=0%
+                defects_db.update({u_key: u_value},omni_key)
+                prog_bar.progress(100) #?progress=100%
 
         #! delete entry
-        st.divider()
-        del_pass = st.secrets["DEL_PASS"]
-        input_pass = st.text_input('Enter Password to delete entry:')
-        if input_pass==del_pass:    #? getting delete access
+        with st.expander('Delete entry'):
+            st.write(f'Selected entry: {omni_key}')
             col1, col2 = st.columns(2, gap="large")
-            delete_button = col2.button(label='Delete this entry', use_container_width=True)
+            del_pass = st.secrets["DEL_PASS"]
+            input_pass = col1.text_input('Enter Password to delete entry:')
+            del_status = True
+            if input_pass==del_pass:    #? getting delete access
+                del_status = False
+            delete_button = col1.button(label='Delete this entry', disabled=del_status, use_container_width=True)
             if delete_button:
                 prog_bar = st.progress(0) #?progress=0%
-                defects_db.delete(common_key)
-                imgs_drive.delete(common_key)
+                defects_db.delete(omni_key)
+                imgs_drive.delete(omni_key)
                 prog_bar.progress(100) #?progress=100%
 
     except ValueError:
