@@ -144,7 +144,7 @@ if selected=='Defects Entry':
 
 #*------------------------------------------------------------------------------------------*# NAV-2
 if selected=='Defects History':
-    col1, col2 = st.columns(2, gap="large")
+    col1, col2, col3 = st.columns(3, gap="large")
     #! fetch button
     fetch_button = col1.button(label='Fetch / Refresh Data  🔄', use_container_width=True)
     if 'defects_data' not in st.session_state:
@@ -162,7 +162,7 @@ if selected=='Defects History':
 
         #! data downloading...
         csv = convert_df(df)
-        col2.download_button(label="Download Data (.csv)  📥", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
+        col3.download_button(label="Download Data (.csv)  📥", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         #! all defects dataframe
         with st.expander('View All Defects Data'):
@@ -174,7 +174,7 @@ if selected=='Defects History':
                 else:
                     st.dataframe(df, use_container_width=True)
             except:
-                st.error("An error occured while dataframing...🙁")
+                st.error("An error occured while dataframing...	:dizzy_face:")
         
         omni_key = st.selectbox("Select Defect(key):", df.index)
 
@@ -186,36 +186,32 @@ if selected=='Defects History':
             if not defect_img:
                 col1.error("No Image available !!")
             col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", width=300, use_column_width='always')
-            disp_df = {
-                'Defect Type': sel_defect.Defect_type,
-                'Customer': sel_defect.Customer,
-                'Quantity': sel_defect.Quantity,
-                'Article': sel_defect.Article,
-                'PO': sel_defect.PO,
-                'Remarks': sel_defect.Remarks,
-            }
-            col2.table(pd.DataFrame(disp_df).T)
+            col2.table(pd.DataFrame(sel_defect).T)
 
         #! update entry
-        with st.expander('Update entry'):
-            st.write(f'Selected entry: {omni_key}')
+        with st.expander('Update data'):
+            st.metric('Selected entry:', omni_key)
             col1, col2 = st.columns(2, gap="large")
-            u_key = col1.selectbox('Select Field:', ['Defect_type', 'Customer', 'K1', 'PO', 'Qty', 'Remarks'])
-            u_value = col1.text_input('New Value:')
-            upd_status = True
-            upd_pass = st.secrets["DEL_PASS"]
+            update_key = col1.selectbox('Select Field:', df.columns[1:])
+            current_val = col1.caption(f'Current value ({update_key}): {defects_db.get(omni_key)[update_key]}')
+            update_value = col1.text_input('New Value:')
+            if update_key=='Qty':            #? check for numerical value
+                update_value = float(update_value)
+            upd_pass = st.secrets["UPD_PASS"]
             input_pass = col2.text_input('Enter Password to update entry:')
-            if input_pass==upd_pass:    #? getting delete access
-                upd_status = False
-            update_button = col2.button(label='Update this entry', disabled=upd_status, use_container_width=True)
+            update_status = True
+            if input_pass==upd_pass:    #? getting update access
+                update_status = False
+            update_button = col2.button(label='Update this entry', disabled=update_status, use_container_width=True)
             if update_button:
                 prog_bar = st.progress(0) #?progress=0%
-                defects_db.update({u_key: u_value},omni_key)
+                defects_db.update({update_key: update_value},omni_key)
+                fetch_all_data()
                 prog_bar.progress(100) #?progress=100%
 
         #! delete entry
-        with st.expander('Delete entry'):
-            st.write(f'Selected entry: {omni_key}')
+        with st.expander('Delete data'):
+            st.metric('Selected entry:', omni_key)
             col1, col2 = st.columns(2, gap="large")
             del_pass = st.secrets["DEL_PASS"]
             input_pass = col1.text_input('Enter Password to delete entry:')
