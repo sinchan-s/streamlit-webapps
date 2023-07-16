@@ -5,11 +5,12 @@ from deta import Deta
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
+# from annotated_text import annotated_text   #pip install st-annotated-text
 
 #! page configuration
 st.set_page_config(
     page_title="Daily defects observation • web-app",
-    page_icon=":stop_sign:",
+    page_icon=":octagonal_sign:",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items=None
@@ -78,24 +79,12 @@ if selected=='Defects Entry':
     #! image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_img = col1.camera_input("Take defect image 📷")
-    user_img = col2.file_uploader("Choose defect image to upload 📂", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+    cam_img = col1.camera_input(":camera: Take photo")
+    user_img = col2.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
 
-    #! image preview panel
-    # Some code from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
-    with col3.expander('Image Preview'):
-        if cam_img is None and user_img is None:
-            st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
-            image_data = placeholder_img
-        elif user_img is None:
-            st.image(cam_img, caption=key, width=350)
-            image_data = cam_img.getvalue()
-        else:
-            st.image(user_img, caption=key, width=350)
-            image_data = user_img.getvalue()
 
     #! details add-on
-    defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps']
+    defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Oil Stain']
     col1, col2, col3 = st.columns(3, gap="large")
     date_time = col1.date_input('Select date 📅:', datetime.now())
     date = date_time.strftime("%d-%m-%Y")
@@ -109,17 +98,45 @@ if selected=='Defects Entry':
     st.divider()
 
     #! data validate conditions
-    if defects:
-        for i in range(len(defects)):
-            defect_type = defects[i] + ", "
-    else:
+    defect_type = ""
+    if not defects:
         defect_type = m_defects
+    else:
+        defect_type = ', '.join(str(d) for d in defects)
+    
+    #! upload preview expander
+    # code inspired rom: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
+    with st.expander('Preview Upload'):
+        col1, col2 = st.columns(2)
+        #! image section
+        if cam_img is None and user_img is None:
+            col1.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
+            image_data = placeholder_img
+        elif user_img is None:
+            col1.image(cam_img, caption=key, width=350)
+            image_data = cam_img.getvalue()
+        else:
+            col1.image(user_img, caption=key, width=350)
+            image_data = user_img.getvalue()
+        #! details filled-in
+        upload_df = {
+            'Defect Type': defect_type,
+            'Customer': customer,
+            'Quantity': qty,
+            'Article': k1,
+            'PO': po_no,
+            'Remarks': remarks,
+        }
+        # col2.json(upload_df)
+        col2.table(pd.DataFrame(upload_df, index=[key]).T)
+
 
     #! upload button
     col1, col2, col3 = st.columns(3, gap="large")
     upload_button = col1.button(label='Upload Data ⬆️', use_container_width=True)                          #? Upload button
     if upload_button:
         prog_bar = col2.progress(0) #?progress=0%
+        col2.caption('Please wait...')
         upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
         upload_data(defect_type=defect_type, customer=customer, article=k1, po_no=po_no, qty=qty, remarks=remarks)                            #? button for text data upload
         col3.success("Data Uploaded successfully !!")                         #? upload successful..
@@ -142,16 +159,12 @@ if selected=='Defects History':
         df = pd.DataFrame(st.session_state.defects_data)
         df = df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
         df = df.sort_values(by='key',ascending=False)
-        omni_key = col1.selectbox("Select Defect(key):", df.index)
 
         #! data downloading...
         csv = convert_df(df)
         col2.download_button(label="Download Data (.csv)  📥", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
-        sel_defect = df[df.index==omni_key]
-        # st.write(sel_defect.details[0]['Qty'])
-
-        #! all defects data expander
+        #! all defects dataframe
         with st.expander('View All Defects Data'):
             # st.json(st.session_state.defects_data)
             try:
@@ -162,9 +175,12 @@ if selected=='Defects History':
                     st.dataframe(df, use_container_width=True)
             except:
                 st.error("An error occured while dataframing...🙁")
+        
+        omni_key = st.selectbox("Select Defect(key):", df.index)
 
-        #! selected defect details preview
+        #! defect details preview
         with st.expander(label='Defect details', expanded=True):
+            sel_defect = df[df.index==omni_key]
             col1, col2 = st.columns(2, gap="large")
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
@@ -186,12 +202,6 @@ if selected=='Defects History':
             col1, col2 = st.columns(2, gap="large")
             u_key = col1.selectbox('Select Field:', ['Defect_type', 'Customer', 'K1', 'PO', 'Qty', 'Remarks'])
             u_value = col1.text_input('New Value:')
-            upd_status = True
-            upd_pass = st.secrets["DEL_PASS"]
-            input_pass = col2.text_input('Enter Password to update entry:')
-            if input_pass==upd_pass:    #? getting delete access
-                upd_status = False
-            update_button = col2.button(label='Update this entry', disabled=upd_status, use_container_width=True)
             upd_status = True
             upd_pass = st.secrets["DEL_PASS"]
             input_pass = col2.text_input('Enter Password to update entry:')
