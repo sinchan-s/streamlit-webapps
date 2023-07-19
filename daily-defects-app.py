@@ -1,4 +1,4 @@
-import calendar, base64, json, time
+import calendar, base64, json, time, io
 from datetime import datetime
 from PIL import Image
 from deta import Deta
@@ -52,14 +52,21 @@ conn = load_data()
 defects_db = conn[0]
 imgs_drive = conn[1]
 
-#*------------------------------------------------------------------------------------------*# DETA functions
+#*------------------------------------------------------------------------------------------*# 
+#*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
 #!------------defects_db functions
 # @st.cache_data(ttl=3600, show_spinner="uploading...")
 def upload_data(defect_type, customer, article, po_no, qty, remarks):
     return defects_db.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
+
 # @st.cache_data(ttl=3600)
 def upload_img(image_name, image_data):
+    input_img = Image.open(io.BytesIO(image_data))
+    # basewidth = 400     #? confining image width
+    # wpercent = (basewidth/float(input_img.size[0]))   #? determining the height ratio
+    # hsize = int((float(input_img.size[1])*float(wpercent)))
+    # resized_img = input_img.resize((basewidth,hsize), Image.ANTIALIAS)   #? resize image and save
     return imgs_drive.put(image_name, data=image_data)
 
 # @st.cache_data(ttl=3600)
@@ -74,7 +81,8 @@ def fetch_all_data():
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
-#*------------------------------------------------------------------------------------------*# NAV-1
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-1                                          *#
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects Entry':
 
@@ -88,15 +96,15 @@ if selected=='Defects Entry':
     #!------------details add-on
     defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Oil Stain']
     col1, col2, col3 = st.columns(3, gap="large")
-    date_time = col1.date_input('Select date 📅:', datetime.now())
+    date_time = col1.date_input(':calendar: Select date:', datetime.now())
     date = date_time.strftime("%d-%m-%Y")
     defects = col1.multiselect("Defect Type:", defects_list)
-    m_defects = col1.text_input("Manually enter Defect type:")
-    customer = col2.text_input("Customer details:")
-    po_no = col2.text_input("PO No:")
-    k1 = col3.text_input("Article:")
+    m_defects = col1.text_input("Manually enter Defect type:", placeholder='Enter Defect(s) type')
+    customer = col2.text_input("Customer details:", placeholder='End Buyer / Vendor /  Customer')
+    po_no = col2.text_input("PO No:", placeholder='F000000000 / P000000000')
+    k1 = col3.text_input("Article:", placeholder='Finish K1')
     qty = col3.number_input("Defect quantity observed:")
-    remarks = col3.text_area("Additional Remarks:")
+    remarks = col3.text_area("Additional Remarks:", placeholder='Extra details to add')
     st.divider()
 
     #!------------data validate conditions
@@ -119,6 +127,8 @@ if selected=='Defects Entry':
             image_data = cam_img.getvalue()
         else:
             col1.image(user_img, caption=key, width=350)
+            test_img = Image.open(user_img)
+            # col1.write(test_img.size)
             image_data = user_img.getvalue()
         #!------------details filled-in
         upload_df = {
@@ -144,7 +154,8 @@ if selected=='Defects Entry':
         col3.success("Data Uploaded successfully !!")                         #? upload successful..
         prog_bar.progress(100) #?progress=100%
 
-#*------------------------------------------------------------------------------------------*# NAV-2
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-2                                          *#
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects History':
     col1, col2, col3 = st.columns(3, gap="large")
@@ -188,7 +199,7 @@ if selected=='Defects History':
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
                 col1.error("No Image available !!")
-            col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", width=300, use_column_width='always')
+            col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", width=350)
             col2.table(pd.DataFrame(sel_defect).T)
 
         #!------------update entry
