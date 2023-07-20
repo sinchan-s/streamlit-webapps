@@ -52,7 +52,7 @@ conn = load_data()
 defects_db = conn[0]
 imgs_drive = conn[1]
 
-#*------------------------------------------------------------------------------------------*# 
+#*------------------------------------------------------------------------------------------*#
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
 #!------------defects_db functions
@@ -61,13 +61,19 @@ def upload_data(defect_type, customer, article, po_no, qty, remarks):
     return defects_db.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
 
 # @st.cache_data(ttl=3600)
-def upload_img(image_name, image_data):
+def resize_n_upload_img(image_name, image_data):
     input_img = Image.open(io.BytesIO(image_data))
-    # basewidth = 400     #? confining image width
-    # wpercent = (basewidth/float(input_img.size[0]))   #? determining the height ratio
-    # hsize = int((float(input_img.size[1])*float(wpercent)))
-    # resized_img = input_img.resize((basewidth,hsize), Image.ANTIALIAS)   #? resize image and save
-    return imgs_drive.put(image_name, data=image_data)
+    #!--------image resizing
+    basewidth = 400     #? confining image width
+    wpercent = (basewidth/float(input_img.size[0]))   #? determining the height ratio
+    hsize = int((float(input_img.size[1])*float(wpercent)))
+    resized_img = input_img.resize((basewidth,hsize), Image.ANTIALIAS)   #? resize image and save
+    #!--------pil-image to byte array conversion
+    img_byte_arr = io.BytesIO()
+    resized_img.save(img_byte_arr, format='PNG')
+    img_byte_arr = img_byte_arr.getvalue()
+    
+    return imgs_drive.put(image_name, data=img_byte_arr)
 
 # @st.cache_data(ttl=3600)
 def fetch_data(key):
@@ -149,7 +155,7 @@ if selected=='Defects Entry':
     if upload_button:
         prog_bar = col2.progress(0) #?progress=0%
         col2.caption('Please wait...')
-        upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
+        resize_n_upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
         upload_data(defect_type=defect_type, customer=customer, article=k1, po_no=po_no, qty=qty, remarks=remarks)                            #? button for text data upload
         col3.success("Data Uploaded successfully !!")                         #? upload successful..
         prog_bar.progress(100) #?progress=100%
@@ -231,7 +237,7 @@ if selected=='Defects History':
             if update_button:
                 prog_bar = st.progress(0) #?progress=0%
                 if update_key=='Image':
-                    upload_img(image_name=omni_key, image_data=update_value.getvalue())
+                    resize_n_upload_img(image_name=omni_key, image_data=update_value.getvalue())
                 else:
                     defects_db.update({update_key: update_value},omni_key)
                 fetch_all_data()
