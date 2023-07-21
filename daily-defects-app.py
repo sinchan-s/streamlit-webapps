@@ -10,7 +10,7 @@ from streamlit_option_menu import option_menu  #pip install streamlit-option-men
 #!------------page configuration
 st.set_page_config(
     page_title="Daily defects observation • web-app",
-    page_icon=":octagonal_sign:",
+    page_icon=":memo:",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items=None
@@ -185,23 +185,24 @@ if selected=='Defects History':
         col3.download_button(label="Download Data (.csv)  📥", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         #!------------all defects dataframe
-        with st.expander('View All Defects Data'):
+        with st.expander('View All Defects Data', expanded=True):
             # st.json(st.session_state.defects_data)
             try:
                 st.session_state.transpose_df_view = st.checkbox('Transpose View')
                 if st.session_state.transpose_df_view:
-                    st.dataframe(df.T, use_container_width=True)
+                    st.data_editor(df.T)
                 else:
-                    st.dataframe(df, use_container_width=True)
+                    st.dataframe(df)
             except:
                 st.error("An error occured while dataframing...	:dizzy_face:")
         
-        omni_key = st.selectbox("Select Defect(key):", df.index)
+        #!------------select defect to view
+        omni_key = st.selectbox("Search Defect by key:", df.index)
 
         #!------------defect details preview
-        with st.expander(label='Defect details', expanded=True):
+        with st.expander(label='Defect details', expanded=False):
             sel_defect = df[df.index==omni_key]
-            col1, col2 = st.columns(2, gap="large")
+            col1, col2 = st.columns(2, gap="small")
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
                 col1.error("No Image available !!")
@@ -211,14 +212,12 @@ if selected=='Defects History':
         #!------------update entry
         with st.expander('Update data'):
             st.metric('Selected entry:', omni_key)
-            update_pass = st.secrets["UPD_PASS"]
             col1, col2 = st.columns(2, gap="large")
 
             all_fields = list(df.columns[1:])   #?all available fields dropdown
             all_fields.append('Image')
             update_key = col1.selectbox('Select Field:', all_fields)
 
-            
             if update_key=='Quantity':
                 current_val = defects_db.get(omni_key)[update_key]
                 update_value = col1.number_input('New Value:', value=current_val)
@@ -227,13 +226,8 @@ if selected=='Defects History':
             else:
                 current_val = defects_db.get(omni_key)[update_key]
                 update_value = col1.text_input('New Value:', value=current_val)
-            # col1.caption(f'Current value ({update_key}): {current_val}')
                 
-            input_pass = col2.text_input('Enter Password to update entry:')
-            update_status = True
-            if input_pass==update_pass:    #? getting update access
-                update_status = False
-            update_button = col2.button(label='Update this entry', disabled=update_status, use_container_width=True)
+            update_button = col2.button(label='Update this entry', use_container_width=True)
             if update_button:
                 prog_bar = st.progress(0) #?progress=0%
                 if update_key=='Image':
