@@ -5,7 +5,7 @@ from deta import Deta
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
-# from annotated_text import annotated_text   #pip install st-annotated-text
+from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
 #!------------page configuration
 st.set_page_config(
@@ -151,7 +151,7 @@ if selected=='Defects Entry':
 
     #!------------upload button
     col1, col2, col3 = st.columns(3, gap="large")
-    upload_button = col1.button(label='Upload Data ⬆️', use_container_width=True)                          #? Upload button
+    upload_button = col1.button(label='⬆️ Upload Data', use_container_width=True)                          #? Upload button
     if upload_button:
         prog_bar = col2.progress(0) #?progress=0%
         col2.caption('Please wait...')
@@ -166,7 +166,7 @@ if selected=='Defects Entry':
 if selected=='Defects History':
     col1, col2, col3 = st.columns(3, gap="large")
     #!------------fetch button
-    fetch_button = col1.button(label='Fetch / Refresh Data  🔄', use_container_width=True)
+    fetch_button = col1.button(label='🔄 Fetch / Refresh Data', use_container_width=True)
     if 'defects_data' not in st.session_state:
         st.session_state.defects_data = {'key':0, }
     if fetch_button:
@@ -182,7 +182,7 @@ if selected=='Defects History':
 
         #!------------data downloading...
         csv = convert_df(df)
-        col3.download_button(label="Download Data (.csv)  📥", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
+        col3.download_button(label="📥 Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
@@ -211,7 +211,7 @@ if selected=='Defects History':
 
         #!------------update entry
         with st.expander('Update data'):
-            st.metric('Selected entry:', omni_key)
+            annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
             col1, col2 = st.columns(2, gap="large")
 
             all_fields = list(df.columns[1:])   #?all available fields dropdown
@@ -239,7 +239,7 @@ if selected=='Defects History':
 
         #!------------delete entry
         with st.expander('Delete data'):
-            st.metric('Selected entry:', omni_key)
+            annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
             col1, col2 = st.columns(2, gap="large")
             del_pass = st.secrets["DEL_PASS"]
             input_pass = col1.text_input('Enter Password to delete entry:')
