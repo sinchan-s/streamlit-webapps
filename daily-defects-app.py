@@ -167,8 +167,7 @@ if selected=='Defects History':
     col1, col2, col3 = st.columns(3, gap="large")
     #!------------fetch button
     fetch_button = col1.button(label='🔄 Fetch / Refresh Data', use_container_width=True)
-    if 'defects_data' not in st.session_state:
-        st.session_state.defects_data = {'key':0, }
+    st.session_state.defects_data = {'key':0,}
     if fetch_button:
         with col2:
             prog_bar = st.progress(0) #?progress=0%
@@ -176,32 +175,32 @@ if selected=='Defects History':
             prog_bar.progress(100) #?progress=100%
     try:
         #!------------dataframing the json data
-        df = pd.DataFrame(st.session_state.defects_data)
-        df = df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
-        df = df.sort_values(by='key',ascending=False)
+        st.session_state.df = pd.DataFrame(st.session_state.defects_data)
+        st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
+        st.session_state.df = st.session_state.df.sort_values(by='key',ascending=False)
 
         #!------------data downloading...
-        csv = convert_df(df)
+        csv = convert_df(st.session_state.df)
         col3.download_button(label="📥 Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
-            # st.json(st.session_state.defects_data)
+            # st.json(defects_data)
             try:
                 st.session_state.transpose_df_view = st.checkbox('Transpose View')
                 if st.session_state.transpose_df_view:
-                    st.data_editor(df.T)
+                    st.data_editor(st.session_state.df.T)
                 else:
-                    st.dataframe(df)
+                    st.dataframe(st.session_state.df)
             except:
                 st.error("An error occured while dataframing...	:dizzy_face:")
         
         #!------------select defect to view
-        omni_key = st.selectbox("Search Defect by key:", df.index)
+        omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index)
 
         #!------------defect details preview
-        with st.expander(label='Defect details', expanded=False):
-            sel_defect = df[df.index==omni_key]
+        with st.expander(label='Defect details', expanded=True):
+            sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
             col1, col2 = st.columns(2, gap="small")
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
@@ -214,7 +213,7 @@ if selected=='Defects History':
             annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
             col1, col2 = st.columns(2, gap="large")
 
-            all_fields = list(df.columns[1:])   #?all available fields dropdown
+            all_fields = list(st.session_state.df.columns[1:])   #?all available fields dropdown
             all_fields.append('Image')
             update_key = col1.selectbox('Select Field:', all_fields)
 
