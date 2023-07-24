@@ -49,16 +49,16 @@ def load_data():
     return db, drive
 
 conn = load_data()
-defects_db = conn[0]
+defects_base = conn[0]
 imgs_drive = conn[1]
 
 #*------------------------------------------------------------------------------------------*#
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
-#!------------defects_db functions
+#!------------defects_base functions
 # @st.cache_data(ttl=3600, show_spinner="uploading...")
 def upload_data(defect_type, customer, article, po_no, qty, remarks):
-    return defects_db.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
+    return defects_base.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
 
 # @st.cache_data(ttl=3600)
 def resize_n_upload_img(image_name, image_data):
@@ -77,11 +77,11 @@ def resize_n_upload_img(image_name, image_data):
 
 # @st.cache_data(ttl=3600)
 def fetch_data(key):
-    return defects_db.get(key)
+    return defects_base.get(key)
 
 # @st.cache_data(ttl=3600, show_spinner="fetching...")
 def fetch_all_data():
-    res = defects_db.fetch()
+    res = defects_base.fetch()
     return res.items
 
 def convert_df(df):
@@ -167,7 +167,8 @@ if selected=='Defects History':
     col1, col2, col3 = st.columns(3, gap="large")
     #!------------fetch button
     fetch_button = col1.button(label='🔄 Fetch / Refresh Data', use_container_width=True)
-    st.session_state.defects_data = {'key':0,}
+    if 'defects_data' not in st.session_state:
+        st.session_state.defects_data = {'key':0,}
     if fetch_button:
         with col2:
             prog_bar = st.progress(0) #?progress=0%
@@ -175,6 +176,8 @@ if selected=='Defects History':
             prog_bar.progress(100) #?progress=100%
     try:
         #!------------dataframing the json data
+        if 'df' not in st.session_state:
+            st.session_state.df = {'key':0,}
         st.session_state.df = pd.DataFrame(st.session_state.defects_data)
         st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
         st.session_state.df = st.session_state.df.sort_values(by='key',ascending=False)
@@ -187,8 +190,8 @@ if selected=='Defects History':
         with st.expander('View All Defects Data', expanded=True):
             # st.json(defects_data)
             try:
-                st.session_state.transpose_df_view = st.checkbox('Transpose View')
-                if st.session_state.transpose_df_view:
+                transpose_df_view = st.checkbox('Transpose View')
+                if transpose_df_view:
                     st.data_editor(st.session_state.df.T)
                 else:
                     st.dataframe(st.session_state.df)
@@ -196,9 +199,9 @@ if selected=='Defects History':
                 st.error("An error occured while dataframing...	:dizzy_face:")
         
         #!------------select defect to view
-        omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index)
+        omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data)
 
-        #!------------defect details preview
+        #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
             col1, col2 = st.columns(2, gap="small")
@@ -207,6 +210,7 @@ if selected=='Defects History':
                 col1.error("No Image available !!")
             col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", width=350)
             col2.table(pd.DataFrame(sel_defect).T)
+
 
         #!------------update entry
         with st.expander('Update data'):
@@ -218,12 +222,12 @@ if selected=='Defects History':
             update_key = col1.selectbox('Select Field:', all_fields)
 
             if update_key=='Quantity':
-                current_val = defects_db.get(omni_key)[update_key]
+                current_val = defects_base.get(omni_key)[update_key]
                 update_value = col1.number_input('New Value:', value=current_val)
             elif update_key=='Image':
                 update_value = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
             else:
-                current_val = defects_db.get(omni_key)[update_key]
+                current_val = defects_base.get(omni_key)[update_key]
                 update_value = col1.text_input('New Value:', value=current_val)
                 
             update_button = col2.button(label='Update this entry', use_container_width=True)
@@ -232,7 +236,7 @@ if selected=='Defects History':
                 if update_key=='Image':
                     resize_n_upload_img(image_name=omni_key, image_data=update_value.getvalue())
                 else:
-                    defects_db.update({update_key: update_value},omni_key)
+                    defects_base.update({update_key: update_value},omni_key)
                 fetch_all_data()
                 prog_bar.progress(100) #?progress=100%
 
@@ -248,11 +252,9 @@ if selected=='Defects History':
             delete_button = col1.button(label='Delete this entry', disabled=del_status, use_container_width=True)
             if delete_button:
                 prog_bar = st.progress(0) #?progress=0%
-                defects_db.delete(omni_key)
+                defects_base.delete(omni_key)
                 imgs_drive.delete(omni_key)
                 prog_bar.progress(100) #?progress=100%
 
     except ValueError:
         st.write('Please refresh !!')
-    # except:
-    #     st.write('Some error occured..🙁')
