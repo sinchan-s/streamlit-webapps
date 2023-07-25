@@ -72,7 +72,7 @@ def resize_n_upload_img(image_name, image_data):
     img_byte_arr = io.BytesIO()
     resized_img.save(img_byte_arr, format='PNG')
     img_byte_arr = img_byte_arr.getvalue()
-    
+    #!--------putting the image data with its name
     return imgs_drive.put(image_name, data=img_byte_arr)
 
 # @st.cache_data(ttl=3600)
@@ -100,10 +100,10 @@ if selected=='Defects Entry':
 
 
     #!------------details add-on
-    defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Oil Stain']
-    col1, col2, col3 = st.columns(3, gap="large")
+    defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Stain', 'Shade variation']
     date_time = col1.date_input(':calendar: Select date:', datetime.now())
     date = date_time.strftime("%d-%m-%Y")
+    col1, col2, col3 = st.columns(3, gap="large")
     defects = col1.multiselect("Defect Type:", defects_list)
     m_defects = col1.text_input("Manually enter Defect type:", placeholder='Enter Defect(s) type')
     customer = col2.text_input("Customer details:", placeholder='End Buyer / Vendor /  Customer')
@@ -116,44 +116,44 @@ if selected=='Defects Entry':
     #!------------data validate conditions
     defect_type = ""
     if not defects:
-        defect_type = m_defects
+        defect_type = m_defects #? from manual entry
     else:
-        defect_type = ', '.join(str(d) for d in defects)
+        defect_type = ', '.join(str(d) for d in defects)    #? from dropdown list
     
     #!------------upload preview expander
-    # code inspired rom: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
+    # code inspired from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
     with st.expander('Preview Upload'):
         col1, col2 = st.columns(2)
         #!------------image section
-        if cam_img is None and user_img is None:
-            col1.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
-            image_data = placeholder_img
-        elif user_img is None:
-            col1.image(cam_img, caption=key, width=350)
-            image_data = cam_img.getvalue()
-        else:
-            col1.image(user_img, caption=key, width=350)
-            test_img = Image.open(user_img)
-            # col1.write(test_img.size)
-            image_data = user_img.getvalue()
+        with col1:
+            if cam_img is None and user_img is None:
+                st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
+                image_data = placeholder_img
+            elif user_img is None:
+                st.image(cam_img, caption=key, width=350)
+                image_data = cam_img.getvalue()
+            else:
+                st.image(user_img, caption=key, width=350)
+                test_img = Image.open(user_img)
+                image_data = user_img.getvalue()
         #!------------details filled-in
-        upload_df = {
-            'Defect Type': defect_type,
-            'Customer': customer,
-            'Quantity': qty,
-            'Article': k1,
-            'PO': po_no,
-            'Remarks': remarks,
-        }
-        # col2.json(upload_df)
-        col2.table(pd.DataFrame(upload_df, index=[key]).T)
-
+        with col2:
+            upload_df = {
+                'Defect Type': defect_type,
+                'Customer': customer,
+                'Quantity': qty,
+                'Article': k1,
+                'PO': po_no,
+                'Remarks': remarks,
+            }
+            st.table(pd.DataFrame(upload_df, index=[key]).T)
 
     #!------------upload button
     col1, col2, col3 = st.columns(3, gap="large")
-    upload_button = col1.button(label='⬆️ Upload Data', use_container_width=True)                          #? Upload button
+    upload_button = col1.button(label='⬆️ Upload Data*', use_container_width=True)                          #? Upload button
+    col1.caption("*Please don't press Upload button multiple times, it will create duplicate entries")
+    prog_bar = col2.progress(0) #?progress=0%
     if upload_button:
-        prog_bar = col2.progress(0) #?progress=0%
         col2.caption('Please wait...')
         resize_n_upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
         upload_data(defect_type=defect_type, customer=customer, article=k1, po_no=po_no, qty=qty, remarks=remarks)                            #? button for text data upload
@@ -167,11 +167,11 @@ if selected=='Defects History':
     col1, col2, col3 = st.columns(3, gap="large")
     #!------------fetch button
     fetch_button = col1.button(label='🔄 Fetch / Refresh Data', use_container_width=True)
+    prog_bar = col2.progress(0) #?progress=0%
     if 'defects_data' not in st.session_state:
         st.session_state.defects_data = {'key':0,}
     if fetch_button:
         with col2:
-            prog_bar = st.progress(0) #?progress=0%
             st.session_state.defects_data = fetch_all_data()
             prog_bar.progress(100) #?progress=100%
     try:
@@ -231,8 +231,8 @@ if selected=='Defects History':
                 update_value = col1.text_input('New Value:', value=current_val)
                 
             update_button = col2.button(label='Update this entry', use_container_width=True)
+            prog_bar = st.progress(0) #?progress=0%
             if update_button:
-                prog_bar = st.progress(0) #?progress=0%
                 if update_key=='Image':
                     resize_n_upload_img(image_name=omni_key, image_data=update_value.getvalue())
                 else:
@@ -250,8 +250,8 @@ if selected=='Defects History':
             if input_pass==del_pass:    #? getting delete access
                 del_status = False
             delete_button = col1.button(label='Delete this entry', disabled=del_status, use_container_width=True)
+            prog_bar = st.progress(0) #?progress=0%
             if delete_button:
-                prog_bar = st.progress(0) #?progress=0%
                 defects_base.delete(omni_key)
                 imgs_drive.delete(omni_key)
                 prog_bar.progress(100) #?progress=100%
