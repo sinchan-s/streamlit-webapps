@@ -1,4 +1,4 @@
-import calendar, base64, json, time, io
+import calendar, base64, json, time, io, os
 from datetime import datetime
 from PIL import Image
 from deta import Deta
@@ -62,15 +62,17 @@ def upload_data(defect_type, customer, article, po_no, qty, remarks):
 
 # @st.cache_data(ttl=3600)
 def resize_n_upload_img(image_name, image_data):
+    img_size = len(image_data)/1024     #?image size
     input_img = Image.open(io.BytesIO(image_data))
     #!--------image resizing
-    basewidth = 400     #? confining image width
-    wpercent = (basewidth/float(input_img.size[0]))   #? determining the height ratio
-    hsize = int((float(input_img.size[1])*float(wpercent)))
-    resized_img = input_img.resize((basewidth,hsize), Image.ANTIALIAS)   #? resize image and save
+    if img_size >= 1024:
+        basewidth = 400     #? confining image width
+        wpercent = (basewidth/float(input_img.size[0]))   #? determining the height ratio
+        hsize = int((float(input_img.size[1])*float(wpercent)))
+        input_img = input_img.resize((basewidth,hsize), Image.ANTIALIAS)   #? resize image and save
     #!--------pil-image to byte array conversion
     img_byte_arr = io.BytesIO()
-    resized_img.save(img_byte_arr, format='PNG')
+    input_img.save(img_byte_arr, format='PNG')
     img_byte_arr = img_byte_arr.getvalue()
     #!--------putting the image data with its name
     return imgs_drive.put(image_name, data=img_byte_arr)
@@ -208,13 +210,13 @@ if selected=='Defects History':
             defect_img = Image.open(imgs_drive.get(omni_key))
             if not defect_img:
                 col1.error("No Image available !!")
-            col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", width=350)
+            col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
             col2.table(pd.DataFrame(sel_defect).T)
 
 
         #!------------update entry
         with st.expander('Update data'):
-            annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
+            annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed cyan"),)
             col1, col2 = st.columns(2, gap="large")
 
             all_fields = list(st.session_state.df.columns[1:])   #?all available fields dropdown
@@ -230,7 +232,7 @@ if selected=='Defects History':
                 current_val = defects_base.get(omni_key)[update_key]
                 update_value = col1.text_input('New Value:', value=current_val)
                 
-            update_button = col2.button(label='Update this entry', use_container_width=True)
+            update_button = col2.button(label='Update this entry', use_container_width=True, on_click=fetch_all_data)
             prog_bar = st.progress(0) #?progress=0%
             if update_button:
                 if update_key=='Image':
