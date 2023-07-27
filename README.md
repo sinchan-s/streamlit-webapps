@@ -19,9 +19,12 @@
 * To check real-time implementation of Linear SVM classifier using polynomial features on the sklearn generated dataset: make_moons.
    
 ![image](https://user-images.githubusercontent.com/63915540/178118264-b78539c0-b02e-4f8d-84a3-aae3893d30f2.png)
-
+   
 ### Expense tracker app   
 [1]   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/da6995d9-7b39-42df-ac95-cb953ff324ca)
 [2]   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/fad192a1-7fc7-47b1-b3bb-11d93067b2ed)
+   
+### Daily Defects app
+![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/3351019a-ee00-478e-9c9f-44382e7e6b6b)
