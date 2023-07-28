@@ -97,9 +97,10 @@ if selected=='Defects Entry':
     #!------------image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_img = col1.camera_input(":camera: Take photo")
-    user_img = col2.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
-
+    cam_check = col2.checkbox('Take photo')
+    user_img = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+    if cam_check:
+        cam_img = col3.camera_input(":camera: Camera open")
 
     #!------------details add-on
     defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Stain', 'Shade variation']
