@@ -97,16 +97,18 @@ if selected=='Defects Entry':
     #!------------image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_check = col2.checkbox('Take photo')
+    cam_access = col2.checkbox('Camera Access')
     user_img = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
-    if cam_check:
-        cam_img = col3.camera_input(":camera: Camera open")
+    cam_disabled_state = True
+    if cam_access:
+        cam_disabled_state = False
+    cam_img = col3.camera_input(":camera:", disabled=cam_disabled_state)
 
     #!------------details add-on
     defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Stain', 'Shade variation']
+    col1, col2, col3 = st.columns(3, gap="large")
     date_time = col1.date_input(':calendar: Select date:', datetime.now())
     date = date_time.strftime("%d-%m-%Y")
-    col1, col2, col3 = st.columns(3, gap="large")
     defects = col1.multiselect("Defect Type:", defects_list)
     m_defects = col1.text_input("Manually enter Defect type:", placeholder='Enter Defect(s) type')
     customer = col2.text_input("Customer details:", placeholder='End Buyer / Vendor /  Customer')
@@ -129,20 +131,16 @@ if selected=='Defects Entry':
         col1, col2 = st.columns(2)
         #!------------image section
         with col1:
-            try:
-                if cam_img is None and user_img is None:
-                    st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
-                    image_data = placeholder_img
-                elif user_img is None:
-                    st.image(cam_img, caption=key, width=350)
-                    image_data = cam_img.getvalue()
-                else:
-                    st.image(user_img, caption=key, width=350)
-                    test_img = Image.open(user_img)
-                    image_data = user_img.getvalue()
-            except:
-                st.write('get some pic!!')
-                
+            if cam_img is None and user_img is None:
+                st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
+                image_data = placeholder_img
+            elif cam_img is None:
+                st.image(user_img, caption=key, width=350)
+                test_img = Image.open(user_img)
+                image_data = user_img.getvalue()
+            else:
+                st.image(cam_img, caption=key, width=350)
+                image_data = cam_img.getvalue()
         #!------------details filled-in
         with col2:
             upload_df = {
@@ -253,10 +251,10 @@ if selected=='Defects History':
             col1, col2 = st.columns(2, gap="large")
             del_pass = st.secrets["DEL_PASS"]
             input_pass = col1.text_input('Enter Password to delete entry:')
-            del_status = True
+            del_disabled_status = True
             if input_pass==del_pass:    #? getting delete access
-                del_status = False
-            delete_button = col1.button(label='Delete this entry', disabled=del_status, use_container_width=True)
+                del_disabled_status = False
+            delete_button = col1.button(label='Delete this entry', disabled=del_disabled_status, use_container_width=True)
             prog_bar = st.progress(0) #?progress=0%
             if delete_button:
                 defects_base.delete(omni_key)
