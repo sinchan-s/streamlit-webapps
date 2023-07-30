@@ -121,7 +121,7 @@ if selected=='Defects Entry':
     #!------------data validate conditions
     defect_type = ""
     if not defects:
-        defect_type = m_defects #? from manual entry
+        defect_type = m_defects                             #? from manual entry
     else:
         defect_type = ', '.join(str(d) for d in defects)    #? from dropdown list
     
