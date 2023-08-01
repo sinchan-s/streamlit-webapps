@@ -1,3 +1,5 @@
+
+
 #! 
 import streamlit as st
 import pandas as pd
@@ -10,7 +12,7 @@ from annotated_text import annotated_text, annotation   #pip install st-annotate
 #! Set page configuration
 st.set_page_config(
     page_title="QA Dashboard",
-    page_icon=":bar_chart:",
+    page_icon=":chart_with_downwards_trend:",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
