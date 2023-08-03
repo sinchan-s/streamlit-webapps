@@ -27,4 +27,6 @@
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/fad192a1-7fc7-47b1-b3bb-11d93067b2ed)
    
 ### Daily Defects app
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://daily-defects.streamlit.app/)   
+* Web-app to track daily defects in the QA department.   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/3351019a-ee00-478e-9c9f-44382e7e6b6b)
