@@ -1,6 +1,5 @@
 
-
-#! 
+#! important libraries
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -40,3 +39,72 @@ selected = option_menu(
     orientation='horizontal')
 
 
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-1                                          *#
+#*------------------------------------------------------------------------------------------*#
+if selected=='NCR':
+
+    #!------------graph display
+    col1, col2, col3 = st.columns(3, gap="large")
+    col1.write('DisplayC')
+    col2.write('DisplayT')
+    col3.write('DisplayI')
+    ncr_chart = col1.bar_chart()
+    ncr_chart2 = col2.bar_chart()
+    ncr_chart3 = col3.bar_chart()
+
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-2                                          *#
+#*------------------------------------------------------------------------------------------*#
+if selected=='CUR':
+
+    #!------------graph display
+    col1, col2, col3 = st.columns(3, gap="large")
+    col1.write('DisplayC')
+    col2.write('DisplayT')
+    col3.write('DisplayI')
+    ncr_chart = col1.bar_chart()
+    ncr_chart2 = col2.bar_chart()
+    ncr_chart3 = col3.bar_chart()
+
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-3                                          *#
+#*------------------------------------------------------------------------------------------*#
+if selected=='Q3':
+
+    #!------------graph display
+    col1, col2, col3 = st.columns(3, gap="large")
+    col1.write('DisplayC')
+    col2.write('DisplayT')
+    col3.write('DisplayI')
+    ncr_chart = col1.bar_chart()
+    ncr_chart2 = col2.bar_chart()
+    ncr_chart3 = col3.bar_chart()
+
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-4                                          *#
+#*------------------------------------------------------------------------------------------*#
+if selected=='Q6':
+
+    #!------------graph display
+    col1, col2, col3 = st.columns(3, gap="large")
+    col1.write('DisplayC')
+    col2.write('DisplayT')
+    col3.write('DisplayI')
+    ncr_chart = col1.bar_chart()
+    ncr_chart2 = col2.bar_chart()
+    ncr_chart3 = col3.bar_chart()
+
+#*------------------------------------------------------------------------------------------*# 
+#*                                           NAV-5                                          *#
+#*------------------------------------------------------------------------------------------*#
+if selected=='Complaints':
+
+    #!------------graph display
+    col1, col2, col3 = st.columns(3, gap="large")
+    col1.write('DisplayC')
+    col2.write('DisplayT')
+    col3.write('DisplayI')
+    ncr_chart = col1.bar_chart()
+    ncr_chart2 = col2.bar_chart()
+    ncr_chart3 = col3.bar_chart()
