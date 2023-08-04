@@ -51,7 +51,6 @@ if selected=='NCR':
     col3.write('DisplayI')
     ncr_chart = col1.bar_chart()
     ncr_chart2 = col2.bar_chart()
-    ncr_chart3 = col3.bar_chart()
 
 #*------------------------------------------------------------------------------------------*# 
 #*                                           NAV-2                                          *#
@@ -64,7 +63,6 @@ if selected=='CUR':
     col2.write('DisplayT')
     col3.write('DisplayI')
     ncr_chart = col1.bar_chart()
-    ncr_chart2 = col2.bar_chart()
     ncr_chart3 = col3.bar_chart()
 
 #*------------------------------------------------------------------------------------------*# 
@@ -77,7 +75,6 @@ if selected=='Q3':
     col1.write('DisplayC')
     col2.write('DisplayT')
     col3.write('DisplayI')
-    ncr_chart = col1.bar_chart()
     ncr_chart2 = col2.bar_chart()
     ncr_chart3 = col3.bar_chart()
 
@@ -92,8 +89,6 @@ if selected=='Q6':
     col2.write('DisplayT')
     col3.write('DisplayI')
     ncr_chart = col1.bar_chart()
-    ncr_chart2 = col2.bar_chart()
-    ncr_chart3 = col3.bar_chart()
 
 #*------------------------------------------------------------------------------------------*# 
 #*                                           NAV-5                                          *#
@@ -105,6 +100,4 @@ if selected=='Complaints':
     col1.write('DisplayC')
     col2.write('DisplayT')
     col3.write('DisplayI')
-    ncr_chart = col1.bar_chart()
-    ncr_chart2 = col2.bar_chart()
     ncr_chart3 = col3.bar_chart()
