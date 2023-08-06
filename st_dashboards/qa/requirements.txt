@@ -5,7 +5,7 @@ scikit-learn==1.1.1
 sklearn==0.0
 streamlit==1.24.0
 seaborn==0.11.2
-pygwalker==0.1.11
+pygwalker==0.2.2
 streamlit-option-menu==0.3.6
 plotly==5.9.0
 deta==1.1.0
