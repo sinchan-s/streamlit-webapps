@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import pygwalker as pyg
-import sqlite3
+from deta import Deta
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
@@ -31,12 +31,37 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 st.title('QA Dashboard')
 st.subheader('All insights in one place:')
 
-#!------------nav menu
+#! nav menu
 selected = option_menu(
     menu_title=None, 
     options=['NCR', 'CUR', 'Q3', 'Q6', 'Complaints'],
     icons=['asterisk', 'bookmark-x', 'backspace-reverse', 'border-all', 'clipboard-x'],
     orientation='horizontal')
+
+#! initialize deta Base & Drive
+# @st.cache_resource(ttl=3600)
+DETA_KEY = st.secrets["DETA_KEY"]
+deta = Deta(DETA_KEY)
+drive = deta.Drive("qa_dash")
+
+
+#*------------------------------------------------------------------------------------------*#
+#*                                       DETA functions                                     *#
+#*------------------------------------------------------------------------------------------*#
+def upload_to_drive(file):
+    return drive.put(file)
+
+
+#*------------------------------------------------------------------------------------------*#
+#*                                      data files upload                                   *#
+#*------------------------------------------------------------------------------------------*#
+user_file = st.file_uploader(":: Upload file", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
+upload_btn = st.button(label='Upload file')
+if upload_btn:
+    prog_bar = st.progress(0) #?progress=0%
+    upload_to_drive(user_file)
+    st.success("Data Uploaded successfully !!")                         #? upload successful..
+    prog_bar.progress(100) #?progress=100%
 
 
 #*------------------------------------------------------------------------------------------*# 
