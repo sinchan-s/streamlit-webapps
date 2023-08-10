@@ -1,5 +1,6 @@
 
 #! important libraries
+import os, pathlib
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -40,22 +41,27 @@ selected = option_menu(
 
 #! initialize deta Base & Drive
 # @st.cache_resource(ttl=3600)
-DETA_KEY = st.secrets["DETA_KEY"]
-deta = Deta(DETA_KEY)
-drive = deta.Drive("qa_dash")
+def load_data():
+    DETA_KEY = st.secrets["DETA_KEY"]
+    deta = Deta(DETA_KEY)
+    drive = deta.Drive("qa_dash")
+    return drive
 
+conn = load_data()
+xls_drive = conn
 
 #*------------------------------------------------------------------------------------------*#
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
 def upload_to_drive(file):
-    return drive.put(file)
+    return xls_drive.put(file.name, data=file)
 
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      data files upload                                   *#
 #*------------------------------------------------------------------------------------------*#
-user_file = st.file_uploader(":: Upload file", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
+user_file = st.file_uploader(":arrow_up_small: Upload file", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
+st.write(user_file)
 upload_btn = st.button(label='Upload file')
 if upload_btn:
     prog_bar = st.progress(0) #?progress=0%
