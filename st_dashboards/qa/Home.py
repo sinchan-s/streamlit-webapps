@@ -57,18 +57,6 @@ def upload_to_drive(file):
     return xls_drive.put(file.name, data=file)
 
 
-#*------------------------------------------------------------------------------------------*#
-#*                                      data files upload                                   *#
-#*------------------------------------------------------------------------------------------*#
-user_file = st.file_uploader(":arrow_up_small: Upload file", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
-st.write(user_file)
-upload_btn = st.button(label='Upload file')
-if upload_btn:
-    prog_bar = st.progress(0) #?progress=0%
-    upload_to_drive(user_file)
-    st.success("Data Uploaded successfully !!")                         #? upload successful..
-    prog_bar.progress(100) #?progress=100%
-
 
 #*------------------------------------------------------------------------------------------*# 
 #*                                         NAV-1: NCR                                       *#
@@ -76,6 +64,7 @@ if upload_btn:
 if selected=='NCR':
 
     #!------------graph display
+    ncr_data_list = st.selectbox("Choose data: ", xls_drive.list()['names'])
     ncr_main_chart = st.bar_chart()
     col1, col2, col3 = st.columns(3, gap="large")
     col1.write('DisplayC')
@@ -91,6 +80,7 @@ if selected=='NCR':
 if selected=='CUR':
 
     #!------------graph display
+    cur_data_list = st.selectbox("Choose data: ", xls_drive.list()['names'])
     cur_main_chart = st.bar_chart()
     col1, col2, col3 = st.columns(3, gap="large")
     col1.write('DisplayC')
@@ -106,6 +96,7 @@ if selected=='CUR':
 if selected=='Q3':
 
     #!------------graph display
+    q3_data_list = st.selectbox("Choose data: ", xls_drive.list()['names'])
     q3_main_chart = st.bar_chart()
     col1, col2, col3 = st.columns(3, gap="large")
     col1.write('DisplayC')
@@ -121,6 +112,7 @@ if selected=='Q3':
 if selected=='Q6':
 
     #!------------graph display
+    q6_data_list = st.selectbox("Choose data: ", xls_drive.list()['names'])
     q6_main_chart = st.bar_chart()
     col1, col2, col3 = st.columns(3, gap="large")
     col1.write('DisplayC')
@@ -135,6 +127,7 @@ if selected=='Q6':
 if selected=='Complaints':
 
     #!------------graph display
+    comp_data_list = st.selectbox("Choose data: ", xls_drive.list()['names'])
     comp_main_chart = st.bar_chart()
     col1, col2, col3 = st.columns(3, gap="large")
     col1.write('DisplayC')
@@ -142,3 +135,16 @@ if selected=='Complaints':
     col3.write('DisplayI')
     comp_chart3 = col3.bar_chart()
     comp_df = st.dataframe()
+
+#*------------------------------------------------------------------------------------------*#
+#*                                      data files upload                                   *#
+#*------------------------------------------------------------------------------------------*#
+col1, col2 = st.columns(2)
+user_file = col1.file_uploader(":arrow_up_small: Upload data file", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
+# st.write(user_file)
+upload_btn = col1.button(label='Upload')
+prog_bar = col2.progress(0) #?progress=0%
+if upload_btn:
+    upload_to_drive(user_file)
+    col2.success("Data Uploaded successfully !!")                         #? upload successful..
+    prog_bar.progress(100) #?progress=100%
