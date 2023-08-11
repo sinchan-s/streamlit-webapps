@@ -90,7 +90,7 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 #*------------------------------------------------------------------------------------------*# 
-#*                                           NAV-1                                          *#
+#*                                    NAV-1: Defects Entry                                  *#
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects Entry':
 
@@ -100,9 +100,10 @@ if selected=='Defects Entry':
     cam_access = col2.checkbox('Camera Access')
     user_img = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
     cam_disabled_state = True
+    cam_img = user_img
     if cam_access:
         cam_disabled_state = False
-    cam_img = col3.camera_input(":camera:", disabled=cam_disabled_state)
+        cam_img = col3.camera_input(":camera:", disabled=cam_disabled_state)
 
     #!------------details add-on
     defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Stain', 'Shade variation']
@@ -166,7 +167,7 @@ if selected=='Defects Entry':
         prog_bar.progress(100) #?progress=100%
 
 #*------------------------------------------------------------------------------------------*# 
-#*                                           NAV-2                                          *#
+#*                                NAV-2: Defects History                                    *#
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects History':
     col1, col2, col3 = st.columns(3, gap="large")
@@ -185,7 +186,7 @@ if selected=='Defects History':
             st.session_state.df = {'key':0,}
         st.session_state.df = pd.DataFrame(st.session_state.defects_data)
         st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
-        st.session_state.df = st.session_state.df.sort_values(by='key',ascending=False)
+        st.session_state.df = st.session_state.df.sort_values(by='Date',ascending=True)
 
         #!------------data downloading...
         csv = convert_df(st.session_state.df)
@@ -202,6 +203,7 @@ if selected=='Defects History':
                     st.dataframe(st.session_state.df)
             except:
                 st.error("An error occured while dataframing...	:dizzy_face:")
+        st.divider()
         
         #!------------select defect to view
         omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data)
