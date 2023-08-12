@@ -117,6 +117,7 @@ if selected=='Defects Entry':
     k1 = col3.text_input("Article:", placeholder='Finish K1')
     qty = col3.number_input("Defect quantity observed:")
     remarks = col3.text_area("Additional Remarks:", placeholder='Extra details to add')
+    # st.write(datetime(date_time))
     st.divider()
 
     #!------------data validate conditions
