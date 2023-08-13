@@ -1,5 +1,5 @@
 import calendar, base64, json, time, io, os
-from datetime import datetime
+from datetime import date, time, datetime
 from PIL import Image
 from deta import Deta
 import pandas as pd
@@ -108,16 +108,18 @@ if selected=='Defects Entry':
     #!------------details add-on
     defects_list = ['Slubs', 'Splices', 'Lining', 'Patta', 'Dropping', 'SM & TP', 'Leno issue', 'Neps', 'Stain', 'Shade variation']
     col1, col2, col3 = st.columns(3, gap="large")
-    date_time = col1.date_input(':calendar: Select date:', datetime.now())
-    date = date_time.strftime("%d-%m-%Y")
-    defects = col1.multiselect("Defect Type:", defects_list)
-    m_defects = col1.text_input("Manually enter Defect type:", placeholder='Enter Defect(s) type')
-    customer = col2.text_input("Customer details:", placeholder='End Buyer / Vendor /  Customer')
-    po_no = col2.text_input("PO No:", placeholder='F000000000 / P000000000')
-    k1 = col3.text_input("Article:", placeholder='Finish K1')
-    qty = col3.number_input("Defect quantity observed:")
+    date_inp = col1.date_input(':calendar: Select date:', datetime.now())
+    time_inp = col1.time_input(':timer_clock: Select time')
+    date = date_inp.strftime("%d-%m-%Y")
+    defects = col2.multiselect("Defect Type:", defects_list)
+    m_defects = col2.text_input("Manually enter Defect type:", placeholder='Enter Defect(s) type')
+    customer = col3.text_input("Customer details:", placeholder='End Buyer / Vendor /  Customer')
+    k1 = col1.text_input("Article:", placeholder='Finish K1')
+    po_no = col3.text_input("PO No:", placeholder='F000000000 / P000000000')
+    qty = col2.number_input("Defect quantity observed:")
     remarks = col3.text_area("Additional Remarks:", placeholder='Extra details to add')
-    # st.write(datetime(date_time))
+    ymd = date_inp.strftime("%Y,%m,%d")
+    st.write(key)
     st.divider()
 
     #!------------data validate conditions
