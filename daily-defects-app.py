@@ -118,8 +118,8 @@ if selected=='Defects Entry':
     po_no = col3.text_input("PO No:", placeholder='F000000000 / P000000000')
     qty = col2.number_input("Defect quantity observed:")
     remarks = col3.text_area("Additional Remarks:", placeholder='Extra details to add')
-    ymd = date_inp.strftime("%Y,%m,%d")
-    st.write(key)
+    # ymd = date_inp.strftime("%Y,%m,%d")
+    # st.write(key)
     st.divider()
 
     #!------------data validate conditions
@@ -227,8 +227,8 @@ if selected=='Defects History':
             annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed cyan"),)
             col1, col2 = st.columns(2, gap="large")
 
-            all_fields = list(st.session_state.df.columns[1:])   #?all available fields dropdown
-            all_fields.append('Image')
+            all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
+            all_fields.extend(['Image'])
             update_key = col1.selectbox('Select Field:', all_fields)
 
             if update_key=='Quantity':
@@ -236,6 +236,9 @@ if selected=='Defects History':
                 update_value = col1.number_input('New Value:', value=current_val)
             elif update_key=='Image':
                 update_value = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+            elif update_key=='Date':
+                current_value = col1.date_input(":calendar: Select date:", value=datetime.now())
+                update_value = current_value.strftime("%d-%m-%Y")
             else:
                 current_val = defects_base.get(omni_key)[update_key]
                 update_value = col1.text_input('New Value:', value=current_val)
