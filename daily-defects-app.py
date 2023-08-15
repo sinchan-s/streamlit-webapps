@@ -1,4 +1,4 @@
-import calendar, base64, json, time, io, os
+import calendar, base64, json, time, io, os, math
 from datetime import date, time, datetime
 from PIL import Image
 from deta import Deta
@@ -26,8 +26,11 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-#!------------unique key generator
-key = str(datetime.now().timestamp())
+#*------------------------------------------------------------------------------------------*#
+#*                                    Unique key generator                                  *#
+#*------------------------------------------------------------------------------------------*#
+key = str(math.ceil(datetime.now().timestamp()))
+# st.write(key)
 
 #!------------set title and subtitle
 st.title('Daily Defects observation app')
@@ -188,8 +191,9 @@ if selected=='Defects History':
         if 'df' not in st.session_state:
             st.session_state.df = {'key':0,}
         st.session_state.df = pd.DataFrame(st.session_state.defects_data)
+        st.session_state.df['Date'] = pd.to_datetime(st.session_state.df.Date, format='%d-%m-%Y')
         st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
-        st.session_state.df = st.session_state.df.sort_values(by='Date',ascending=True)
+        st.session_state.df = st.session_state.df.sort_values(by='Date',ascending=False)
 
         #!------------data downloading...
         csv = convert_df(st.session_state.df)
