@@ -183,9 +183,13 @@ if selected=='Defects History':
     if 'defects_data' not in st.session_state:
         st.session_state.defects_data = {'key':0,}
     if fetch_button:
-        with col2:
-            st.session_state.defects_data = fetch_all_data()
-            prog_bar.progress(100) #?progress=100%
+        try:
+            with col2:
+                st.session_state.defects_data = fetch_all_data()
+                prog_bar.progress(100) #?progress=100%
+        except:
+            err = TimeoutError('Please check your network connection !!')
+            st.exception(err)
     try:
         #!------------dataframing the json data
         if 'df' not in st.session_state:
@@ -256,6 +260,7 @@ if selected=='Defects History':
                     defects_base.update({update_key: update_value},omni_key)
                 fetch_all_data()
                 prog_bar.progress(100) #?progress=100%
+                
 
         #!------------delete entry
         with st.expander('Delete data'):
