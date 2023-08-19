@@ -199,9 +199,6 @@ if selected=='Defects History':
         st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
         st.session_state.df = st.session_state.df.sort_values(by='Date',ascending=False)
 
-        #!------------data downloading...
-        csv = convert_df(st.session_state.df)
-        col3.download_button(label="📥 Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
@@ -214,6 +211,10 @@ if selected=='Defects History':
                     st.dataframe(st.session_state.df)
             except:
                 st.error("An error occured while dataframing...	:dizzy_face:")
+        
+            #!------------data downloading...
+            csv = convert_df(st.session_state.df)
+            st.download_button(label="📥 Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         st.divider()
         
         #!------------select defect to view
