@@ -224,19 +224,19 @@ if selected=='Defects History':
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
             col1, col2 = st.columns(2, gap="small")
-            defect_img = Image.open(imgs_drive.get(omni_key))
-            if not defect_img:
-                col1.error("No Image available !!")
-            col1.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
-            col2.table(pd.DataFrame(sel_defect).T)
-
-
-        #!------------update entry
-        col1, col2 = st.columns(2, gap="small")
-        with col1:
-            with st.expander('Update'):
-                annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed cyan"),)
-                # st, st = st.columns(2, gap="large")
+            with col1:
+                img_file = imgs_drive.get(omni_key)
+                annotated_text(annotation("Image", "", "#55f"),)
+                defect_img = Image.open(img_file)
+                if not defect_img:
+                    st.error("No Image available !!")
+                st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
+            with col2:
+                annotated_text(annotation("Details", "", "#f5f"),)
+                st.table(pd.DataFrame(sel_defect).T)
+                
+                #!------------update entry
+                annotated_text(annotation('Udpate Entry', omni_key, font_family="Source Sans Pro", border="2px dashed cyan"),)
 
                 all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
                 all_fields.extend(['Image'])
@@ -252,7 +252,7 @@ if selected=='Defects History':
                     update_value = current_value.strftime("%d-%m-%Y")
                 else:
                     current_val = defects_base.get(omni_key)[update_key]
-                    update_value = st.text_input('New Value:', value=current_val)
+                    update_value = st.text_input(f'New {update_key}:', value=current_val)
                     
                 update_button = st.button(label='Update this entry', use_container_width=True, on_click=fetch_all_data)
                 if update_button:
@@ -263,24 +263,22 @@ if selected=='Defects History':
                         defects_base.update({update_key: update_value},omni_key)
                     fetch_all_data()
                     prog_bar.progress(100) #?progress=100%
-                    
 
         #!------------delete entry
-        with col2:
-            with st.expander('Delete'):
-                annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
-                # st, col2 = st.columns(2, gap="large")
-                del_pass = st.secrets["DEL_PASS"]
-                input_pass = st.text_input('Enter Password to delete entry:')
-                del_disabled_status = True
-                if input_pass==del_pass:    #? getting delete access
-                    del_disabled_status = False
-                delete_button = st.button(label='Delete this entry', disabled=del_disabled_status, use_container_width=True)
-                if delete_button:
-                    prog_bar = st.progress(0) #?progress=0%
-                    defects_base.delete(omni_key)
-                    imgs_drive.delete(omni_key)
-                    prog_bar.progress(100) #?progress=100%
+        with st.expander('Delete'):
+            annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
+            # st, col2 = st.columns(2, gap="large")
+            del_pass = st.secrets["DEL_PASS"]
+            input_pass = st.text_input('Enter Password to delete entry:')
+            del_disabled_status = True
+            if input_pass==del_pass:    #? getting delete access
+                del_disabled_status = False
+            delete_button = st.button(label='Delete this entry', disabled=del_disabled_status, use_container_width=True)
+            if delete_button:
+                prog_bar = st.progress(0) #?progress=0%
+                defects_base.delete(omni_key)
+                imgs_drive.delete(omni_key)
+                prog_bar.progress(100) #?progress=100%
 
     except ValueError:
         st.write('Please refresh !!')
