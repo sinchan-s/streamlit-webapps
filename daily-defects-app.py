@@ -236,7 +236,7 @@ if selected=='Defects History':
                 st.table(pd.DataFrame(sel_defect).T)
                 
                 #!------------update entry
-                annotated_text(annotation('Udpate Entry', omni_key, font_family="Source Sans Pro", border="2px dashed cyan"),)
+                annotated_text(annotation('Udpate Entry', "", "#28a1e6"),)
 
                 all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
                 all_fields.extend(['Image'])
