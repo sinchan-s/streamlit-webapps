@@ -265,7 +265,8 @@ if selected=='Defects History':
                     prog_bar.progress(100) #?progress=100%
 
         #!------------delete entry
-        with st.expander('Delete'):
+        col1, col2 = st.columns(2, gap="small")
+        with col1.expander('Delete'):
             annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
             # st, col2 = st.columns(2, gap="large")
             del_pass = st.secrets["DEL_PASS"]
