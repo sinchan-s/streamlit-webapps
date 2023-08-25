@@ -100,7 +100,7 @@ if selected=='Defects Entry':
     #!------------image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_access = col2.checkbox('Camera Access')
+    cam_access = col2.checkbox(':camera: Take picture')
     user_img = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
     cam_disabled_state = True
     cam_img = user_img
@@ -264,22 +264,20 @@ if selected=='Defects History':
                     fetch_all_data()
                     prog_bar.progress(100) #?progress=100%
 
-        #!------------delete entry
-        col1, col2 = st.columns(2, gap="small")
-        with col1.expander('Delete'):
-            annotated_text(annotation(omni_key, "Selected entry", font_family="Source Sans Pro", border="2px dashed red"),)
-            # st, col2 = st.columns(2, gap="large")
-            del_pass = st.secrets["DEL_PASS"]
-            input_pass = st.text_input('Enter Password to delete entry:')
-            del_disabled_status = True
-            if input_pass==del_pass:    #? getting delete access
-                del_disabled_status = False
-            delete_button = st.button(label='Delete this entry', disabled=del_disabled_status, use_container_width=True)
-            if delete_button:
-                prog_bar = st.progress(0) #?progress=0%
-                defects_base.delete(omni_key)
-                imgs_drive.delete(omni_key)
-                prog_bar.progress(100) #?progress=100%
+                #!------------delete entry
+                annotated_text(annotation("Delete", "", "#d11315"),)
+                # st, col2 = st.columns(2, gap="large")
+                del_pass = st.secrets["DEL_PASS"]
+                input_pass = st.text_input('Enter Password to delete entry:')
+                del_disabled_status = True
+                if input_pass==del_pass:    #? getting delete access
+                    del_disabled_status = False
+                delete_button = st.button(label='Delete this entry', disabled=del_disabled_status, use_container_width=True)
+                if delete_button:
+                    prog_bar = st.progress(0) #?progress=0%
+                    defects_base.delete(omni_key)
+                    imgs_drive.delete(omni_key)
+                    prog_bar.progress(100) #?progress=100%
 
     except ValueError:
         st.write('Please refresh !!')
