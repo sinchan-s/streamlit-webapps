@@ -33,5 +33,5 @@
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/cc68bebc-e56c-4dd9-8159-76ced458a99e)
 [2a]   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/4efd11d5-7bd0-434b-881c-b9659eccb531)
-[2b]
-![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/74b2bfd8-2cf6-4c2d-af4e-39d8ceee1e45)
+[2b]   
+![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/8f5343b7-3512-43e5-9269-ba6188784235)
