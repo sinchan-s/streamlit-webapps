@@ -28,7 +28,7 @@
    
 ### Daily Defects app
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://daily-defects.streamlit.app/)   
-* Web-app to track daily defects in the QA department.   
+* Web-app to track daily defects in producion-level for QA.   
 [1]   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/cc68bebc-e56c-4dd9-8159-76ced458a99e)
 [2a]   
