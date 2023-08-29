@@ -36,5 +36,4 @@ Web-view
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/8f5343b7-3512-43e5-9269-ba6188784235)   
    
 Mobile-view   
-![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/fab4d3ca-d2a4-4634-89d0-e90e9c91d957)![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/426696fa-a71a-4bef-8ee0-89ee16cc0950)
-
+![Untitled2](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/7cd38509-9782-4e7a-8b78-21e57c61725b)
