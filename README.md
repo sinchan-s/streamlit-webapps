@@ -30,10 +30,8 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://daily-defects.streamlit.app/)   
 * Web-app to track daily defects in producion-level for QA.
 * Mobile-friendly view of the web based app.   
-Web-view      
-[1]   
-![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/cc68bebc-e56c-4dd9-8159-76ced458a99e)   
-[2]   
+Web-view        
+![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/cc68bebc-e56c-4dd9-8159-76ced458a99e)
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/8f5343b7-3512-43e5-9269-ba6188784235)   
    
 Mobile-view   
