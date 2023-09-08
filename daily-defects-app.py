@@ -226,17 +226,17 @@ if selected=='Defects History':
             col1, col2 = st.columns(2, gap="small")
             with col1:
                 img_file = imgs_drive.get(omni_key)
-                annotated_text(annotation("Image", "", "#55f"),)
+                annotated_text(annotation("Image", "", "#28a1e6"),)
                 defect_img = Image.open(img_file)
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
             with col2:
-                annotated_text(annotation("Details", "", "#f5f"),)
+                annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
                 
                 #!------------update entry
-                annotated_text(annotation('Udpate Entry', "", "#28a1e6"),)
+                annotated_text(annotation('Udpate Entry', "", "#bd660f"),)
 
                 all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
                 all_fields.extend(['Image'])
