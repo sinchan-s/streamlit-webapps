@@ -4,6 +4,7 @@ from PIL import Image
 from deta import Deta
 import pandas as pd
 import streamlit as st
+from fpdf import FPDF
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
@@ -91,6 +92,14 @@ def fetch_all_data():
 
 def convert_df(df):
     return df.to_csv().encode('utf-8')
+
+
+#*------------------------------------------------------------------------------------------*# 
+#*                                      PDF settings init                                   *#
+#*------------------------------------------------------------------------------------------*#
+pdf = FPDF()
+pdf.add_page()
+pdf.set_font('helvetica', size=20)
 
 #*------------------------------------------------------------------------------------------*# 
 #*                                    NAV-1: Defects Entry                                  *#
@@ -213,8 +222,8 @@ if selected=='Defects History':
                 st.error("An error occured while dataframing...	:dizzy_face:")
         
             #!------------data downloading...
-            csv = convert_df(st.session_state.df)
-            st.download_button(label="📥 Download Data (.csv)", data=csv, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
+            csv_data = convert_df(st.session_state.df)
+            st.download_button(label="📥 Download Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         # st.divider()
         
         #!------------select defect to view
@@ -223,6 +232,13 @@ if selected=='Defects History':
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
+            # with pdf.table() as table:
+            #     for data_row in TABLE_DATA:
+            #         row = table.row()
+            #         for datum in data_row:
+            #             row.cell(datum)
+            # pdf_data = pdf.output()
+            pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
                 img_file = imgs_drive.get(omni_key)
@@ -231,6 +247,7 @@ if selected=='Defects History':
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
+                st.download_button(label=":page_facing_up: Download this detail (.pdf)", data=pdf_data, file_name=f"{sel_defect.Defect_type[0]} in {sel_defect.Customer[0]} defect.pdf", mime='text/pdf', use_container_width=True)
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
