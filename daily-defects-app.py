@@ -3,6 +3,9 @@ from datetime import date, time, datetime
 from PIL import Image
 from deta import Deta
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import streamlit as st
 from fpdf import FPDF
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
@@ -232,12 +235,10 @@ if selected=='Defects History':
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
-            # with pdf.table() as table:
-            #     for data_row in TABLE_DATA:
-            #         row = table.row()
-            #         for datum in data_row:
-            #             row.cell(datum)
-            # pdf_data = pdf.output()
+            fig, ax =plt.subplots(figsize=(12,4))
+            ax.axis('tight')
+            ax.axis('off')
+            the_table = ax.table(cellText=sel_defect,colLabels=sel_defect,loc='center')
             pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
