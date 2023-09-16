@@ -235,10 +235,10 @@ if selected=='Defects History':
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
-            fig, ax =plt.subplots(figsize=(12,4))
-            ax.axis('tight')
-            ax.axis('off')
-            the_table = ax.table(cellText=sel_defect,colLabels=sel_defect,loc='center')
+            # fig, ax =plt.subplots(figsize=(12,4))
+            # ax.axis('tight')
+            # ax.axis('off')
+            # the_table = ax.table(cellText=sel_defect,colLabels=sel_defect,loc='center')
             pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
