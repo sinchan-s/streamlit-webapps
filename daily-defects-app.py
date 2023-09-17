@@ -1,4 +1,4 @@
-import io, os, math
+import io, os, math, csv
 from datetime import date, time, datetime
 from PIL import Image
 from deta import Deta
@@ -226,7 +226,7 @@ if selected=='Defects History':
         
             #!------------data downloading...
             csv_data = convert_df(st.session_state.df)
-            st.download_button(label="📥 Download Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
+            st.download_button(label="📥 Download All Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
         # st.divider()
         
         #!------------select defect to view
@@ -235,11 +235,21 @@ if selected=='Defects History':
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
-            # fig, ax =plt.subplots(figsize=(12,4))
-            # ax.axis('tight')
-            # ax.axis('off')
-            # the_table = ax.table(cellText=sel_defect,colLabels=sel_defect,loc='center')
-            pdf_data = 'some text'
+            sel_defect['Date'] = sel_defect['Date'].astype('float64')
+            st.dataframe(sel_defect)
+            # df_to_list = sel_defect.to_json(orient='split').encode('utf-8')
+            df_to_list = sel_defect.values.tolist()
+            # st.write(list(map(float, df_to_list)))
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Times", size=16)
+            with pdf.table() as table:
+                for data_row in df_to_list:
+                    row = table.row()
+                    for datum in data_row:
+                        row.cell(float(datum))
+            pdf_data = pdf.output()
+            # pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
                 img_file = imgs_drive.get(omni_key)
