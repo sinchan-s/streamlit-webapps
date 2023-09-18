@@ -235,21 +235,20 @@ if selected=='Defects History':
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
-            sel_defect['Date'] = sel_defect['Date'].astype('float64')
-            st.dataframe(sel_defect)
-            # df_to_list = sel_defect.to_json(orient='split').encode('utf-8')
-            df_to_list = sel_defect.values.tolist()
-            # st.write(list(map(float, df_to_list)))
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Times", size=16)
-            with pdf.table() as table:
-                for data_row in df_to_list:
-                    row = table.row()
-                    for datum in data_row:
-                        row.cell(float(datum))
-            pdf_data = pdf.output()
-            # pdf_data = 'some text'
+            # sel_defect['Date'] = sel_defect['Date'].astype('float64')
+            # st.dataframe(sel_defect)
+            # # df_to_list = sel_defect.to_json(orient='split').encode('utf-8')
+            # df_to_list = sel_defect.values.tolist()
+            # pdf = FPDF()
+            # pdf.add_page()
+            # pdf.set_font("Times", size=16)
+            # with pdf.table() as table:
+            #     for data_row in df_to_list:
+            #         row = table.row()
+            #         for datum in data_row:
+            #             row.cell(float(datum))
+            # pdf_data = pdf.output()
+            pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
                 img_file = imgs_drive.get(omni_key)
@@ -258,13 +257,13 @@ if selected=='Defects History':
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
-                st.download_button(label=":page_facing_up: Download this detail (.pdf)", data=pdf_data, file_name=f"{sel_defect.Defect_type[0]} in {sel_defect.Customer[0]} defect.pdf", mime='text/pdf', use_container_width=True)
+                st.download_button(label=":page_facing_up: Download this data (.pdf)", data=pdf_data, file_name=f"{sel_defect.Defect_type[0]} in {sel_defect.Customer[0]} defect.pdf", mime='text/pdf', use_container_width=True)
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
                 
-                #!------------update entry
-                annotated_text(annotation('Udpate Entry', "", "#bd660f"),)
+                #!------------update data
+                annotated_text(annotation('Udpate data', "", "#bd660f"),)
 
                 all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
                 all_fields.extend(['Image'])
@@ -282,7 +281,7 @@ if selected=='Defects History':
                     current_val = defects_base.get(omni_key)[update_key]
                     update_value = st.text_input(f'New {update_key}:', value=current_val)
                     
-                update_button = st.button(label='Update this entry', use_container_width=True, on_click=fetch_all_data)
+                update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data)
                 if update_button:
                     prog_bar = st.progress(0) #?progress=0%
                     if update_key=='Image':
@@ -292,15 +291,15 @@ if selected=='Defects History':
                     fetch_all_data()
                     prog_bar.progress(100) #?progress=100%
 
-                #!------------delete entry
+                #!------------delete data
                 annotated_text(annotation("Delete", "", "#d11315"),)
                 # st, col2 = st.columns(2, gap="large")
                 del_pass = st.secrets["DEL_PASS"]
-                input_pass = st.text_input('Enter Password to delete entry:')
+                input_pass = st.text_input('Enter Password to delete data:')
                 del_disabled_status = True
                 if input_pass==del_pass:    #? getting delete access
                     del_disabled_status = False
-                delete_button = st.button(label='Delete this entry', disabled=del_disabled_status, use_container_width=True)
+                delete_button = st.button(label='Delete this data', disabled=del_disabled_status, use_container_width=True)
                 if delete_button:
                     prog_bar = st.progress(0) #?progress=0%
                     defects_base.delete(omni_key)
