@@ -1,4 +1,4 @@
-import io, os, math, csv
+import io, os, math, base64
 from datetime import date, time, datetime
 from PIL import Image
 from deta import Deta
@@ -214,7 +214,6 @@ if selected=='Defects History':
         
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
-            # st.json(defects_data)
             try:
                 transpose_df_view = st.checkbox('Transpose View')
                 if transpose_df_view:
@@ -227,7 +226,6 @@ if selected=='Defects History':
             #!------------data downloading...
             csv_data = convert_df(st.session_state.df)
             st.download_button(label="📥 Download All Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
-        # st.divider()
         
         #!------------select defect to view
         omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data)
@@ -235,20 +233,6 @@ if selected=='Defects History':
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
-            # sel_defect['Date'] = sel_defect['Date'].astype('float64')
-            # st.dataframe(sel_defect)
-            # # df_to_list = sel_defect.to_json(orient='split').encode('utf-8')
-            # df_to_list = sel_defect.values.tolist()
-            # pdf = FPDF()
-            # pdf.add_page()
-            # pdf.set_font("Times", size=16)
-            # with pdf.table() as table:
-            #     for data_row in df_to_list:
-            #         row = table.row()
-            #         for datum in data_row:
-            #             row.cell(float(datum))
-            # pdf_data = pdf.output()
-            pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
                 img_file = imgs_drive.get(omni_key)
@@ -257,7 +241,6 @@ if selected=='Defects History':
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
-                st.download_button(label=":page_facing_up: Download this data (.pdf)", data=pdf_data, file_name=f"{sel_defect.Defect_type[0]} in {sel_defect.Customer[0]} defect.pdf", mime='text/pdf', use_container_width=True)
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
@@ -305,6 +288,24 @@ if selected=='Defects History':
                     defects_base.delete(omni_key)
                     imgs_drive.delete(omni_key)
                     prog_bar.progress(100) #?progress=100%
+        
+        #!------------download section
+        with st.expander(label='Download data (.pdf)', expanded=True):
+            pdf_df = st.session_state.df[st.session_state.df.index==omni_key]
+            df_to_list = pdf_df.values.tolist()
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Times", size=16)
+            with pdf.table() as table:
+                for data_row in df_to_list:
+                    row = table.row()
+                    for datum in data_row:
+                        row.cell(str(datum))
+            pdf_data = pdf.output()
+            base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+            pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf">'
+            st.markdown(pdf_display, unsafe_allow_html=True)
+            
 
     except ValueError:
         st.write('Please refresh !!')
