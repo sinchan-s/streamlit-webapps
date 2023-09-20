@@ -292,11 +292,14 @@ if selected=='Defects History':
         #!------------download section
         with st.expander(label='Download data (.pdf)', expanded=True):
             pdf_df = st.session_state.df[st.session_state.df.index==omni_key]
-            df_to_list = pdf_df.values.tolist()
-            pdf = FPDF()
+            df_to_list = list([pdf_df.columns.values.tolist()])
+            df_val_list = pdf_df.values.tolist()
+            # st.write(df_to_list)
+            df_to_list.extend(df_val_list)
+            pdf = FPDF(orientation="landscape")
             pdf.add_page()
-            pdf.set_font("Times", size=16)
-            with pdf.table() as table:
+            pdf.set_font("Times", size=12)
+            with pdf.table(text_align="CENTER") as table:
                 for data_row in df_to_list:
                     row = table.row()
                     for datum in data_row:
