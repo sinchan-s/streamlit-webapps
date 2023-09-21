@@ -34,7 +34,6 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 #*                                    Unique key generator                                  *#
 #*------------------------------------------------------------------------------------------*#
 key = str(math.ceil(datetime.now().timestamp()))
-# st.write(key)
 
 #!------------set title and subtitle
 st.title('Daily Defects observation app')
@@ -133,8 +132,6 @@ if selected=='Defects Entry':
     po_no = col3.text_input("PO No:", placeholder='F000000000 / P000000000')
     qty = col2.number_input("Defect quantity observed:")
     remarks = col3.text_area("Additional Remarks:", placeholder='Extra details to add')
-    # ymd = date_inp.strftime("%Y,%m,%d")
-    # st.write(key)
     st.divider()
 
     #!------------data validate conditions
@@ -143,7 +140,7 @@ if selected=='Defects Entry':
         defect_type = m_defects                             #? from manual entry
     else:
         defect_type = ', '.join(str(d) for d in defects)    #? from dropdown list
-    
+
     #!------------upload preview expander
     # code inspired from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
     with st.expander('Preview Upload'):
@@ -181,7 +178,7 @@ if selected=='Defects Entry':
         col2.caption('Please wait...')
         resize_n_upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
         upload_data(defect_type=defect_type, customer=customer, article=k1, po_no=po_no, qty=qty, remarks=remarks)                            #? button for text data upload
-        col3.success("Data Uploaded successfully !!")                         #? upload successful..
+        col3.success("Data Uploaded successfully !!")                                  #? upload successful..
         prog_bar.progress(100) #?progress=100%
 
 #*------------------------------------------------------------------------------------------*# 
@@ -211,7 +208,7 @@ if selected=='Defects History':
         st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
         st.session_state.df = st.session_state.df.sort_values(by='Date',ascending=False)
 
-        
+
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
             try:
@@ -222,11 +219,11 @@ if selected=='Defects History':
                     st.dataframe(st.session_state.df)
             except:
                 st.error("An error occured while dataframing...	:dizzy_face:")
-        
+
             #!------------data downloading...
             csv_data = convert_df(st.session_state.df)
             st.download_button(label="📥 Download All Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
-        
+
         #!------------select defect to view
         omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data)
 
@@ -244,7 +241,7 @@ if selected=='Defects History':
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
-                
+
                 #!------------update data
                 annotated_text(annotation('Udpate data', "", "#bd660f"),)
 
@@ -263,7 +260,7 @@ if selected=='Defects History':
                 else:
                     current_val = defects_base.get(omni_key)[update_key]
                     update_value = st.text_input(f'New {update_key}:', value=current_val)
-                    
+
                 update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data)
                 if update_button:
                     prog_bar = st.progress(0) #?progress=0%
@@ -288,7 +285,7 @@ if selected=='Defects History':
                     defects_base.delete(omni_key)
                     imgs_drive.delete(omni_key)
                     prog_bar.progress(100) #?progress=100%
-        
+
         #!------------download section
         with st.expander(label='Download data (.pdf)', expanded=True):
             pdf_df = st.session_state.df[st.session_state.df.index==omni_key]
@@ -304,11 +301,16 @@ if selected=='Defects History':
                     row = table.row()
                     for datum in data_row:
                         row.cell(str(datum))
+            rect1 = pdf.eph/4   , pdf.epw/3, 70, 100
+            pdf.rect(*rect1)
+            pdf.image(defect_img, *rect1, keep_aspect_ratio=True)
+            # pdf.image(defect_img, h=pdf.eph/2, w=pdf.epw/2)
             pdf_data = pdf.output()
+
+            # inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
             base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-            pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf">'
+            pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="600" type="application/pdf">'
             st.markdown(pdf_display, unsafe_allow_html=True)
-            
 
     except ValueError:
         st.write('Please refresh !!')
