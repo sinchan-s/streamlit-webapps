@@ -301,10 +301,10 @@ if selected=='Defects History':
                     row = table.row()
                     for datum in data_row:
                         row.cell(str(datum))
-            rect1 = pdf.eph/4   , pdf.epw/3, 70, 100
-            pdf.rect(*rect1)
-            pdf.image(defect_img, *rect1, keep_aspect_ratio=True)
-            # pdf.image(defect_img, h=pdf.eph/2, w=pdf.epw/2)
+                row = table.row()
+                row.cell("Defect image", colspan=2)
+                row.cell(f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", colspan=2)
+                row.cell(img=defect_img, img_fill_width=True, colspan=3)
             pdf_data = pdf.output()
 
             # inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
