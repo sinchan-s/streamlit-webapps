@@ -235,6 +235,8 @@ if selected=='Defects History':
                 img_file = imgs_drive.get(omni_key)
                 annotated_text(annotation("Image", "", "#28a1e6"),)
                 defect_img = Image.open(img_file)
+                width, height = defect_img.size
+                st.write(width, height)
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
@@ -295,19 +297,20 @@ if selected=='Defects History':
             df_to_list.extend(df_val_list)
             pdf = FPDF(orientation="landscape")
             pdf.add_page()
+            # pdf.set_margin(1)
             pdf.set_font("Times", size=12)
             with pdf.table(text_align="CENTER") as table:
-                for data_row in df_to_list:
-                    row = table.row()
-                    for datum in data_row:
-                        row.cell(str(datum))
                 row = table.row()
                 row.cell("Defect image", colspan=2)
                 row.cell(f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", colspan=2)
                 row.cell(img=defect_img, img_fill_width=True, colspan=3)
+                for data_row in df_to_list:
+                    row = table.row()
+                    for datum in data_row:
+                        row.cell(str(datum))
             pdf_data = pdf.output()
 
-            # inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
+            # code inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
             base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
             pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="600" type="application/pdf">'
             st.markdown(pdf_display, unsafe_allow_html=True)
