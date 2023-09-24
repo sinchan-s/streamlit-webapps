@@ -1,4 +1,4 @@
-import io, os, math, csv
+import io, os, math, base64
 from datetime import date, time, datetime
 from PIL import Image
 from deta import Deta
@@ -34,7 +34,6 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 #*                                    Unique key generator                                  *#
 #*------------------------------------------------------------------------------------------*#
 key = str(math.ceil(datetime.now().timestamp()))
-# st.write(key)
 
 #!------------set title and subtitle
 st.title('Daily Defects observation app')
@@ -133,8 +132,6 @@ if selected=='Defects Entry':
     po_no = col3.text_input("PO No:", placeholder='F000000000 / P000000000')
     qty = col2.number_input("Defect quantity observed:")
     remarks = col3.text_area("Additional Remarks:", placeholder='Extra details to add')
-    # ymd = date_inp.strftime("%Y,%m,%d")
-    # st.write(key)
     st.divider()
 
     #!------------data validate conditions
@@ -143,7 +140,7 @@ if selected=='Defects Entry':
         defect_type = m_defects                             #? from manual entry
     else:
         defect_type = ', '.join(str(d) for d in defects)    #? from dropdown list
-    
+
     #!------------upload preview expander
     # code inspired from: https://stackoverflow.com/questions/74423171/streamlit-image-file-upload-to-deta-drive
     with st.expander('Preview Upload'):
@@ -181,7 +178,7 @@ if selected=='Defects Entry':
         col2.caption('Please wait...')
         resize_n_upload_img(image_name=key, image_data=image_data)                     #? button for image data upload
         upload_data(defect_type=defect_type, customer=customer, article=k1, po_no=po_no, qty=qty, remarks=remarks)                            #? button for text data upload
-        col3.success("Data Uploaded successfully !!")                         #? upload successful..
+        col3.success("Data Uploaded successfully !!")                                  #? upload successful..
         prog_bar.progress(100) #?progress=100%
 
 #*------------------------------------------------------------------------------------------*# 
@@ -211,10 +208,9 @@ if selected=='Defects History':
         st.session_state.df = st.session_state.df[["key", "Date", "Defect_type", "Customer", "Article", "PO", "Quantity", "Remarks"]].set_index('key')
         st.session_state.df = st.session_state.df.sort_values(by='Date',ascending=False)
 
-        
+
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
-            # st.json(defects_data)
             try:
                 transpose_df_view = st.checkbox('Transpose View')
                 if transpose_df_view:
@@ -223,45 +219,31 @@ if selected=='Defects History':
                     st.dataframe(st.session_state.df)
             except:
                 st.error("An error occured while dataframing...	:dizzy_face:")
-        
+
             #!------------data downloading...
             csv_data = convert_df(st.session_state.df)
             st.download_button(label="📥 Download All Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
-        # st.divider()
-        
+
         #!------------select defect to view
         omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data)
 
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
-            # sel_defect['Date'] = sel_defect['Date'].astype('float64')
-            # st.dataframe(sel_defect)
-            # # df_to_list = sel_defect.to_json(orient='split').encode('utf-8')
-            # df_to_list = sel_defect.values.tolist()
-            # pdf = FPDF()
-            # pdf.add_page()
-            # pdf.set_font("Times", size=16)
-            # with pdf.table() as table:
-            #     for data_row in df_to_list:
-            #         row = table.row()
-            #         for datum in data_row:
-            #             row.cell(float(datum))
-            # pdf_data = pdf.output()
-            pdf_data = 'some text'
             col1, col2 = st.columns(2, gap="small")
             with col1:
                 img_file = imgs_drive.get(omni_key)
                 annotated_text(annotation("Image", "", "#28a1e6"),)
                 defect_img = Image.open(img_file)
+                width, height = defect_img.size
+                st.write(width, height)
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
-                st.download_button(label=":page_facing_up: Download this data (.pdf)", data=pdf_data, file_name=f"{sel_defect.Defect_type[0]} in {sel_defect.Customer[0]} defect.pdf", mime='text/pdf', use_container_width=True)
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
-                
+
                 #!------------update data
                 annotated_text(annotation('Udpate data', "", "#bd660f"),)
 
@@ -280,7 +262,7 @@ if selected=='Defects History':
                 else:
                     current_val = defects_base.get(omni_key)[update_key]
                     update_value = st.text_input(f'New {update_key}:', value=current_val)
-                    
+
                 update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data)
                 if update_button:
                     prog_bar = st.progress(0) #?progress=0%
@@ -305,6 +287,32 @@ if selected=='Defects History':
                     defects_base.delete(omni_key)
                     imgs_drive.delete(omni_key)
                     prog_bar.progress(100) #?progress=100%
+
+        #!------------download section
+        with st.expander(label='Download data (.pdf)', expanded=True):
+            pdf_df = st.session_state.df[st.session_state.df.index==omni_key]
+            df_to_list = list([pdf_df.columns.values.tolist()])
+            df_val_list = pdf_df.values.tolist()
+            df_to_list.extend(df_val_list)
+            pdf = FPDF(orientation="landscape")
+            pdf.add_page()
+            pdf.set_font("Times", size=12)
+            with pdf.table(text_align="CENTER") as table:
+                for data_row in df_to_list:
+                    row = table.row()
+                    for datum in data_row:
+                        row.cell(str(datum))
+                re_defect_img = defect_img.resize((400,400))
+                row = table.row()
+                row.cell("Defect image", colspan=2)
+                row.cell(f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", colspan=2)
+                row.cell(img=re_defect_img, img_fill_width=True, colspan=3)
+            pdf_data = pdf.output()
+
+            # code inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
+            base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+            pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="600" type="application/pdf">'
+            st.markdown(pdf_display, unsafe_allow_html=True)
 
     except ValueError:
         st.write('Please refresh !!')
