@@ -235,8 +235,6 @@ if selected=='Defects History':
                 img_file = imgs_drive.get(omni_key)
                 annotated_text(annotation("Image", "", "#28a1e6"),)
                 defect_img = Image.open(img_file)
-                width, height = defect_img.size
-                st.write(width, height)
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
