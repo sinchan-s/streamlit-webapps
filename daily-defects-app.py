@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import streamlit as st
 from fpdf import FPDF
+from fpdf.fonts import FontFace
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
@@ -294,8 +295,12 @@ if selected=='Defects History':
             df_to_list.extend(df_val_list)
             pdf = FPDF(orientation="landscape")
             pdf.add_page()
+            pdf.set_margin(5)
             pdf.set_font("Times", size=12)
-            with pdf.table(text_align="CENTER") as table:
+            blue = (0, 0, 255)
+            grey = (180, 180, 180)
+            headings_style = FontFace(emphasis="BOLD", color=blue, fill_color=grey)
+            with pdf.table(line_height=7, text_align="CENTER", headings_style=headings_style) as table:
                 for data_row in df_to_list:
                     row = table.row()
                     for datum in data_row:
