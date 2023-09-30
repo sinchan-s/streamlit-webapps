@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import streamlit as st
 from fpdf import FPDF
+from fpdf.fonts import FontFace
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
@@ -235,8 +236,6 @@ if selected=='Defects History':
                 img_file = imgs_drive.get(omni_key)
                 annotated_text(annotation("Image", "", "#28a1e6"),)
                 defect_img = Image.open(img_file)
-                width, height = defect_img.size
-                st.write(width, height)
                 if not defect_img:
                     st.error("No Image available !!")
                 st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
@@ -296,8 +295,12 @@ if selected=='Defects History':
             df_to_list.extend(df_val_list)
             pdf = FPDF(orientation="landscape")
             pdf.add_page()
+            pdf.set_margin(5)
             pdf.set_font("Times", size=12)
-            with pdf.table(text_align="CENTER") as table:
+            blue = (0, 0, 255)
+            grey = (180, 180, 180)
+            headings_style = FontFace(emphasis="BOLD", color=blue, fill_color=grey)
+            with pdf.table(line_height=7, text_align="CENTER", headings_style=headings_style) as table:
                 for data_row in df_to_list:
                     row = table.row()
                     for datum in data_row:
