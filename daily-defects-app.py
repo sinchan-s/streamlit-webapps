@@ -297,9 +297,9 @@ if selected=='Defects History':
             pdf.add_page()
             pdf.set_margin(5)
             pdf.set_font("Times", size=12)
-            blue = (0, 0, 255)
-            grey = (180, 180, 180)
-            headings_style = FontFace(emphasis="BOLD", color=blue, fill_color=grey)
+            white = (255, 255, 255)
+            black = (0, 0, 0)
+            headings_style = FontFace(emphasis="BOLD", color=white, fill_color=black)
             with pdf.table(line_height=7, text_align="CENTER", headings_style=headings_style) as table:
                 for data_row in df_to_list:
                     row = table.row()
