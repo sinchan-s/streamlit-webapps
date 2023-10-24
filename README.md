@@ -21,11 +21,10 @@
 ![image](https://user-images.githubusercontent.com/63915540/178118264-b78539c0-b02e-4f8d-84a3-aae3893d30f2.png)
    
 ### Expense tracker app   
-* Daily expense/transaction tracking app with sankey chart.
-* Categorize transactions with comments.
-[1]   
+* Daily expense/transaction tracking app.
+* Categorize transactions with comments.[1]   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/da6995d9-7b39-42df-ac95-cb953ff324ca)
-[2]   
+* Visualize income-expense graphically with sankey chart.[2]   
 ![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/fad192a1-7fc7-47b1-b3bb-11d93067b2ed)
    
 ### Daily Defects app
