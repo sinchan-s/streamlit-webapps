@@ -36,26 +36,19 @@ selected = option_menu(
 if selected=='Grouping':
     #!------QA data
     df = pd.read_excel('qa-sept23.xlsx', sheet_name='Data', skiprows=[0], index_col=0)
-    st.dataframe(df)
 
-    col1, col2, col3 = st.columns(3, gap='large')
+    st.write(f'Total Production: {(df.iloc[-1,8]+df.iloc[-1,14]).round(2)}m ({df.iloc[-1,8]+df.iloc[-1,14]+df.iloc[-1,4]}m)')
+    # st.write('Total Production (including PD Production): ', ().round(2), 'm')
+
+    col1, col2 = st.columns(2, gap='large')
     with col1:
-        st.write('Printed P/D Production: ', df.iloc[-1,0].round(2), 'm')
-        st.write('Printed YD Production: ', df.iloc[-1,1].round(2), 'm')
-        st.write('Printed P/D Yardage Production: ', df.iloc[-1,2].round(2), 'm')
-        st.write('Printed YD Yardage Production: ', df.iloc[-1,3].round(2), 'm')
-        st.write('Piece Dyed Production: ', df.iloc[-1,4].round(2), 'm')
-        st.write('Print FRC: ', df.iloc[-1,7].round(2), 'm')
-        st.write('Print RG/RS Production: ', df.iloc[-1,5].round(2), 'm')
-        st.write('Total Print Production: ', df.iloc[-1,8].round(2), 'm')
+        print_lst_idx = ['Printed P/D Production', 'Printed YD Production', 'Printed P/D Yardage Production', 'Printed YD Yardage Production', 'Piece Dyed Production', 'Print FRC', 'Print RG/RS Production', 'Total Print Production']
+        print_lst_vals = [df.iloc[:,0].sum()/2, df.iloc[:,1].sum()/2, df.iloc[:,2].sum()/2, df.iloc[:,3].sum()/2, df.iloc[:,4].sum()/2, df.iloc[:,7].sum()/2, df.iloc[:,5].sum()/2, df.iloc[:,8].sum()/2]
+        print_df = pd.DataFrame(print_lst_vals, index=print_lst_idx, columns=['Qty (m)'])
+        st.dataframe(print_df)
 
     with col2:
-        st.write('Bulk YD Production: ', df.iloc[-1,9].round(2), 'm')
-        st.write('YD Yardage Production: ', df.iloc[-1,10].round(2), 'm')
-        st.write('YD FRC: ', df.iloc[-1,13].round(2), 'm')
-        st.write('YD RG/RS Production: ', df.iloc[-1,11].round(2), 'm')
-        st.write('Total YD Production: ', df.iloc[-1,14].round(2), 'm')
-
-    with col3:
-        st.write('All Total Production: ', (df.iloc[-1,8]+df.iloc[-1,14]).round(2), 'm')
-        st.write('All Total Production (including PD Production): ', (df.iloc[-1,8]+df.iloc[-1,14]+df.iloc[-1,4]).round(2), 'm')
+        yd_lst_idx = ['YD Production', 'YD Yardage Production', 'YD FRC', 'YD RG/RS Production', 'Total YD Production']
+        yd_lst_vals = [df.iloc[:,9].sum()/2, df.iloc[:,10].sum()/2, df.iloc[:,13].sum()/2, df.iloc[:,11].sum()/2, df.iloc[:,14].sum()/2]
+        yd_df = pd.DataFrame(yd_lst_vals, index=yd_lst_idx, columns=['Qty (m)'])
+        st.dataframe(yd_df)
