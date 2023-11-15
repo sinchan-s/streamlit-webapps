@@ -57,3 +57,13 @@ if selected=='Grouping':
         yd_lst_vals = [half_sum('Yarn Dyed'), half_sum('Yarn Dyed Yardage'), half_sum('Yarn Dyed FRC'), half_sum('YD RG/RS'), half_sum('YD TOTAL')]
         yd_df = pd.DataFrame(yd_lst_vals, index=yd_lst_idx, columns=['Qty (m)'])
         st.dataframe(yd_df)
+
+if selected=='Lab':
+    #!------Lab data
+    pass
+    # df2 = pd.read_excel()
+
+if selected=='Inspection':
+    pass
+    #!------Inspection data
+    # df2 = pd.read_excel()
