@@ -42,19 +42,21 @@ if selected=='Grouping':
     df = pd.read_excel('qa-sept23.xlsx', sheet_name='Data', skiprows=[0], index_col=0)
     # st.dataframe(df)
 
-    st.write(f'Total Production: {(df.iloc[-1,8]+df.iloc[-1,14]).round(2)}m ({df.iloc[-1,8]+df.iloc[-1,14]+df.iloc[-1,4]}m)')
+    annotated_text(("Total Production", f"{(df.iloc[-1,8]+df.iloc[-1,14])}"))
     # st.write('Total Production (including PD Production): ', ().round(2), 'm')
 
     col1, col2 = st.columns(2, gap='large')
     with col1:
-        print_lst_idx = ['Printed P/D Production', 'Printed YD Production', 'Printed P/D Yardage Production', 'Printed YD Yardage Production', 'Piece Dyed Production', 'Print FRC', 'Print RG/RS Production', 'Total Print Production']
-        print_lst_vals = [half_sum('Print '), half_sum('Print Yd'), half_sum('Print PD Yardage '), half_sum('Print Yd Yardage '), half_sum('Piece Dyed '), half_sum('Print FRC'), half_sum('Print RG/RS'), half_sum('PRINT TOTAL')]
+        annotated_text(("Print Production", f"{half_sum('PRINT TOTAL').round(2)}"))
+        print_lst_idx = ['Printed YD Production', 'Printed P/D Yardage Production', 'Printed YD Yardage Production', 'Piece Dyed Production', 'Print FRC', 'Print RG/RS Production', 'Total Print Production']
+        print_lst_vals = [half_sum('Print Yd'), half_sum('Print PD Yardage '), half_sum('Print Yd Yardage '), half_sum('Piece Dyed '), half_sum('Print FRC'), half_sum('Print RG/RS'), half_sum('Print ')]
         print_df = pd.DataFrame(print_lst_vals, index=print_lst_idx, columns=['Qty (m)'])
         st.dataframe(print_df)
 
     with col2:
-        yd_lst_idx = ['YD Production', 'YD Yardage Production', 'YD FRC', 'YD RG/RS Production', 'Total YD Production']
-        yd_lst_vals = [half_sum('Yarn Dyed'), half_sum('Yarn Dyed Yardage'), half_sum('Yarn Dyed FRC'), half_sum('YD RG/RS'), half_sum('YD TOTAL')]
+        annotated_text(("YD Production", f"{half_sum('YD TOTAL').round(2)}"))
+        yd_lst_idx = ['YD Yardage Production', 'YD FRC', 'YD RG/RS Production', 'Total YD Production']
+        yd_lst_vals = [half_sum('Yarn Dyed Yardage'), half_sum('Yarn Dyed FRC'), half_sum('YD RG/RS'), half_sum('Yarn Dyed')]
         yd_df = pd.DataFrame(yd_lst_vals, index=yd_lst_idx, columns=['Qty (m)'])
         st.dataframe(yd_df)
 
