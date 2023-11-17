@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import seaborn as sns
+from deta import Deta
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
@@ -37,6 +38,43 @@ selected = option_menu(
     icons=['asterisk', 'bookmark-x', 'backspace-reverse'], 
     orientation='horizontal')
 
+#! initialize deta Base & Drive
+def load_data():
+    DETA_KEY = st.secrets["DETA_KEY"]
+    deta = Deta(DETA_KEY)
+    db = deta.Base("ncr_db")
+    drive = deta.Drive("qa_dash")
+    return db, drive
+
+conn = load_data()
+ncr_db_base = conn[0]
+qa_dash_drive = conn[1]
+
+#*------------------------------------------------------------------------------------------*#
+#*                                       DETA functions                                     *#
+#*------------------------------------------------------------------------------------------*#
+#! ncr_db_base functions
+# def upload_data(defect_type, customer, article, po_no, qty, remarks):
+#     return ncr_db_base.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
+
+def resize_n_upload_img(image_name, image_data):
+    return qa_dash_drive.put(image_name, data=img_byte_arr)
+
+def fetch_data(key):
+    return ncr_db_base.get(key)
+
+def fetch_all_data():
+    res = ncr_db_base.fetch()
+    return res.items
+
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
+
+#*----------------------------------------------------------------------------*#
+#*                                  Tabs Area                                 *#
+#*----------------------------------------------------------------------------*#
+#! Tab-1
 if selected=='Grouping':
     #!------QA data
     df = pd.read_excel('qa-sept23.xlsx', sheet_name='Data', skiprows=[0], index_col=0)
