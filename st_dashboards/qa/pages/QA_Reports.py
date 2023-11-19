@@ -23,9 +23,6 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-#! calculative functions
-def half_sum(col):
-    return df[col].sum()/2
 
 #! Set title and subtitle
 st.title('QA Reports')
@@ -51,25 +48,23 @@ ncr_db_base = conn[0]
 qa_dash_drive = conn[1]
 
 #*------------------------------------------------------------------------------------------*#
-#*                                       DETA functions                                     *#
+#*                                        Functions                                         *#
 #*------------------------------------------------------------------------------------------*#
 #! ncr_db_base functions
-# def upload_data(defect_type, customer, article, po_no, qty, remarks):
-#     return ncr_db_base.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
+db_upload = lambda details : ncr_db.put({"key": str(datetime.now().timestamp()), "date": datetime.now().strftime("%m/%d/%Y"), "time": datetime.now().strftime("%H:%M:%S"), "details": details})
 
-def resize_n_upload_img(image_name, image_data):
-    return qa_dash_drive.put(image_name, data=img_byte_arr)
 
-def fetch_data(key):
-    return ncr_db_base.get(key)
+db_fetch = lambda key : ncr_db.get(key)
 
-def fetch_all_data():
-    res = ncr_db_base.fetch()
-    return res.items
+db_fetch_all = lambda : ncr_db.fetch().items
 
-def convert_df(df):
-    return df.to_csv().encode('utf-8')
+drive_upload = lambda fname, fpath : qa_dash_drive.put(fname, path=fpath)
 
+drive_list = lambda : qa_dash_drive.list()['names']
+
+drive_fetch = lambda fname: qa_dash_drive.get(fname)
+#! calculative functions
+half_sum = lambda col : df[col].sum()/2
 
 #*----------------------------------------------------------------------------*#
 #*                                  Tabs Area                                 *#
@@ -77,6 +72,9 @@ def convert_df(df):
 #! Tab-1
 if selected=='Grouping':
     #!------QA data
+    qa_file = st.selectbox('Select file:', drive_list())
+    st.write(qa_file)
+    db_file = drive_fetch(qa_file)
     df = pd.read_excel('qa-sept23.xlsx', sheet_name='Data', skiprows=[0], index_col=0)
     # st.dataframe(df)
 
