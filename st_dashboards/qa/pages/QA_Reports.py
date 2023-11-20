@@ -1,3 +1,4 @@
+import os, io
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -73,13 +74,12 @@ half_sum = lambda col : df[col].sum()/2
 if selected=='Grouping':
     #!------QA data
     qa_file = st.selectbox('Select file:', drive_list())
-    st.write(qa_file)
+    # st.write(qa_file)
     db_file = drive_fetch(qa_file)
-    df = pd.read_excel('qa-sept23.xlsx', sheet_name='Data', skiprows=[0], index_col=0)
-    # st.dataframe(df)
-
+    df = pd.read_excel(db_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+    with st.expander("Preview file"):
+        st.dataframe(df)
     annotated_text(("Total Production", f"{(df.iloc[-1,8]+df.iloc[-1,14])}"))
-    # st.write('Total Production (including PD Production): ', ().round(2), 'm')
 
     col1, col2 = st.columns(2, gap='large')
     with col1:
