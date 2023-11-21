@@ -112,7 +112,7 @@ if selected=='Defects Entry':
     #!------------image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_access = col2.checkbox(':camera: Take picture')
+    cam_access = col2.toggle(':camera: Take picture')
     user_img = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
     cam_disabled_state = True
     cam_img = user_img
@@ -233,12 +233,11 @@ if selected=='Defects History':
             sel_defect = st.session_state.df[st.session_state.df.index==omni_key]
             col1, col2 = st.columns(2, gap="small")
             with col1:
-                img_file = imgs_drive.get(omni_key)
+                img_file = imgs_drive.get(omni_key).read()
                 annotated_text(annotation("Image", "", "#28a1e6"),)
-                defect_img = Image.open(img_file)
-                if not defect_img:
+                if not img_file:
                     st.error("No Image available !!")
-                st.image(defect_img, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
+                st.image(img_file, caption=f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric")
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
@@ -305,7 +304,7 @@ if selected=='Defects History':
                     row = table.row()
                     for datum in data_row:
                         row.cell(str(datum))
-                re_defect_img = defect_img.resize((400,400))
+                re_defect_img = img_file#.resize((400,400))
                 row = table.row()
                 row.cell("Defect image", colspan=2)
                 row.cell(f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", colspan=2)
