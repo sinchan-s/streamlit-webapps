@@ -33,7 +33,7 @@ st.title('QA Reports')
 selected = option_menu(
     menu_title=None, 
     options=['Grouping', 'Lab', 'Inspection'], 
-    icons=['asterisk', 'bookmark-x', 'backspace-reverse'], 
+    icons=['palette2', 'columns-gap', 'search'], 
     orientation='horizontal')
 
 #! initialize deta Base & Drive
@@ -54,7 +54,6 @@ qa_dash_drive = conn[1]
 #! ncr_db_base functions
 db_upload = lambda details : ncr_db.put({"key": str(datetime.now().timestamp()), "date": datetime.now().strftime("%m/%d/%Y"), "time": datetime.now().strftime("%H:%M:%S"), "details": details})
 
-
 db_fetch = lambda key : ncr_db.get(key)
 
 db_fetch_all = lambda : ncr_db.fetch().items
@@ -72,11 +71,14 @@ half_sum = lambda col : df[col].sum()/2
 #*----------------------------------------------------------------------------*#
 #! Tab-1
 if selected=='Grouping':
-    #!------QA data
+    #!------list down all files
     qa_file = st.selectbox('Select file:', drive_list())
     # st.write(qa_file)
+    #!------fetching selected file
     db_file = drive_fetch(qa_file)
+    #!------reading file
     df = pd.read_excel(db_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+    #!------preview 
     with st.expander("Preview file"):
         st.dataframe(df)
     annotated_text(("Total Production", f"{(df.iloc[-1,8]+df.iloc[-1,14])}"))
