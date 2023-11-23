@@ -63,11 +63,6 @@ imgs_drive = conn[1]
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
 #!------------defects_base functions
-# @st.cache_data(ttl=3600, show_spinner="uploading...")
-def upload_data(defect_type, customer, article, po_no, qty, remarks):
-    return defects_base.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
-
-# @st.cache_data(ttl=3600)
 def resize_n_upload_img(image_name, image_data):
     img_size = len(image_data)/1024     #?image size
     input_img = Image.open(io.BytesIO(image_data))
@@ -84,17 +79,13 @@ def resize_n_upload_img(image_name, image_data):
     #!--------putting the image data with its name
     return imgs_drive.put(image_name, data=img_byte_arr)
 
-# @st.cache_data(ttl=3600)
-def fetch_data(key):
-    return defects_base.get(key)
+upload_data = lambda defect_type, customer, article, po_no, qty, remarks : defects_base.put({"key": key, "Date": date, "Defect_type": defect_type, "Customer": customer, "Article": article, "PO": po_no, "Quantity": qty, "Remarks": remarks})
 
-# @st.cache_data(ttl=3600, show_spinner="fetching...")
-def fetch_all_data():
-    res = defects_base.fetch()
-    return res.items
+fetch_data = lambda key : defects_base.get(key)
 
-def convert_df(df):
-    return df.to_csv().encode('utf-8')
+fetch_all_data = lambda : defects_base.fetch().items
+
+convert_df = lambda df : df.to_csv().encode('utf-8')
 
 
 #*------------------------------------------------------------------------------------------*# 
@@ -226,7 +217,7 @@ if selected=='Defects History':
             st.download_button(label="📥 Download All Data (.csv)", data=csv_data, file_name='defects_df.csv', mime='text/csv', use_container_width=True)
 
         #!------------select defect to view
-        omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data)
+        omni_key = st.selectbox("Search Defect by key:", st.session_state.df.index, on_change=fetch_all_data())
 
         #!------------defect preview panel
         with st.expander(label='Defect details', expanded=True):
@@ -261,7 +252,7 @@ if selected=='Defects History':
                     current_val = defects_base.get(omni_key)[update_key]
                     update_value = st.text_input(f'New {update_key}:', value=current_val)
 
-                update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data)
+                update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data())
                 if update_button:
                     prog_bar = st.progress(0) #?progress=0%
                     if update_key=='Image':
