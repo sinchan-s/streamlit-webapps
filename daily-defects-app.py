@@ -204,7 +204,7 @@ if selected=='Defects History':
         #!------------all defects dataframe
         with st.expander('View All Defects Data', expanded=True):
             try:
-                transpose_df_view = st.checkbox('Transpose View')
+                transpose_df_view = st.toggle('Transpose View')
                 if transpose_df_view:
                     st.data_editor(st.session_state.df.T)
                 else:
