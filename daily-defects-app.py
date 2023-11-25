@@ -278,35 +278,35 @@ if selected=='Defects History':
                     prog_bar.progress(100) #?progress=100%
 
         #!------------download section
-        with st.expander(label='Download data (.pdf)', expanded=True):
-            pdf_df = st.session_state.df[st.session_state.df.index==omni_key]
-            df_to_list = list([pdf_df.columns.values.tolist()])
-            df_val_list = pdf_df.values.tolist()
-            df_to_list.extend(df_val_list)
-            pdf = FPDF(orientation="landscape")
-            pdf.add_page()
-            pdf.set_margin(5)
-            pdf.set_font("Times", size=12)
-            white = (255, 255, 255)
-            black = (0, 0, 0)
-            headings_style = FontFace(emphasis="BOLD", color=white, fill_color=black)
-            with pdf.table(line_height=7, text_align="CENTER", headings_style=headings_style) as table:
-                for data_row in df_to_list:
-                    row = table.row()
-                    for datum in data_row:
-                        row.cell(str(datum))
-                re_defect_img = img_file#.resize((400,400))
-                row = table.row()
-                row.cell("Defect image", colspan=2)
-                row.cell(f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", colspan=2)
-                row.cell(img=re_defect_img, img_fill_width=True, colspan=3)
-            pdf_data = pdf.output()
+        # with st.expander(label='Download data (.pdf)', expanded=True):
+        #     pdf_df = st.session_state.df[st.session_state.df.index==omni_key]
+        #     df_to_list = list([pdf_df.columns.values.tolist()])
+        #     df_val_list = pdf_df.values.tolist()
+        #     df_to_list.extend(df_val_list)
+        #     pdf = FPDF(orientation="landscape")
+        #     pdf.add_page()
+        #     pdf.set_margin(5)
+        #     pdf.set_font("Times", size=12)
+        #     white = (255, 255, 255)
+        #     black = (0, 0, 0)
+        #     headings_style = FontFace(emphasis="BOLD", color=white, fill_color=black)
+        #     with pdf.table(line_height=7, text_align="CENTER", headings_style=headings_style) as table:
+        #         for data_row in df_to_list:
+        #             row = table.row()
+        #             for datum in data_row:
+        #                 row.cell(str(datum))
+        #         re_defect_img = img_file#.resize((400,400))
+        #         row = table.row()
+        #         row.cell("Defect image", colspan=2)
+        #         row.cell(f"{sel_defect.Defect_type[0]} in {sel_defect.Quantity[0]}m of {sel_defect.Customer[0]} fabric", colspan=2)
+        #         row.cell(img=re_defect_img, img_fill_width=True, colspan=3)
+        #     pdf_data = pdf.output()
 
-            # code inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
-            base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-            pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="600" type="application/pdf">'
-            st.markdown(pdf_display, unsafe_allow_html=True)
-            st.download_button(label="Download PDF", data=base64_pdf, mime="application/octet-stream", file_name="Output.pdf")
+        #     # code inspired from: https://discuss.streamlit.io/t/rendering-pdf-on-ui/13505/1
+        #     base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+        #     pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="600" type="application/pdf">'
+        #     st.markdown(pdf_display, unsafe_allow_html=True)
+        #     st.download_button(label="Download PDF", data=base64_pdf, mime="application/octet-stream", file_name="Output.pdf")
 
     except ValueError:
         st.write('Please refresh !!')
