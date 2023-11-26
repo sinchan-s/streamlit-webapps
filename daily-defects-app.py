@@ -232,50 +232,51 @@ if selected=='Defects History':
             with col2:
                 annotated_text(annotation("Details", "", "#189c16"),)
                 st.table(pd.DataFrame(sel_defect).T)
+                more_ops = st.toggle("More options")
+                if more_ops:
+                    #!------------update data
+                    annotated_text(annotation('Update data', "", "#bd660f"),)
 
-                #!------------update data
-                annotated_text(annotation('Udpate data', "", "#bd660f"),)
+                    all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
+                    all_fields.extend(['Image'])
+                    update_key = st.selectbox('Select Field:', all_fields)
 
-                all_fields = list(st.session_state.df.columns[:])   #?all available fields dropdown
-                all_fields.extend(['Image'])
-                update_key = st.selectbox('Select Field:', all_fields)
-
-                if update_key=='Quantity':
-                    current_val = defects_base.get(omni_key)[update_key]
-                    update_value = st.number_input('New Value:', value=current_val)
-                elif update_key=='Image':
-                    update_value = st.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
-                elif update_key=='Date':
-                    current_value = st.date_input(":calendar: Select date:", value=datetime.now())
-                    update_value = current_value.strftime("%d-%m-%Y")
-                else:
-                    current_val = defects_base.get(omni_key)[update_key]
-                    update_value = st.text_input(f'New {update_key}:', value=current_val)
-
-                update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data())
-                if update_button:
-                    prog_bar = st.progress(0) #?progress=0%
-                    if update_key=='Image':
-                        resize_n_upload_img(image_name=omni_key, image_data=update_value.getvalue())
+                    if update_key=='Quantity':
+                        current_val = defects_base.get(omni_key)[update_key]
+                        update_value = st.number_input('New Value:', value=current_val)
+                    elif update_key=='Image':
+                        update_value = st.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+                    elif update_key=='Date':
+                        current_value = st.date_input(":calendar: Select date:", value=datetime.now())
+                        update_value = current_value.strftime("%d-%m-%Y")
                     else:
-                        defects_base.update({update_key: update_value},omni_key)
-                    fetch_all_data()
-                    prog_bar.progress(100) #?progress=100%
+                        current_val = defects_base.get(omni_key)[update_key]
+                        update_value = st.text_input(f'New {update_key}:', value=current_val)
 
-                #!------------delete data
-                annotated_text(annotation("Delete", "", "#d11315"),)
-                # st, col2 = st.columns(2, gap="large")
-                del_pass = st.secrets["DEL_PASS"]
-                input_pass = st.text_input('Enter Password to delete data:')
-                del_disabled_status = True
-                if input_pass==del_pass:    #? getting delete access
-                    del_disabled_status = False
-                delete_button = st.button(label='Delete this data', disabled=del_disabled_status, use_container_width=True)
-                if delete_button:
-                    prog_bar = st.progress(0) #?progress=0%
-                    defects_base.delete(omni_key)
-                    imgs_drive.delete(omni_key)
-                    prog_bar.progress(100) #?progress=100%
+                    update_button = st.button(label='Update this data', use_container_width=True, on_click=fetch_all_data())
+                    if update_button:
+                        prog_bar = st.progress(0) #?progress=0%
+                        if update_key=='Image':
+                            resize_n_upload_img(image_name=omni_key, image_data=update_value.getvalue())
+                        else:
+                            defects_base.update({update_key: update_value},omni_key)
+                        fetch_all_data()
+                        prog_bar.progress(100) #?progress=100%
+
+                    #!------------delete data
+                    annotated_text(annotation("Delete", "", "#d11315"),)
+                    # st, col2 = st.columns(2, gap="large")
+                    del_pass = st.secrets["DEL_PASS"]
+                    input_pass = st.text_input('Enter Password to delete data:')
+                    del_disabled_status = True
+                    if input_pass==del_pass:    #? getting delete access
+                        del_disabled_status = False
+                    delete_button = st.button(label='Delete this data', disabled=del_disabled_status, use_container_width=True)
+                    if delete_button:
+                        prog_bar = st.progress(0) #?progress=0%
+                        defects_base.delete(omni_key)
+                        imgs_drive.delete(omni_key)
+                        prog_bar.progress(100) #?progress=100%
 
         #!------------download section
         # with st.expander(label='Download data (.pdf)', expanded=True):
