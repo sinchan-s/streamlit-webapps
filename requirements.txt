@@ -1,5 +1,5 @@
 ﻿matplotlib==3.5.2
-numpy==1.23.0
+numpy==1.23.5
 pandas==1.4.3
 scikit-learn==1.1.1
 sklearn==0.0
@@ -11,3 +11,4 @@ plotly==5.9.0
 deta==1.1.0
 st-annotated-text==4.0.0
 fpdf2==2.7.5
+streamlit-cropper==0.2.2
