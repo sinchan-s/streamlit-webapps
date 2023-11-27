@@ -1,15 +1,18 @@
+
+#! Important Libraries
 import io, os, math, base64
-from datetime import date, time, datetime
-from PIL import Image
-from deta import Deta
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
 import streamlit as st
+from PIL import Image
 from fpdf import FPDF
+from deta import Deta
 from fpdf.fonts import FontFace
+from datetime import date, time, datetime
+# from streamlit_cropper import st_cropper
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
+from matplotlib.backends.backend_pdf import PdfPages
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
 
 #!------------page configuration
@@ -99,6 +102,19 @@ pdf.set_font('helvetica', size=20)
 #*                                    NAV-1: Defects Entry                                  *#
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects Entry':
+
+    img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])
+    realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
+    box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
+    aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["1:1", "16:9", "4:3", "2:3", "Free"])
+    aspect_dict = {
+        "1:1": (1, 1),
+        "16:9": (16, 9),
+        "4:3": (4, 3),
+        "2:3": (2, 3),
+        "Free": None
+    }
+    aspect_ratio = aspect_dict[aspect_choice]
 
     #!------------image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
