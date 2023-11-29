@@ -10,7 +10,7 @@ from fpdf import FPDF
 from deta import Deta
 from fpdf.fonts import FontFace
 from datetime import date, time, datetime
-# from streamlit_cropper import st_cropper
+from streamlit_cropper import st_cropper
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from matplotlib.backends.backend_pdf import PdfPages
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
@@ -103,18 +103,7 @@ pdf.set_font('helvetica', size=20)
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects Entry':
 
-    img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])
-    realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
-    box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
-    aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["1:1", "16:9", "4:3", "2:3", "Free"])
-    aspect_dict = {
-        "1:1": (1, 1),
-        "16:9": (16, 9),
-        "4:3": (4, 3),
-        "2:3": (2, 3),
-        "Free": None
-    }
-    aspect_ratio = aspect_dict[aspect_choice]
+
 
     #!------------image display-upload
     col1, col2, col3 = st.columns(3, gap="large")
@@ -165,6 +154,30 @@ if selected=='Defects Entry':
             else:
                 st.image(cam_img, caption=key, width=350)
                 image_data = cam_img.getvalue()
+            # img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])
+            realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
+            box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
+            aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["1:1", "16:9", "4:3", "2:3", "Free"])
+            aspect_dict = {
+                "1:1": (1, 1),
+                "16:9": (16, 9),
+                "4:3": (4, 3),
+                "2:3": (2, 3),
+                "Free": None
+            }
+            aspect_ratio = aspect_dict[aspect_choice]
+            # if user_img or cam_img:
+            #     img = st.image(image_data)
+            #     if not realtime_update:
+            #         st.write("Double click to save crop")
+            #     # Get a cropped image from the frontend
+            #     cropped_img = st_cropper(img, realtime_update=realtime_update, box_color=box_color,
+            #                                 aspect_ratio=aspect_ratio)
+                
+            #     # Manipulate cropped image at will
+            #     st.write("Preview")
+            #     _ = cropped_img.thumbnail((150,150))
+            #     st.image(cropped_img)
         #!------------details filled-in
         with col2:
             upload_df = {
