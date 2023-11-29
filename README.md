@@ -34,8 +34,8 @@
 * PDF download section also available for download of detailed defect report.
   
 Web-view        
-![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/cc68bebc-e56c-4dd9-8159-76ced458a99e)
-![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/8f5343b7-3512-43e5-9269-ba6188784235)   
+![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/9bac7fea-4d39-4d3b-9a20-829a130df6a1)
+![image](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/d61d14a8-6440-4256-83f6-708f8438bd69)
    
 Mobile-view   
 ![Untitled2](https://github.com/sinchan-s/streamlit-webapps/assets/63915540/7cd38509-9782-4e7a-8b78-21e57c61725b)
