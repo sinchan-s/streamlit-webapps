@@ -106,15 +106,13 @@ if selected=='Defects Entry':
 
 
     #!------------image display-upload
-    col1, col2 = st.columns(2, gap="large")
     placeholder_img = Image.open('place_h.jpg')
-    cam_access = col2.toggle('Use Camera')
-    cam_disabled_state = True
+    cam_access = st.toggle('Use Camera')
     if cam_access:
         cam_disabled_state = False
-        cam_img = col1.camera_input(":camera: Take picture", disabled=cam_disabled_state)
+        cam_img = st.camera_input(":camera: Take defect picture")
     else:
-        user_img = col1.file_uploader(":frame_with_picture: Upload image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
+        user_img = st.file_uploader(":frame_with_picture: Upload defect image", accept_multiple_files=False, type=['png', 'jpeg', 'jpg'])
         cam_img = user_img
 
     #!------------details add-on
