@@ -11,9 +11,9 @@ from deta import Deta
 from fpdf.fonts import FontFace
 from datetime import date, time, datetime
 from streamlit_cropper import st_cropper
-from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
+from streamlit_option_menu import option_menu
 from matplotlib.backends.backend_pdf import PdfPages
-from annotated_text import annotated_text, annotation   #pip install st-annotated-text
+from annotated_text import annotated_text, annotation
 
 #!------------page configuration
 st.set_page_config(
@@ -50,7 +50,6 @@ selected = option_menu(
     orientation='horizontal')
 
 #!------------initialize deta Base & Drive
-# @st.cache_resource(ttl=3600)
 def load_data():
     DETA_KEY = st.secrets["DETA_KEY"]
     deta = Deta(DETA_KEY)
@@ -103,10 +102,9 @@ pdf.set_font('helvetica', size=20)
 #*------------------------------------------------------------------------------------------*#
 if selected=='Defects Entry':
 
-
-
     #!------------image display-upload
     placeholder_img = Image.open('place_h.jpg')
+    user_img = placeholder_img
     cam_access = st.toggle('Use Camera')
     if cam_access:
         cam_disabled_state = False
@@ -148,7 +146,7 @@ if selected=='Defects Entry':
                 image_data = placeholder_img
             elif cam_img is None:
                 st.image(user_img, caption=key, width=350)
-                test_img = Image.open(user_img)
+                # test_img = Image.open(user_img)
                 image_data = user_img.getvalue()
             else:
                 st.image(cam_img, caption=key, width=350)
