@@ -141,13 +141,9 @@ if selected=='Defects Entry':
         col1, col2 = st.columns(2)
         #!------------image section
         with col1:
-            if cam_img is None and user_img is None:
+            if cam_img is None or user_img is None:
                 st.image(placeholder_img, caption='Placeholder image', width=350, use_column_width='auto')
                 image_data = placeholder_img
-            elif cam_img is None:
-                st.image(user_img, caption=key, width=350)
-                # test_img = Image.open(user_img)
-                image_data = user_img.getvalue()
             else:
                 st.image(cam_img, caption=key, width=350)
                 image_data = cam_img.getvalue()
