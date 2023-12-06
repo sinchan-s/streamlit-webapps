@@ -64,7 +64,7 @@ drive_list = lambda : qa_dash_drive.list()['names']
 
 drive_fetch = lambda fname: qa_dash_drive.get(fname)
 #! calculative functions
-half_sum = lambda col : df[col].sum()/2
+col_sum_half = lambda col : (df.iloc[:,col].sum()/2).round(2)
 
 #*----------------------------------------------------------------------------*#
 #*                                  Tabs Area                                 *#
@@ -78,6 +78,7 @@ if selected=='Grouping':
     db_file = drive_fetch(qa_file)
     #!------reading file
     df = pd.read_excel(db_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+    df_cols = df.columns
     #!------preview 
     with st.expander("Preview file"):
         st.dataframe(df)
@@ -87,16 +88,20 @@ if selected=='Grouping':
         annotated_text((f"{(df.iloc[-1,8]+df.iloc[-1,14])}", "Total Production"))
     
     with col2:
-        annotated_text((f"{half_sum('PRINT TOTAL').round(2)}", "Print Production"))
-        print_lst_idx = ['Printed YD Production', 'Printed P/D Yardage Production', 'Printed YD Yardage Production', 'Piece Dyed Production', 'Print FRC', 'Print RG/RS Production', 'Total Print Production']
-        print_lst_vals = [half_sum('Print Yd'), half_sum('Print PD Yardage '), half_sum('Print Yd Yardage '), half_sum('Piece Dyed '), half_sum('Print FRC'), half_sum('Print RG/RS'), half_sum('Print ')]
+        annotated_text((f"{col_sum_half(8)}", "Print Production"))
+
+        print_lst_idx = [df_cols[i] for i in range(8)]
+        print_lst_vals = [col_sum_half(n) for n in range(8)]
+
         print_df = pd.DataFrame(print_lst_vals, index=print_lst_idx, columns=['Qty (m)'])
         st.dataframe(print_df)
 
     with col3:
-        annotated_text((f"{half_sum('YD TOTAL').round(2)}", "YD Production"))
-        yd_lst_idx = ['YD Yardage Production', 'YD FRC', 'YD RG/RS Production', 'Total YD Production']
-        yd_lst_vals = [half_sum('Yarn Dyed Yardage'), half_sum('Yarn Dyed FRC'), half_sum('YD RG/RS'), half_sum('Yarn Dyed')]
+        annotated_text((f"{col_sum_half(14)}", "YD Production"))
+        
+        yd_lst_idx = [df_cols[i] for i in range(9,14)]
+        yd_lst_vals = [col_sum_half(n) for n in range(9,14)]
+        
         yd_df = pd.DataFrame(yd_lst_vals, index=yd_lst_idx, columns=['Qty (m)'])
         st.dataframe(yd_df)
 
