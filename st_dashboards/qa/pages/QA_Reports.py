@@ -58,7 +58,7 @@ db_fetch = lambda key : ncr_db.get(key)
 
 db_fetch_all = lambda : ncr_db.fetch().items
 
-drive_upload = lambda fname, fpath : qa_dash_drive.put(fname, path=fpath)
+drive_upload = lambda file : qa_dash_drive.put(file.name, data=file)
 
 drive_list = lambda : qa_dash_drive.list()['names']
 
@@ -71,37 +71,39 @@ col_sum_half = lambda col : (df.iloc[:,col].sum()/2).round(2)
 #*----------------------------------------------------------------------------*#
 #! Tab-1
 if selected=='Grouping':
-    #!------list down all files
-    qa_file = st.selectbox('Select file:', drive_list())
-    # st.write(qa_file)
-    #!------fetching selected file
-    db_file = drive_fetch(qa_file)
-    #!------reading file
-    df = pd.read_excel(db_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+    #!----upload data file
+    with st.expander(":arrow_up_small: Upload data file"):
+        user_file = st.file_uploader("", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
+        upload_btn = st.button(label='Upload')
+        if upload_btn:
+            prog_bar = st.progress(0) #?==> upload progress=0%
+            drive_upload(user_file)
+            st.success("DataFile Uploaded successfully !!")
+            prog_bar.progress(100) #?==> upload progress=100%
+
+    #!----retrieve data file
+    qa_file = st.selectbox('Select file:', drive_list())                                #?==> select to preview uploaded files
+    st.toggle('Compare All files')
+    db_file = drive_fetch(qa_file)                                                      #?==> fetching selected file
+    df = pd.read_excel(db_file.read(), sheet_name='Data', skiprows=[0], index_col=0)    #?==> reading file
     df_cols = df.columns
-    #!------preview 
     with st.expander("Preview file"):
         st.dataframe(df)
 
+    #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
     with col1:
-        annotated_text((f"{(df.iloc[-1,8]+df.iloc[-1,14])}", "Total Production"))
-    
+        annotated_text((f"{col_sum_half(8)+col_sum_half(14)} m", "Total Production (Print+YD)"))
     with col2:
-        annotated_text((f"{col_sum_half(8)}", "Print Production"))
-
+        annotated_text((f"{col_sum_half(8)} m", "Print Production (Total)"))
         print_lst_idx = [df_cols[i] for i in range(8)]
-        print_lst_vals = [col_sum_half(n) for n in range(8)]
-
+        print_lst_vals = [str(col_sum_half(n))+' m' for n in range(8)]
         print_df = pd.DataFrame(print_lst_vals, index=print_lst_idx, columns=['Qty (m)'])
         st.dataframe(print_df)
-
     with col3:
-        annotated_text((f"{col_sum_half(14)}", "YD Production"))
-        
+        annotated_text((f"{col_sum_half(14)} m", "YD Production (Total)"))
         yd_lst_idx = [df_cols[i] for i in range(9,14)]
-        yd_lst_vals = [col_sum_half(n) for n in range(9,14)]
-        
+        yd_lst_vals = [str(col_sum_half(n))+' m' for n in range(9,14)]
         yd_df = pd.DataFrame(yd_lst_vals, index=yd_lst_idx, columns=['Qty (m)'])
         st.dataframe(yd_df)
 
