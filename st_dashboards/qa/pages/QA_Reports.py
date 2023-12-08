@@ -64,7 +64,7 @@ drive_list = lambda : qa_dash_drive.list()['names']
 
 drive_fetch = lambda fname: qa_dash_drive.get(fname)
 #! calculative functions
-col_sum_half = lambda col : (df.iloc[:,col].sum()/2).round(2)
+col_sum_half = lambda df, col : (df.iloc[:,col].sum()/2).round(2)
 
 #*----------------------------------------------------------------------------*#
 #*                                  Tabs Area                                 *#
@@ -73,8 +73,9 @@ col_sum_half = lambda col : (df.iloc[:,col].sum()/2).round(2)
 if selected=='Grouping':
     #!----upload data file
     with st.expander(":arrow_up_small: Upload data file"):
-        user_file = st.file_uploader("", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
+        user_file = st.file_uploader("", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
         upload_btn = st.button(label='Upload')
+        st.caption("*Naming convention for uploading is 'qa-<month_name><year>.xlsx', e.g.: 'qa-nov23.xlsx'")
         if upload_btn:
             prog_bar = st.progress(0) #?==> upload progress=0%
             drive_upload(user_file)
@@ -83,9 +84,9 @@ if selected=='Grouping':
 
     #!----retrieve data file
     qa_file = st.selectbox('Select file:', drive_list())                                #?==> select to preview uploaded files
-    st.toggle('Compare All files')
-    db_file = drive_fetch(qa_file)                                                      #?==> fetching selected file
-    df = pd.read_excel(db_file.read(), sheet_name='Data', skiprows=[0], index_col=0)    #?==> reading file
+    comparo = st.toggle('Compare All files')
+    drive_file = drive_fetch(qa_file)                                                      #?==> fetching selected file
+    df = pd.read_excel(drive_file.read(), sheet_name='Data', skiprows=[0], index_col=0)    #?==> reading file
     df_cols = df.columns
     with st.expander("Preview file"):
         st.dataframe(df)
@@ -93,19 +94,37 @@ if selected=='Grouping':
     #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
     with col1:
-        annotated_text((f"{col_sum_half(8)+col_sum_half(14)} m", "Total Production (Print+YD)"))
+        if comparo:
+            for d in drive_list():
+                d_file = drive_fetch(d)
+                df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+                annotated_text((f"{col_sum_half(df_l,8)+col_sum_half(df_l,14)} m", f"Total Production ({d})"))
+        else:
+            annotated_text((f"{col_sum_half(df,8)+col_sum_half(df,14)} m", "Total Production (Print+YD)"))
     with col2:
-        annotated_text((f"{col_sum_half(8)} m", "Print Production (Total)"))
-        print_lst_idx = [df_cols[i] for i in range(8)]
-        print_lst_vals = [str(col_sum_half(n))+' m' for n in range(8)]
-        print_df = pd.DataFrame(print_lst_vals, index=print_lst_idx, columns=['Qty (m)'])
-        st.dataframe(print_df)
+        print_vals = {}
+        if comparo:
+            for d in drive_list():
+                d_file = drive_fetch(d)
+                df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+                annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
+                print_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
+        else:
+            annotated_text((f"{col_sum_half(df, 8)} m", f"Print Production (Total)"))
+            print_vals['Qty'] = [str(col_sum_half(df, n))+' m' for n in range(8)]
+        st.dataframe(pd.DataFrame(data=print_vals, index=[df_cols[i] for i in range(8)]))
     with col3:
-        annotated_text((f"{col_sum_half(14)} m", "YD Production (Total)"))
-        yd_lst_idx = [df_cols[i] for i in range(9,14)]
-        yd_lst_vals = [str(col_sum_half(n))+' m' for n in range(9,14)]
-        yd_df = pd.DataFrame(yd_lst_vals, index=yd_lst_idx, columns=['Qty (m)'])
-        st.dataframe(yd_df)
+        yd_vals = {}
+        if comparo:
+            for d in drive_list():
+                d_file = drive_fetch(d)
+                df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+                annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
+                yd_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
+        else:
+            annotated_text((f"{col_sum_half(df, 14)} m", f"YD Production (Total)"))
+            yd_vals['Qty'] = [str(col_sum_half(df, n))+' m' for n in range(9,14)]
+        st.dataframe(pd.DataFrame(data=yd_vals, index=[df_cols[i] for i in range(9,14)]))
 
 if selected=='Lab':
     #!------Lab data
