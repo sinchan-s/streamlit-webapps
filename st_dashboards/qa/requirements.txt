@@ -10,3 +10,4 @@ streamlit-option-menu==0.3.6
 plotly==5.9.0
 deta==1.1.0
 st-annotated-text==4.0.0
+openpyxl==3.1.2
