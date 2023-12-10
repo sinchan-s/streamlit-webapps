@@ -83,55 +83,44 @@ if selected=='Grouping':
             prog_bar.progress(100) #?==> upload progress=100%
 
     #!----retrieve data file
-    qa_file = st.selectbox('Select file:', drive_list())                                #?==> select to preview uploaded files
-    comparo = st.toggle('Compare All files')
+    qa_files = st.multiselect('Select file:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
     comparo_prog = st.progress(0)
-    drive_file = drive_fetch(qa_file)                                                      #?==> fetching selected file
-    df = pd.read_excel(drive_file.read(), sheet_name='Data', skiprows=[0], index_col=0)    #?==> reading file
-    df_cols = df.columns
+    drive_file = drive_fetch(qa_files[0])                                               #?==> fetching selected file
+    df = pd.read_excel(drive_file.read(), sheet_name='Data', skiprows=[0], index_col=0) #?==> reading file
     with st.expander("Preview file"):
         st.dataframe(df)
 
     #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
     with col1:
-        if comparo:
-            for i,d in enumerate(drive_list()):
-                comparo_prog.progress(i+10)
-                d_file = drive_fetch(d)
-                df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-                annotated_text((f"{col_sum_half(df_l,8)+col_sum_half(df_l,14)} m", f"Total Production ({d})"))
-            comparo_prog.progress(25)
-        else:
-            annotated_text((f"{col_sum_half(df,8)+col_sum_half(df,14)} m", "Total Production (Print+YD)"))
+        for i,d in enumerate(qa_files):
+            comparo_prog.progress(i+10)
+            d_file = drive_fetch(d)
+            df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+            st.metric(f"Total Production ({d})", f"{col_sum_half(df_l,8)+col_sum_half(df_l,14)} m")
+        comparo_prog.progress(25)
     with col2:
         print_vals = {}
-        if comparo:
-            for i,d in enumerate(drive_list()):
-                comparo_prog.progress(i+25)
-                d_file = drive_fetch(d)
-                df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-                annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
-                print_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
-            comparo_prog.progress(63)
-        else:
-            annotated_text((f"{col_sum_half(df, 8)} m", f"Print Production (Total)"))
-            print_vals['Qty'] = [str(col_sum_half(df, n))+' m' for n in range(8)]
-        st.dataframe(pd.DataFrame(data=print_vals, index=[df_cols[i] for i in range(8)]))
+        for i,d in enumerate(qa_files):
+            comparo_prog.progress(i+25)
+            d_file = drive_fetch(d)
+            df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+            st.metric(f"Print Production ({d})", f"{col_sum_half(df_l,8)} m")
+            # annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
+            print_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
+        comparo_prog.progress(63)
+        st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]))
     with col3:
         yd_vals = {}
-        if comparo:
-            for i,d in enumerate(drive_list()):
-                comparo_prog.progress(i+63)
-                d_file = drive_fetch(d)
-                df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-                annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
-                yd_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
-            comparo_prog.progress(100)
-        else:
-            annotated_text((f"{col_sum_half(df, 14)} m", f"YD Production (Total)"))
-            yd_vals['Qty'] = [str(col_sum_half(df, n))+' m' for n in range(9,14)]
-        st.dataframe(pd.DataFrame(data=yd_vals, index=[df_cols[i] for i in range(9,14)]))
+        for i,d in enumerate(qa_files):
+            comparo_prog.progress(i+63)
+            d_file = drive_fetch(d)
+            df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
+            st.metric(f"YD Production ({d})", f"{col_sum_half(df_l,14)} m")
+            # annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
+            yd_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
+        comparo_prog.progress(100)
+        st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
         time.sleep(1)
         comparo_prog.empty()
 if selected=='Lab':
