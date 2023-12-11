@@ -89,30 +89,42 @@ if selected=='Grouping':
     #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
     with col1:
+        delta_val = 0
         for i,d in enumerate(qa_files):
             comparo_prog.progress(i+10, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            st.metric(f"Total Production ({d.split('.')[0]})", f"{col_sum_half(df_l,8)+col_sum_half(df_l,14):,} m")
+            tot_prod = col_sum_half(df_l,8)+col_sum_half(df_l,14)
+            delta_val = (tot_prod - delta_val)*100/delta_val if delta_val != 0 else 0
+            st.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,} m", delta=f'{delta_val:#.1f} %')
+            delta_val = tot_prod
         comparo_prog.progress(25, text='Comparing. Please wait...')
     with col2:
+        delta_val = 0
         print_vals = {}
         for i,d in enumerate(qa_files):
             comparo_prog.progress(i+25, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            st.metric(f"Print Production ({d.split('.')[0]})", f"{col_sum_half(df_l,8):,} m")
+            p_prod = col_sum_half(df_l,8)
+            delta_val = (p_prod - delta_val)*100/delta_val if delta_val != 0 else 0
+            st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,} m", delta=f'{delta_val:#.1f} %')
+            delta_val = p_prod
             # annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
             print_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
         comparo_prog.progress(63, text='Comparing. Please wait...')
         st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]))
     with col3:
+        delta_val = 0
         yd_vals = {}
         for i,d in enumerate(qa_files):
             comparo_prog.progress(i+63, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            st.metric(f"YD Production ({d.split('.')[0]})", f"{col_sum_half(df_l,14):,} m")
+            yd_prod = col_sum_half(df_l,14)
+            delta_val = (yd_prod - delta_val)*100/delta_val if delta_val != 0 else 0
+            st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,} m", delta=f'{delta_val:#.1f} %')
+            delta_val = yd_prod
             # annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
             yd_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
         comparo_prog.progress(100)
