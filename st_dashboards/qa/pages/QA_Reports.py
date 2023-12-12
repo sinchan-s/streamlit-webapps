@@ -111,7 +111,7 @@ if selected=='Grouping':
             st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,} m", delta=f'{delta_val:#.1f} %')
             delta_val = p_prod
             # annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
-            print_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
+            print_vals[d.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
         comparo_prog.progress(63, text='Comparing. Please wait...')
         st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]))
     with col3:
@@ -126,7 +126,7 @@ if selected=='Grouping':
             st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,} m", delta=f'{delta_val:#.1f} %')
             delta_val = yd_prod
             # annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
-            yd_vals[d] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
+            yd_vals[d.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
         comparo_prog.progress(100)
         st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
         time.sleep(1)
