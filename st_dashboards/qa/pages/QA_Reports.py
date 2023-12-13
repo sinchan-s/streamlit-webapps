@@ -84,6 +84,13 @@ if selected=='Grouping':
 
     #!----retrieve data file
     qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
+    # pre_vals = {}
+    with st.expander('File Preview', expanded=False):
+        for df in qa_files:
+            df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
+            # pre_vals[df.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_p, n))+' m' for n in range(8)]
+        st.dataframe(df_p)
+
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
     #!-----columnized file data display
