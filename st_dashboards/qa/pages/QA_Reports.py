@@ -88,8 +88,11 @@ if selected=='Grouping':
     with st.expander('File Preview', expanded=False):
         for df in qa_files:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
-            # pre_vals[df.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_p, n))+' m' for n in range(8)]
-        st.dataframe(df_p)
+        t_view = st.toggle('Transpose view')
+        if t_view:
+            st.dataframe(df_p.T)
+        else:
+            st.dataframe(df_p)
 
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
@@ -120,7 +123,11 @@ if selected=='Grouping':
             # annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
             print_vals[d.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
         comparo_prog.progress(63, text='Comparing. Please wait...')
-        st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]))
+        t_view = st.toggle('Transpose view', key=2)
+        if t_view:
+            st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]).T)
+        else:
+            st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]))
     with col3:
         delta_val = 0
         yd_vals = {}
@@ -135,7 +142,12 @@ if selected=='Grouping':
             # annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
             yd_vals[d.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
         comparo_prog.progress(100)
-        st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
+        t_view = st.toggle('Transpose view', key=3)
+        if t_view:
+            st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]).T)
+        else:
+            st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
+        # st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
         time.sleep(1)
         comparo_prog.empty()
 if selected=='Lab':
