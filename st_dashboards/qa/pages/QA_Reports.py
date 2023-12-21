@@ -66,6 +66,16 @@ drive_fetch = lambda fname: qa_dash_drive.get(fname)
 #! calculative functions
 col_sum_half = lambda df, col : (df.iloc[:,col].sum()/2).round(2)
 
+def upld_func(key, name):
+    user_file = st.file_uploader("", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="", key=key)
+    upload_btn = st.button(label='Upload')
+    st.caption(f"*Follow this naming convention for uploading: '{name}'")
+    if upload_btn:
+        upld_bar = st.progress(0)   #?==> upload progress=0%
+        drive_upload(user_file)
+        st.success("DataFile Uploaded successfully !!")
+        upld_bar.progress(100)      #?==> upload progress=100%
+
 #*----------------------------------------------------------------------------*#
 #*                                  Tabs Area                                 *#
 #*----------------------------------------------------------------------------*#
@@ -73,14 +83,7 @@ col_sum_half = lambda df, col : (df.iloc[:,col].sum()/2).round(2)
 if selected=='Grouping':
     #!----upload data file
     with st.expander(":arrow_up_small: Upload data file"):
-        user_file = st.file_uploader("", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
-        upload_btn = st.button(label='Upload')
-        st.caption("*Naming convention for uploading is 'qa-<month_name><year>.xlsx', e.g.: 'qa-nov23.xlsx'")
-        if upload_btn:
-            prog_bar = st.progress(0) #?==> upload progress=0%
-            drive_upload(user_file)
-            st.success("DataFile Uploaded successfully !!")
-            prog_bar.progress(100) #?==> upload progress=100%
+        upld_func('qa-key', 'qa-jan23.xlsx')
 
     #!----retrieve data file
     qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
@@ -151,11 +154,12 @@ if selected=='Grouping':
         time.sleep(1)
         comparo_prog.empty()
 if selected=='Lab':
-    #!------Lab data
-    pass
-    # df2 = pd.read_excel()
-
+    #!----upload data file
+    with st.expander(":arrow_up_small: Upload data file"):
+        upld_func('lab-key', 'lab-jan23.xlsx')
+    
 if selected=='Inspection':
-    pass
-    #!------Inspection data
-    # df2 = pd.read_excel()
+    #!----upload data file
+    with st.expander(":arrow_up_small: Upload data file"):
+        upld_func('insp-key', 'insp-jan23.xlsx')
+    
