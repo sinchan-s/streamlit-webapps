@@ -87,7 +87,9 @@ if selected=='Grouping':
 
     #!----retrieve data file
     qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
-    # pre_vals = {}
+    st.write(drive_list())
+    matches = [item for item in drive_list() if 'qa' in drive_list()]
+    st.write(matches)
     with st.expander('File Preview', expanded=False):
         for df in qa_files:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
