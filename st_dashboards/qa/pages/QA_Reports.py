@@ -1,4 +1,4 @@
-import os, io, time
+import os, io, time, re
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -87,9 +87,10 @@ if selected=='Grouping':
 
     #!----retrieve data file
     qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
-    st.write(drive_list())
-    matches = [item for item in drive_list() if 'qa' in drive_list()]
-    st.write(matches)
+    # st.write(drive_list())
+    # re.findall(r'qa-',item)
+    matches = [re.findall(r'qa',item) for item in drive_list()]
+    st.write(matches[0])
     with st.expander('File Preview', expanded=False):
         for df in qa_files:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
