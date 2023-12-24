@@ -81,16 +81,29 @@ def upld_func(key, name):
 #*----------------------------------------------------------------------------*#
 #! Tab-1
 if selected=='Grouping':
+    qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
     #!----upload data file
     with st.expander(":arrow_up_small: Upload data file"):
         upld_func('qa-key', 'qa-jan23.xlsx')
+        st.write('Delete uploaded file:')
+        del_pass = st.secrets["DEL_PASS"]
+        col1, col2 = st.columns(2)
+        input_pass = col1.text_input('Enter Password to delete data:')
+        del_disabled_status = True
+        if input_pass==del_pass:    #? getting delete access
+            del_disabled_status = False
+        delete_button = col2.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
+        if delete_button:
+            prog_bar = st.progress(0) #?progress=0%
+            qa_dash_drive.delete(qa_files[0])
+            prog_bar.progress(100) #?progress=100%
+
 
     #!----retrieve data file
-    qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
     # st.write(drive_list())
     # re.findall(r'qa-',item)
-    matches = [re.findall(r'qa',item) for item in drive_list()]
-    st.write(matches[0])
+    matches = [re.findall('[q]',item) for item in drive_list()]
+    st.markdown(matches)
     with st.expander('File Preview', expanded=False):
         for df in qa_files:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
