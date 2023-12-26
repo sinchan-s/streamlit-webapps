@@ -63,7 +63,7 @@ drive_upload = lambda file : qa_dash_drive.put(file.name, data=file)
 drive_list = lambda : qa_dash_drive.list()['names']
 
 drive_fetch = lambda fname: qa_dash_drive.get(fname)
-#! calculative functions
+
 col_sum_half = lambda df, col : (df.iloc[:,col].sum()/2).round(2)
 
 def upld_func(st1, st2, key, name):
@@ -107,10 +107,10 @@ if selected=='Grouping':
         for df in qa_files:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
         t_view = st.toggle('Transpose view')
-        if t_view:
-            st.dataframe(df_p.T)
-        else:
-            st.dataframe(df_p)
+        # if t_view:
+        #     st.dataframe(df_p.T)
+        # else:
+        #     st.dataframe(df_p)
 
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
@@ -138,14 +138,15 @@ if selected=='Grouping':
             delta_val = (p_prod - delta_val)*100/delta_val if delta_val != 0 else 0
             st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,} m", delta=f'{delta_val:#.1f} %')
             delta_val = p_prod
-            # annotated_text((f"{col_sum_half(df_l, 8)} m", f"Print Production ({d})"))
-            print_vals[d.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_l, n))+' m' for n in range(8)]
+            print_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_l, n) for n in range(8)]
         comparo_prog.progress(63, text='Comparing. Please wait...')
         t_view = st.toggle('Transpose view', key=2)
         if t_view:
-            st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]).T)
+            print_chrt = pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]).T
         else:
-            st.dataframe(pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]))
+            print_chrt = pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)])
+        st.dataframe(print_chrt)
+        st.bar_chart(print_chrt.iloc[0, :])
     with col3:
         delta_val = 0
         yd_vals = {}
@@ -158,16 +159,17 @@ if selected=='Grouping':
             st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,} m", delta=f'{delta_val:#.1f} %')
             delta_val = yd_prod
             # annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
-            yd_vals[d.split('.')[0].split('-')[1].upper()] = [str(col_sum_half(df_l, n))+' m' for n in range(9,14)]
+            yd_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_l, n) for n in range(9,14)]
         comparo_prog.progress(100)
         t_view = st.toggle('Transpose view', key=3)
         if t_view:
-            st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]).T)
+            yd_chrt = pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]).T
         else:
-            st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
-        # st.dataframe(pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]))
+            yd_chrt = pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)])
+        st.dataframe(yd_chrt)
         time.sleep(1)
         comparo_prog.empty()
+
 if selected=='Lab':
     #!----upload data file
     with st.expander(":arrow_up_small: Upload data file"):
