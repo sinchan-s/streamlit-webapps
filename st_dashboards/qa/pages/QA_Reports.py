@@ -66,38 +66,40 @@ drive_fetch = lambda fname: qa_dash_drive.get(fname)
 
 col_sum_half = lambda df, col : (df.iloc[:,col].sum()/2).round(2)
 
-def upld_func(st1, st2, key, name):
-    user_file = st1.file_uploader("", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="", key=key)
-    upload_btn = st1.button(label='Upload')
-    st1.caption(f"*Follow this naming convention for uploading: '{name}'")
+#*----------------------------------------------------------------------------*#
+#*                               Sidebar content                              *#
+#*----------------------------------------------------------------------------*#
+with st.sidebar:
+    st.caption("*Follow this naming convention for uploading: 'qa/lab/insp-<month><year>.xlsx'*")
+    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
+    upload_btn = st.button(label='Upload')
     if upload_btn:
-        upld_bar = st1.progress(0)   #?==> upload progress=0%
+        upld_bar = st.progress(0)   #?==> upload progress=0%
         drive_upload(user_file)
-        st1.success("DataFile Uploaded successfully !!")
+        st.success("DataFile Uploaded successfully !!")
         upld_bar.progress(100)      #?==> upload progress=100%
-    if st2.toggle('More Options:'):
-        st2.write('Delete uploaded file:')
+        time.sleep(1)
+        upld_bar.empty()
+    if st.toggle('More Options:'):
+        st.write('Delete uploaded file:')
         del_pass = st.secrets["DEL_PASS"]
-        input_pass = st2.text_input('Enter Password to delete data:')
+        input_pass = st.text_input('Enter Password to delete data:')
         del_disabled_status = True
         if input_pass==del_pass:    #? getting delete access
             del_disabled_status = False
-        delete_button = st2.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
+        delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
         if delete_button:
-            prog_bar = st2.progress(0) #?progress=0%
+            prog_bar = st.progress(0) #?progress=0%
             qa_dash_drive.delete(qa_files[0])
             prog_bar.progress(100) #?progress=100%
-
+            time.sleep(1)
+            prog_bar.empty()
 #*----------------------------------------------------------------------------*#
 #*                                  Tabs Area                                 *#
 #*----------------------------------------------------------------------------*#
 #! Tab-1
 if selected=='Grouping':
     qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
-    #!----upload data file
-    with st.expander(":arrow_up_small: Upload data file"):
-        col1, col2 = st.columns(2)
-        upld_func(col1, col2, 'qa-key', 'qa-jan23.xlsx')
 
 
     #!----retrieve data file
@@ -146,7 +148,8 @@ if selected=='Grouping':
         else:
             print_chrt = pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)])
         st.dataframe(print_chrt)
-        st.bar_chart(print_chrt.iloc[0, :])
+        col_sel = st.selectbox("Choose param", range(8))
+        st.bar_chart(print_chrt.iloc[col_sel, :])
     with col3:
         delta_val = 0
         yd_vals = {}
@@ -172,13 +175,9 @@ if selected=='Grouping':
 
 if selected=='Lab':
     #!----upload data file
-    with st.expander(":arrow_up_small: Upload data file"):
-        col1, col2 = st.columns(2)
-        upld_func(col1, col2, 'lab-key', 'lab-jan23.xlsx')
+    pass
     
 if selected=='Inspection':
     #!----upload data file
-    with st.expander(":arrow_up_small: Upload data file"):
-        col1, col2 = st.columns(2)
-        upld_func(col1, col2, 'insp-key', 'insp-jan23.xlsx')
+    pass
     
