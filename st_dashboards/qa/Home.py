@@ -1,6 +1,6 @@
 
 #! important libraries
-import os, pathlib
+import os, pathlib, time
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -137,14 +137,30 @@ if selected=='Complaints':
     comp_df = st.dataframe()
 
 #*------------------------------------------------------------------------------------------*#
-#*                                      data files upload                                   *#
+#*                                    Sidebar: upload files                                 *#
 #*------------------------------------------------------------------------------------------*#
-col1, col2 = st.columns(2)
-user_file = col1.file_uploader(":arrow_up_small: Upload data file", accept_multiple_files=False, type=['csv','xls', 'xlsx'])
-# st.write(user_file)
-upload_btn = col1.button(label='Upload')
-prog_bar = col2.progress(0) #?progress=0%
-if upload_btn:
-    upload_to_drive(user_file)
-    col2.success("Data Uploaded successfully !!")                         #? upload successful..
-    prog_bar.progress(100) #?progress=100%
+with st.sidebar:
+    st.caption("*Follow this naming convention for uploading: 'qa/lab/insp-<month><year>.xlsx'*")
+    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
+    upload_btn = st.button(label='Upload')
+    if upload_btn:
+        upld_bar = st.progress(0)   #?==> upload progress=0%
+        drive_upload(user_file)
+        st.success("DataFile Uploaded successfully !!")
+        upld_bar.progress(100)      #?==> upload progress=100%
+        time.sleep(1)
+        upld_bar.empty()
+    if st.toggle('More Options:'):
+        st.write('Delete uploaded file:')
+        del_pass = st.secrets["DEL_PASS"]
+        input_pass = st.text_input('Enter Password to delete data:')
+        del_disabled_status = True
+        if input_pass==del_pass:    #? getting delete access
+            del_disabled_status = False
+        delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
+        if delete_button:
+            prog_bar = st.progress(0) #?progress=0%
+            qa_dash_drive.delete(qa_files[0])
+            prog_bar.progress(100) #?progress=100%
+            time.sleep(1)
+            prog_bar.empty()
