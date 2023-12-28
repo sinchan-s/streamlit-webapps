@@ -53,9 +53,11 @@ xls_drive = conn
 #*------------------------------------------------------------------------------------------*#
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
-def upload_to_drive(file):
-    return xls_drive.put(file.name, data=file)
+drive_upload = lambda file : xls_drive.put(file.name, data=file)
 
+drive_list = lambda : xls_drive.list()['names']
+
+drive_fetch = lambda fname: xls_drive.get(fname)
 
 
 #*------------------------------------------------------------------------------------------*# 
@@ -160,7 +162,7 @@ with st.sidebar:
         delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
         if delete_button:
             prog_bar = st.progress(0) #?progress=0%
-            qa_dash_drive.delete(qa_files[0])
+            xls_drive.delete(qa_files[0])
             prog_bar.progress(100) #?progress=100%
             time.sleep(1)
             prog_bar.empty()
