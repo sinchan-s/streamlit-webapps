@@ -41,7 +41,7 @@ def load_data():
     DETA_KEY = st.secrets["DETA_KEY"]
     deta = Deta(DETA_KEY)
     db = deta.Base("ncr_db")
-    drive = deta.Drive("qa_dash")
+    drive = deta.Drive("qa_reports")
     return db, drive
 
 conn = load_data()
