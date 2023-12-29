@@ -64,7 +64,7 @@ drive_list = lambda : qa_dash_drive.list()['names']
 
 drive_fetch = lambda fname: qa_dash_drive.get(fname)
 
-col_sum_half = lambda df, col : (df.iloc[:,col].sum()/2).round(2)
+col_sum_half = lambda df, col : (df.loc[:,col].sum()/2).round(2)
 
 #*----------------------------------------------------------------------------*#
 #*                               Sidebar content                              *#
@@ -109,10 +109,10 @@ if selected=='Grouping':
         for df in qa_files:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
         t_view = st.toggle('Transpose view')
-        # if t_view:
-        #     st.dataframe(df_p.T)
-        # else:
-        #     st.dataframe(df_p)
+        if t_view:
+            st.dataframe(df_p.T)
+        else:
+            st.dataframe(df_p)
 
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
@@ -124,7 +124,7 @@ if selected=='Grouping':
             comparo_prog.progress(i+10, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            tot_prod = col_sum_half(df_l,8)+col_sum_half(df_l,14)
+            tot_prod = (col_sum_half(df_l,"PRINT TOTAL")+col_sum_half(df_l,"YD TOTAL")).round(2)
             delta_val = (tot_prod - delta_val)*100/delta_val if delta_val != 0 else 0
             st.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,} m", delta=f'{delta_val:#.1f} %')
             delta_val = tot_prod
@@ -135,41 +135,41 @@ if selected=='Grouping':
         for i,d in enumerate(qa_files):
             comparo_prog.progress(i+25, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
-            df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            p_prod = col_sum_half(df_l,8)
+            df_print = pd.read_excel(d_file.read(), sheet_name='Summary')
+            p_prod = df_print.iloc[5,3] #col_sum_half(df_print,"PRINT TOTAL")
             delta_val = (p_prod - delta_val)*100/delta_val if delta_val != 0 else 0
-            st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,} m", delta=f'{delta_val:#.1f} %')
+            st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,.2f} m", delta=f'{delta_val:.1f} %')
             delta_val = p_prod
-            print_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_l, n) for n in range(8)]
         comparo_prog.progress(63, text='Comparing. Please wait...')
         t_view = st.toggle('Transpose view', key=2)
-        if t_view:
-            print_chrt = pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)]).T
-        else:
-            print_chrt = pd.DataFrame(data=print_vals, index=[df_l.columns[i] for i in range(8)])
-        st.dataframe(print_chrt)
-        col_sel = st.selectbox("Choose param", range(8))
-        st.bar_chart(print_chrt.iloc[col_sel, :])
+        st.write(df_print.iloc[6:14,3])
+        # print_df = pd.DataFrame(data=df_print.iloc[6,3], index=[df_print.iloc[6:14,0]])
+        # if t_view:
+        #     print_chrt = print_df.T
+        # else:
+        #     print_chrt = print_df
+        # st.dataframe(print_chrt)
+        # col_sel = st.selectbox("Choose param", range(8))
+        # st.bar_chart(print_chrt.iloc[col_sel, :])
     with col3:
         delta_val = 0
         yd_vals = {}
         for i,d in enumerate(qa_files):
             comparo_prog.progress(i+63, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
-            df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            yd_prod = col_sum_half(df_l,14)
+            df_yd = pd.read_excel(d_file.read(), sheet_name='Summary')
+            yd_prod = df_yd.iloc[5,7]
             delta_val = (yd_prod - delta_val)*100/delta_val if delta_val != 0 else 0
-            st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,} m", delta=f'{delta_val:#.1f} %')
+            st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val:.1f} %')
             delta_val = yd_prod
-            # annotated_text((f"{col_sum_half(df_l, 14)} m", f"YD Production ({d})"))
-            yd_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_l, n) for n in range(9,14)]
+            # yd_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_yd, n) for n in range(9,14)]
         comparo_prog.progress(100)
-        t_view = st.toggle('Transpose view', key=3)
-        if t_view:
-            yd_chrt = pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)]).T
-        else:
-            yd_chrt = pd.DataFrame(data=yd_vals, index=[df_l.columns[i] for i in range(9,14)])
-        st.dataframe(yd_chrt)
+        # t_view = st.toggle('Transpose view', key=3)
+        # if t_view:
+        #     yd_chrt = pd.DataFrame(data=yd_vals, index=[df_yd.columns[i] for i in range(9,14)]).T
+        # else:
+        #     yd_chrt = pd.DataFrame(data=yd_vals, index=[df_yd.columns[i] for i in range(9,14)])
+        # st.dataframe(yd_chrt)
         time.sleep(1)
         comparo_prog.empty()
 
