@@ -44,15 +44,23 @@ selected = option_menu(
 def load_data():
     DETA_KEY = st.secrets["DETA_KEY"]
     deta = Deta(DETA_KEY)
+    db = deta.Base("ncr_db")
     drive = deta.Drive("qa_dash")
-    return drive
+    return db, drive
 
 conn = load_data()
-xls_drive = conn
+ncr_db = conn[0]
+xls_drive = conn[1]
 
 #*------------------------------------------------------------------------------------------*#
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
+db_upload = lambda details : ncr_db.put({"key": str(datetime.now().timestamp()), "date": datetime.now().strftime("%m/%d/%Y"), "time": datetime.now().strftime("%H:%M:%S"), "details": details})
+
+db_fetch = lambda key : ncr_db.get(key)
+
+db_fetch_all = lambda : ncr_db.fetch().items
+
 drive_upload = lambda file : xls_drive.put(file.name, data=file)
 
 drive_list = lambda : xls_drive.list()['names']

@@ -40,13 +40,11 @@ selected = option_menu(
 def load_data():
     DETA_KEY = st.secrets["DETA_KEY"]
     deta = Deta(DETA_KEY)
-    db = deta.Base("ncr_db")
     drive = deta.Drive("qa_reports")
-    return db, drive
+    return drive
 
 conn = load_data()
-ncr_db_base = conn[0]
-qa_dash_drive = conn[1]
+qa_dash_drive = conn
 
 #*------------------------------------------------------------------------------------------*#
 #*                                        Functions                                         *#
