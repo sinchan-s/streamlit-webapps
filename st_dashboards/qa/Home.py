@@ -59,6 +59,34 @@ drive_list = lambda : xls_drive.list()['names']
 
 drive_fetch = lambda fname: xls_drive.get(fname)
 
+#*------------------------------------------------------------------------------------------*#
+#*                                    Sidebar: upload files                                 *#
+#*------------------------------------------------------------------------------------------*#
+with st.sidebar:
+    st.caption("*Follow this naming convention for uploading: 'NCR/CUR/Comp-<month><year>.xlsx'*")
+    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
+    upload_btn = st.button(label='Upload')
+    if upload_btn:
+        upld_bar = st.progress(0)   #?==> upload progress=0%
+        drive_upload(user_file)
+        st.success("DataFile Uploaded successfully !!")
+        upld_bar.progress(100)      #?==> upload progress=100%
+        time.sleep(1)
+        upld_bar.empty()
+    if st.toggle('More Options:'):
+        st.write('Delete uploaded file:')
+        del_pass = st.secrets["DEL_PASS"]
+        input_pass = st.text_input('Enter Password to delete data:')
+        del_disabled_status = True
+        if input_pass==del_pass:    #? getting delete access
+            del_disabled_status = False
+        delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
+        if delete_button:
+            prog_bar = st.progress(0) #?progress=0%
+            xls_drive.delete(qa_files[0])
+            prog_bar.progress(100) #?progress=100%
+            time.sleep(1)
+            prog_bar.empty()
 
 #*------------------------------------------------------------------------------------------*# 
 #*                                         NAV-1: NCR                                       *#
@@ -138,31 +166,3 @@ if selected=='Complaints':
     comp_chart3 = col3.bar_chart()
     comp_df = st.dataframe()
 
-#*------------------------------------------------------------------------------------------*#
-#*                                    Sidebar: upload files                                 *#
-#*------------------------------------------------------------------------------------------*#
-with st.sidebar:
-    st.caption("*Follow this naming convention for uploading: 'qa/lab/insp-<month><year>.xlsx'*")
-    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
-    upload_btn = st.button(label='Upload')
-    if upload_btn:
-        upld_bar = st.progress(0)   #?==> upload progress=0%
-        drive_upload(user_file)
-        st.success("DataFile Uploaded successfully !!")
-        upld_bar.progress(100)      #?==> upload progress=100%
-        time.sleep(1)
-        upld_bar.empty()
-    if st.toggle('More Options:'):
-        st.write('Delete uploaded file:')
-        del_pass = st.secrets["DEL_PASS"]
-        input_pass = st.text_input('Enter Password to delete data:')
-        del_disabled_status = True
-        if input_pass==del_pass:    #? getting delete access
-            del_disabled_status = False
-        delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
-        if delete_button:
-            prog_bar = st.progress(0) #?progress=0%
-            xls_drive.delete(qa_files[0])
-            prog_bar.progress(100) #?progress=100%
-            time.sleep(1)
-            prog_bar.empty()
