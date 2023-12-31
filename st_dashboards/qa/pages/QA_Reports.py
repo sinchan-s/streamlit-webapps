@@ -25,9 +25,9 @@ hide_default_format = """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
-#! Set title and subtitle
+#! title & global variables
 st.title('QA Reports')
-# st.subheader('Upload file to explore insights:')
+del_pass = st.secrets["DEL_PASS"]
 
 #! nav menu
 selected = option_menu(
@@ -68,37 +68,28 @@ col_sum_half = lambda df, col : (df.loc[:,col].sum()/2).round(2)
 #*                               Sidebar content                              *#
 #*----------------------------------------------------------------------------*#
 with st.sidebar:
-    st.caption("*Follow this naming convention for uploading: 'qa/lab/insp-<month><year>.xlsx'*")
-    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
-    upload_btn = st.button(label='Upload')
-    if upload_btn:
-        upld_bar = st.progress(0)   #?==> upload progress=0%
+    qa_dash_drive_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
+    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="**Follow this naming convention for upload: 'qa/lab/insp-<month><year>.xlsx'**")
+    if st.button(label='Upload'):
         drive_upload(user_file)
-        st.success("DataFile Uploaded successfully !!")
-        upld_bar.progress(100)      #?==> upload progress=100%
-        time.sleep(1)
-        upld_bar.empty()
+        st.success("File uploaded successfully!!")
     if st.toggle('More Options:'):
-        st.write('Delete uploaded file:')
-        del_pass = st.secrets["DEL_PASS"]
-        input_pass = st.text_input('Enter Password to delete data:')
+        input_pass = st.text_input(f'Delete uploaded file (Enter Password):')
         del_disabled_status = True
         if input_pass==del_pass:    #? getting delete access
             del_disabled_status = False
         delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
         if delete_button:
-            prog_bar = st.progress(0) #?progress=0%
-            qa_dash_drive.delete(qa_files[0])
-            prog_bar.progress(100) #?progress=100%
-            time.sleep(1)
-            prog_bar.empty()
+            qa_dash_drive.delete(qa_dash_drive_files[0])
+            st.success(f"{qa_dash_drive_files[0]} succesfully deleted!")
+    if st.button(label='Refresh'):
+        st.rerun()
+
 #*----------------------------------------------------------------------------*#
 #*                                  Tabs Area                                 *#
 #*----------------------------------------------------------------------------*#
 #! Tab-1
 if selected=='Grouping':
-    qa_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
-
 
     #!----retrieve data file
     matches = [re.findall('[q]',item) for item in drive_list()]
@@ -111,7 +102,6 @@ if selected=='Grouping':
             st.dataframe(df_p.T)
         else:
             st.dataframe(df_p)
-
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
     #!-----columnized file data display

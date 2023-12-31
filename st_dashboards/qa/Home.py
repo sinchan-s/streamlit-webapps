@@ -28,9 +28,10 @@ hide_default_format = """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
-#! Set title and subtitle
+#! title, subtitle & global variables
 st.title('QA Dashboard')
 st.subheader('All insights in one place:')
+del_pass = st.secrets["DEL_PASS"]
 
 #! nav menu
 selected = option_menu(
@@ -71,30 +72,22 @@ drive_fetch = lambda fname: xls_drive.get(fname)
 #*                                    Sidebar: upload files                                 *#
 #*------------------------------------------------------------------------------------------*#
 with st.sidebar:
-    st.caption("*Follow this naming convention for uploading: 'NCR/CUR/Comp-<month><year>.xlsx'*")
-    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="")
-    upload_btn = st.button(label='Upload')
-    if upload_btn:
-        upld_bar = st.progress(0)   #?==> upload progress=0%
+    xls_drive_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
+    user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="**Follow this naming convention for upload: 'NCR/CUR/Comp-<month><year>.xlsx'**")
+    if st.button(label='Upload'):
         drive_upload(user_file)
-        st.success("DataFile Uploaded successfully !!")
-        upld_bar.progress(100)      #?==> upload progress=100%
-        time.sleep(1)
-        upld_bar.empty()
+        st.success("File uploaded successfully!!")
     if st.toggle('More Options:'):
-        st.write('Delete uploaded file:')
-        del_pass = st.secrets["DEL_PASS"]
-        input_pass = st.text_input('Enter Password to delete data:')
+        input_pass = st.text_input(f'Delete uploaded file (Enter Password):')
         del_disabled_status = True
         if input_pass==del_pass:    #? getting delete access
             del_disabled_status = False
         delete_button = st.button(label='Delete', disabled=del_disabled_status, use_container_width=True)
         if delete_button:
-            prog_bar = st.progress(0) #?progress=0%
-            xls_drive.delete(qa_files[0])
-            prog_bar.progress(100) #?progress=100%
-            time.sleep(1)
-            prog_bar.empty()
+            qa_dash_drive.delete(xls_drive_files[0])
+            st.success(f"{xls_drive_files[0]} succesfully deleted!")
+    if st.button(label='Refresh'):
+        st.rerun()
 
 #*------------------------------------------------------------------------------------------*# 
 #*                                         NAV-1: NCR                                       *#
