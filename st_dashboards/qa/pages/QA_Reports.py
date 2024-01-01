@@ -67,8 +67,10 @@ col_sum_half = lambda df, col : (df.loc[:,col].sum()/2).round(2)
 #*----------------------------------------------------------------------------*#
 #*                               Sidebar content                              *#
 #*----------------------------------------------------------------------------*#
+drive_files_list = drive_list()
+
 with st.sidebar:
-    qa_dash_drive_files = st.multiselect('Select files:', drive_list(), default=drive_list()[0])    #?==> select to preview uploaded files
+    qa_dash_drive_files = st.multiselect('Select files:', drive_files_list, default=drive_files_list[0])    #?==> select to preview uploaded files
     user_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=['csv','xls', 'xlsx'], help="**Follow this naming convention for upload: 'qa/lab/insp-<month><year>.xlsx'**")
     if st.button(label='Upload'):
         drive_upload(user_file)
@@ -92,10 +94,11 @@ with st.sidebar:
 if selected=='Grouping':
 
     #!----retrieve data file
-    matches = [re.findall('[q]',item) for item in drive_list()]
-    st.caption(matches)
+    qa_files_idx = [i for i,item in enumerate(drive_files_list) if re.findall('qa-',item)]
+    qa_list = [drive_files_list[i] for i in qa_files_idx]
+    qa_file_select = st.multiselect('Select files:', qa_list, default=qa_list[0], key=12)
     with st.expander('File Preview', expanded=False):
-        for df in qa_files:
+        for df in qa_file_select:
             df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
         t_view = st.toggle('Transpose view')
         if t_view:
@@ -108,7 +111,7 @@ if selected=='Grouping':
     col1, col2, col3 = st.columns(3, gap='large')
     with col1:
         delta_val = 0
-        for i,d in enumerate(qa_files):
+        for i,d in enumerate(qa_file_select):
             comparo_prog.progress(i+10, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
@@ -120,7 +123,7 @@ if selected=='Grouping':
     with col2:
         delta_val = 0
         print_vals = {}
-        for i,d in enumerate(qa_files):
+        for i,d in enumerate(qa_file_select):
             comparo_prog.progress(i+25, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_print = pd.read_excel(d_file.read(), sheet_name='Summary')
@@ -142,7 +145,7 @@ if selected=='Grouping':
     with col3:
         delta_val = 0
         yd_vals = {}
-        for i,d in enumerate(qa_files):
+        for i,d in enumerate(qa_file_select):
             comparo_prog.progress(i+63, text='Comparing. Please wait...')
             d_file = drive_fetch(d)
             df_yd = pd.read_excel(d_file.read(), sheet_name='Summary')
