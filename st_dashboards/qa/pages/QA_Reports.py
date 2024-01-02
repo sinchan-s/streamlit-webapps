@@ -94,17 +94,16 @@ with st.sidebar:
 if selected=='Grouping':
 
     #!----retrieve data file
-    qa_files_idx = [i for i,item in enumerate(drive_files_list) if re.findall('qa-',item)]
-    qa_list = [drive_files_list[i] for i in qa_files_idx]
-    qa_file_select = st.multiselect('Select files:', qa_list, default=qa_list[0], key=12)
-    with st.expander('File Preview', expanded=False):
-        for df in qa_file_select:
-            df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
-        t_view = st.toggle('Transpose view')
-        if t_view:
-            st.dataframe(df_p.T)
-        else:
-            st.dataframe(df_p)
+    qa_file_list = [item for item in drive_files_list if re.findall('qa-',item)]
+    qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[0], key=12)
+    # with st.expander('File Preview', expanded=False):
+    #     for df in qa_file_select:
+    #         df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
+    #     t_view = st.toggle('Transpose view')
+    #     if t_view:
+    #         st.dataframe(df_p.T)
+    #     else:
+    #         st.dataframe(df_p)
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
     #!-----columnized file data display
@@ -113,11 +112,10 @@ if selected=='Grouping':
         delta_val = 0
         for i,d in enumerate(qa_file_select):
             comparo_prog.progress(i+10, text='Comparing. Please wait...')
-            d_file = drive_fetch(d)
-            df_l = pd.read_excel(d_file.read(), sheet_name='Data', skiprows=[0], index_col=0)
-            tot_prod = (col_sum_half(df_l,"PRINT TOTAL")+col_sum_half(df_l,"YD TOTAL")).round(2)
+            df_l = pd.read_excel(drive_fetch(d).read(), sheet_name='Summary')
+            tot_prod = df_l.iloc[5,3]+df_l.iloc[5,7]
             delta_val = (tot_prod - delta_val)*100/delta_val if delta_val != 0 else 0
-            st.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,} m", delta=f'{delta_val:#.1f} %')
+            st.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,.2f} m", delta=f'{delta_val:#.1f} %')
             delta_val = tot_prod
         comparo_prog.progress(25, text='Comparing. Please wait...')
     with col2:
@@ -125,9 +123,8 @@ if selected=='Grouping':
         print_vals = {}
         for i,d in enumerate(qa_file_select):
             comparo_prog.progress(i+25, text='Comparing. Please wait...')
-            d_file = drive_fetch(d)
-            df_print = pd.read_excel(d_file.read(), sheet_name='Summary')
-            p_prod = df_print.iloc[5,3] #col_sum_half(df_print,"PRINT TOTAL")
+            df_print = pd.read_excel(drive_fetch(d).read(), sheet_name='Summary')
+            p_prod = df_print.iloc[5,3]
             delta_val = (p_prod - delta_val)*100/delta_val if delta_val != 0 else 0
             st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,.2f} m", delta=f'{delta_val:.1f} %')
             delta_val = p_prod
@@ -147,8 +144,7 @@ if selected=='Grouping':
         yd_vals = {}
         for i,d in enumerate(qa_file_select):
             comparo_prog.progress(i+63, text='Comparing. Please wait...')
-            d_file = drive_fetch(d)
-            df_yd = pd.read_excel(d_file.read(), sheet_name='Summary')
+            df_yd = pd.read_excel(drive_fetch(d).read(), sheet_name='Summary')
             yd_prod = df_yd.iloc[5,7]
             delta_val = (yd_prod - delta_val)*100/delta_val if delta_val != 0 else 0
             st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val:.1f} %')
