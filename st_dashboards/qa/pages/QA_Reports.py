@@ -96,14 +96,6 @@ if selected=='Grouping':
     #!----retrieve data file
     qa_file_list = [item for item in drive_files_list if re.findall('qa-',item)]
     qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[0], key=12)
-    # with st.expander('File Preview', expanded=False):
-    #     for df in qa_file_select:
-    #         df_p = pd.read_excel(drive_fetch(df).read(), sheet_name='Data', skiprows=[0], index_col=0)
-    #     t_view = st.toggle('Transpose view')
-    #     if t_view:
-    #         st.dataframe(df_p.T)
-    #     else:
-    #         st.dataframe(df_p)
     comparo_prog = st.progress(0, text='Comparing. Please wait...')
 
     #!-----columnized file data display
@@ -130,7 +122,7 @@ if selected=='Grouping':
             delta_val = p_prod
         comparo_prog.progress(63, text='Comparing. Please wait...')
         t_view = st.toggle('Transpose view', key=2)
-        st.write(df_print.iloc[6:14,3])
+        st.data_editor(df_print.iloc[6:14,3])
         # print_df = pd.DataFrame(data=df_print.iloc[6,3], index=[df_print.iloc[6:14,0]])
         # if t_view:
         #     print_chrt = print_df.T
@@ -151,7 +143,8 @@ if selected=='Grouping':
             delta_val = yd_prod
             # yd_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_yd, n) for n in range(9,14)]
         comparo_prog.progress(100)
-        # t_view = st.toggle('Transpose view', key=3)
+        t_view = st.toggle('Transpose view', key=3)
+        st.data_editor(df_yd.iloc[6:14,7])
         # if t_view:
         #     yd_chrt = pd.DataFrame(data=yd_vals, index=[df_yd.columns[i] for i in range(9,14)]).T
         # else:
