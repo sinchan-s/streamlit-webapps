@@ -120,9 +120,10 @@ if selected=='Grouping':
             delta_val = (p_prod - delta_val)*100/delta_val if delta_val != 0 else 0
             st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,.2f} m", delta=f'{delta_val:.1f} %')
             delta_val = p_prod
+            st.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{(df_print.iloc[17:20,6]).sum()*100:,.2f} %")
         comparo_prog.progress(63, text='Comparing. Please wait...')
-        t_view = st.toggle('Transpose view', key=2)
-        st.data_editor(df_print.iloc[6:14,3])
+        # t_view = st.toggle('Transpose view', key=2)
+        # st.data_editor(df_print.iloc[6:14,3])
         # print_df = pd.DataFrame(data=df_print.iloc[6,3], index=[df_print.iloc[6:14,0]])
         # if t_view:
         #     print_chrt = print_df.T
@@ -141,10 +142,11 @@ if selected=='Grouping':
             delta_val = (yd_prod - delta_val)*100/delta_val if delta_val != 0 else 0
             st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val:.1f} %')
             delta_val = yd_prod
+            st.metric(f":red[YD Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{df_yd.iloc[25,6]*100:,.2f} %")
             # yd_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_yd, n) for n in range(9,14)]
         comparo_prog.progress(100)
-        t_view = st.toggle('Transpose view', key=3)
-        st.data_editor(df_yd.iloc[6:14,7])
+        # t_view = st.toggle('Transpose view', key=3)
+        # st.data_editor(df_yd.iloc[6:14,7])
         # if t_view:
         #     yd_chrt = pd.DataFrame(data=yd_vals, index=[df_yd.columns[i] for i in range(9,14)]).T
         # else:
