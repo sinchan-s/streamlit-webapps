@@ -96,70 +96,37 @@ if selected=='Grouping':
     #!----retrieve data file
     qa_file_list = [item for item in drive_files_list if re.findall('qa-',item)]
     qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[0], key=12)
-    df_full = pd.read_excel(drive_fetch(drive_files_list[-1]).read(), sheet_name=None)
+    for i,d in enumerate(qa_file_select):
+        df_full = pd.read_excel(drive_fetch(d).read(), sheet_name=None)
+
     with st.expander('Test Preview', expanded=False):
         st.write(df_full['Summary'])
-        st.write(df_full)
-    comparo_prog = st.progress(0, text='Comparing. Please wait...')
+        # st.write(df_full)
 
     #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
-    with col1:
-        delta_val = 0
-        for i,d in enumerate(qa_file_select):
-            comparo_prog.progress(i+10, text='Comparing. Please wait...')
-            df_l = pd.read_excel(drive_fetch(d).read(), sheet_name='Summary')
-            tot_prod = df_l.iloc[5,3]+df_l.iloc[5,7]
-            delta_val = (tot_prod - delta_val)*100/delta_val if delta_val != 0 else 0
-            st.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,.2f} m", delta=f'{delta_val:#.1f} %')
-            delta_val = tot_prod
-        comparo_prog.progress(25, text='Comparing. Please wait...')
-    with col2:
-        delta_val = 0
-        print_vals = {}
-        for i,d in enumerate(qa_file_select):
-            comparo_prog.progress(i+25, text='Comparing. Please wait...')
-            df_print = pd.read_excel(drive_fetch(d).read(), sheet_name='Summary')
-            p_prod = df_print.iloc[5,3]
-            p_q3 = df_print.iloc[17:20,6]
-            delta_val = (p_prod - delta_val)*100/delta_val if delta_val != 0 else 0
-            st.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,.2f} m", delta=f'{delta_val:.1f} %')
-            delta_val = p_prod
-            st.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_q3.sum()*100:,.2f} %")
-        comparo_prog.progress(63, text='Comparing. Please wait...')
-        # t_view = st.toggle('Transpose view', key=2)
-        # st.data_editor(df_print.iloc[6:14,3])
-        # print_df = pd.DataFrame(data=df_print.iloc[6,3], index=[df_print.iloc[6:14,0]])
-        # if t_view:
-        #     print_chrt = print_df.T
-        # else:
-        #     print_chrt = print_df
-        # st.dataframe(print_chrt)
-        # col_sel = st.selectbox("Choose param", range(8))
-        # st.bar_chart(print_chrt.iloc[col_sel, :])
-    with col3:
-        delta_val = 0
-        yd_vals = {}
-        for i,d in enumerate(qa_file_select):
-            comparo_prog.progress(i+63, text='Comparing. Please wait...')
-            df_yd = pd.read_excel(drive_fetch(d).read(), sheet_name='Summary')
-            yd_prod = df_yd.iloc[5,7]
-            yd_q3 = df_yd.iloc[25,6]
-            delta_val = (yd_prod - delta_val)*100/delta_val if delta_val != 0 else 0
-            st.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val:.1f} %')
-            delta_val = yd_prod
-            st.metric(f":red[YD Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_q3*100:,.2f} %")
-            # yd_vals[d.split('.')[0].split('-')[1].upper()] = [col_sum_half(df_yd, n) for n in range(9,14)]
-        comparo_prog.progress(100)
-        # t_view = st.toggle('Transpose view', key=3)
-        # st.data_editor(df_yd.iloc[6:14,7])
-        # if t_view:
-        #     yd_chrt = pd.DataFrame(data=yd_vals, index=[df_yd.columns[i] for i in range(9,14)]).T
-        # else:
-        #     yd_chrt = pd.DataFrame(data=yd_vals, index=[df_yd.columns[i] for i in range(9,14)])
-        # st.dataframe(yd_chrt)
-        time.sleep(1)
-        comparo_prog.empty()
+    delta_val1, delta_val2, delta_val3 = 0, 0, 0
+    print_vals = {}
+    yd_vals = {}
+    for i,d in enumerate(qa_file_select):
+        df_summ = df_full['Summary']
+        p_prod = df_summ.iloc[5,3]
+        p_q3 = df_summ.iloc[17:20,6]
+        yd_prod = df_summ.iloc[5,7]
+        yd_q3 = df_summ.iloc[25,6]
+        tot_prod = p_prod + yd_prod
+        delta_val1 = (tot_prod - delta_val1)*100/delta_val1 if delta_val1 != 0 else 0
+        delta_val2 = (p_prod - delta_val2)*100/delta_val2 if delta_val2 != 0 else 0
+        delta_val3 = (yd_prod - delta_val3)*100/delta_val3 if delta_val3 != 0 else 0
+        col1.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,.2f} m", delta=f'{delta_val1:#.1f} %')
+        delta_val1 = tot_prod
+        col2.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,.2f} m", delta=f'{delta_val2:.1f} %')
+        delta_val2 = p_prod
+        col3.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val3:.1f} %')
+        delta_val3 = yd_prod
+        col2.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_q3.sum()*100:,.2f} %")
+        col3.metric(f":red[YD Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_q3*100:,.2f} %")
+
 
 if selected=='Lab':
     #!----upload data file
@@ -168,4 +135,3 @@ if selected=='Lab':
 if selected=='Inspection':
     #!----upload data file
     pass
-    
