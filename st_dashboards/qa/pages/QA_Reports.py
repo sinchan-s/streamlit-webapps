@@ -124,7 +124,7 @@ if selected=='Grouping':
         delta_val2 = p_prod
         col3.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val3:.1f} %')
         delta_val3 = yd_prod
-        col2.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_q3.sum()*100:,.2f} %")
+        col2.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_q3*100:,.2f} %")
         col3.metric(f":red[YD Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_q3*100:,.2f} %")
 
 
