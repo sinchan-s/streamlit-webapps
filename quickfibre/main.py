@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import re
+#! addtional libs
+import yaml
+import streamlit_authenticator as stauth
+from yaml.loader import SafeLoader 
 
 #! basic configurations
 st.set_page_config(
@@ -12,7 +16,7 @@ st.set_page_config(
     layout="wide",                              #! widen-out view of the layout
     initial_sidebar_state="collapsed")          #! side-bar state when page-load
 
-#! clean Footer
+#! clean footer
 hide_default_format = """
        <style>
        #MainMenu {visibility: hidden;}
@@ -21,12 +25,41 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
+# #! user login
+# hashed_passwords = stauth.Hasher(['abc1234', 'def1234']).generate()
+
+# with open('config.yaml') as file:
+#     config = yaml.load(file, Loader=SafeLoader)
+
+# authenticator = stauth.Authenticate(
+#     config['credentials'],
+#     config['cookie']['name'],
+#     config['cookie']['key'],
+#     config['cookie']['expiry_days'],
+#     config['preauthorized']
+# )
+
+# authenticator.login('Login', 'main')
+
+
+# if st.session_state["authentication_status"]:
+#     authenticator.logout('Logout', 'main', key='unique_key')
+#     st.write(f'Welcome *{st.session_state["name"]}*')
+#     st.title('Some content')
+# elif st.session_state["authentication_status"] is False:
+#     st.error('Username/password is incorrect')
+# elif st.session_state["authentication_status"] is None:
+#     st.warning('Please enter your username and password')
+
+
 #! reading the source files
 articles_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
 
 #! an apt heading
-st.header("Quick Fibre")
-st.subheader("Your idea Our creation")
+col1, col2 = st.columns(2, gap='large')
+col1.header("Quick Fibre")
+col1.subheader("Your idea Our creation")
+col2.image('ph-2.png')
 
 #! column extraction from construction column
 #! function to extractor columns 
@@ -92,21 +125,18 @@ with col3:
         effect_selectbox = st.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
         gsm_range = st.slider('GSM range', 120, 350, (150, 200))
 
-selection_df = article_df[article_df['construction'].str.contains(weave_selectbox) &
-                             article_df['construction'].str.contains(effect_dict.get(effect_selectbox)) & 
-                             article_df['warp'].str.contains(warp_regex) &
-                             article_df['warp'].str.contains(fibre_dict.get(warp_fibre_select)) & 
-                             article_df['weft'].str.contains(weft_regex) & 
-                             article_df['weft'].str.contains(fibre_dict.get(weft_fibre_select))]
+selection_df = article_df[article_df['Finish Construction'].str.contains(weave_selectbox) &
+                             article_df['Finish Construction'].str.contains(effect_dict.get(effect_selectbox))]
 
-selection_df = selection_df[selection_df['gsm'].between(gsm_range[0], gsm_range[1]) & selection_df['epi'].between(epi_range[0], epi_range[1]) & selection_df['ppi'].between(ppi_range[0], ppi_range[1])]
+# selection_df = selection_df[selection_df['gsm'].between(gsm_range[0], gsm_range[1]) & selection_df['epi'].between(epi_range[0], epi_range[1]) & selection_df['ppi'].between(ppi_range[0], ppi_range[1])]
 # selection_df = article_df[article_df['warp'].str.contains('^6[a-zA-Z]*', na=False)]
 #*-------------------------------------------------------------------------------------------------------------------------*#
 
 #! dataframe display
 tab1, tab2 = st.tabs(['Filtered Data', 'All Data'])
 with tab1:
-    selection_df = selection_df.set_index('k1')
-    df_display = st.dataframe(selection_df)
+    pass
+    # selection_df = selection_df.set_index('k1')
+    # df_display = st.dataframe(selection_df)
 with tab2:
     df_display = st.dataframe(articles_df)
