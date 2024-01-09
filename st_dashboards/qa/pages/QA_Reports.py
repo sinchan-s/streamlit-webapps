@@ -102,14 +102,13 @@ if selected=='Grouping':
     with st.expander('Test Preview', expanded=False):
         st.write(df_full['Summary'])
         # st.write(df_full)
-
     #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
     delta_val1, delta_val2, delta_val3 = 0, 0, 0
-    print_vals = {}
-    yd_vals = {}
+    print_vals, yd_vals = {}, {}    
     for i,d in enumerate(qa_file_select):
         df_summ = df_full['Summary']
+        df_month = d.split('.')[0].split('-')[1].upper()
         p_prod = df_summ.iloc[5,3]
         p_q3 = df_summ.iloc[17:20,6]
         yd_prod = df_summ.iloc[5,7]
@@ -118,14 +117,14 @@ if selected=='Grouping':
         delta_val1 = (tot_prod - delta_val1)*100/delta_val1 if delta_val1 != 0 else 0
         delta_val2 = (p_prod - delta_val2)*100/delta_val2 if delta_val2 != 0 else 0
         delta_val3 = (yd_prod - delta_val3)*100/delta_val3 if delta_val3 != 0 else 0
-        col1.metric(f":blue[Total Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{tot_prod:,.2f} m", delta=f'{delta_val1:#.1f} %')
+        col1.metric(f":blue[Total Production] : :grey[{df_month}]", f"{tot_prod:,.2f} m", delta=f'{delta_val1:#.1f} %')
         delta_val1 = tot_prod
-        col2.metric(f":orange[Print Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_prod:,.2f} m", delta=f'{delta_val2:.1f} %')
+        col2.metric(f":orange[Print Production] : :grey[{df_month}]", f"{p_prod:,.2f} m", delta=f'{delta_val2:.1f} %')
         delta_val2 = p_prod
-        col3.metric(f":violet[YD Production] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_prod:,.2f} m", delta=f'{delta_val3:.1f} %')
+        col3.metric(f":violet[YD Production] : :grey[{df_month}]", f"{yd_prod:,.2f} m", delta=f'{delta_val3:.1f} %')
         delta_val3 = yd_prod
-        col2.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_q3.sum()*100:,.2f} %")
-        col3.metric(f":red[YD Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_q3*100:,.2f} %")
+        col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{p_q3.sum()*100:,.2f} %")
+        col3.metric(f":red[YD Q3] : :grey[{df_month}]", f"{yd_q3*100:,.2f} %")
 
 
 if selected=='Lab':
