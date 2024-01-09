@@ -111,9 +111,9 @@ if selected=='Grouping':
     for i,d in enumerate(qa_file_select):
         df_summ = df_full['Summary']
         p_prod = df_summ.iloc[5,3]
-        p_q3 = df_summ.iloc[17:20,6]
+        p_q3 = df_summ.iloc[17:20,6].sum()+df_summ.iloc[21,6]
         yd_prod = df_summ.iloc[5,7]
-        yd_q3 = df_summ.iloc[25,6]
+        yd_q3 = df_summ.iloc[25,6]+df_summ.iloc[26,6]
         tot_prod = p_prod + yd_prod
         delta_val1 = (tot_prod - delta_val1)*100/delta_val1 if delta_val1 != 0 else 0
         delta_val2 = (p_prod - delta_val2)*100/delta_val2 if delta_val2 != 0 else 0
