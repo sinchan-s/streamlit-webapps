@@ -27,19 +27,20 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 
 # #! user login
 # hashed_passwords = stauth.Hasher(['abc1234', 'def1234']).generate()
+left_col, right_col = st.columns(2)
+with left_col:
+    with open('config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
 
-# with open('config.yaml') as file:
-#     config = yaml.load(file, Loader=SafeLoader)
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days'],
+        config['preauthorized']
+    )
 
-# authenticator = stauth.Authenticate(
-#     config['credentials'],
-#     config['cookie']['name'],
-#     config['cookie']['key'],
-#     config['cookie']['expiry_days'],
-#     config['preauthorized']
-# )
-
-# authenticator.login('Login', 'main')
+    authenticator.login('Login', 'main')
 
 
 # if st.session_state["authentication_status"]:
@@ -56,10 +57,10 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 articles_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
 
 #! an apt heading
-col1, col2 = st.columns(2, gap='large')
-col1.header("Quick Fibre")
-col1.subheader("Your idea Our creation")
-col2.image('ph-2.png')
+# col1, col2 = st.columns(2, gap='large')
+right_col.image('ph.png')
+right_col.header("Quick Fibre")
+right_col.subheader("Your idea Our creation")
 
 #! column extraction from construction column
 #! function to extractor columns 
@@ -140,3 +141,38 @@ with tab1:
     # df_display = st.dataframe(selection_df)
 with tab2:
     df_display = st.dataframe(articles_df)
+
+#! bottom buttons
+col1, col2, col3, col4, col5 = st.columns(5, gap='large')
+col1.button('Search')
+col2.button('Collections')
+col3.button('Account')
+col4.button('Garments')
+col5.button('More')
+st.divider()
+
+#! user account
+col1, col2, col3, col4, col5 = st.columns(5, gap='large')
+col1.image('sap-pic.png')
+col2.write('Name')
+col2.write('Company')
+col2.write('E-mail id')
+col5.metric("Credit Score", 101, 27)
+col1, col2, col3, col4, col5 = st.columns(5, gap='large')
+col1.button('Orders')
+col2.button('Status')
+st.divider()
+col1, col2, col3, col4, col5 = st.columns(5, gap='large')
+col1.button('Bulk')
+col2.button('Yardage')
+col3.button('DeskLoom')
+col4.button('Lab-dip')
+col5.button('Strike-off')
+st.divider()
+col1, col2, col3, col4, col5 = st.columns(5, gap='large')
+col1.button('Hangers')
+col2.button('Stores')
+col3.button('Availablility')
+st.divider()
+
+#! product details
