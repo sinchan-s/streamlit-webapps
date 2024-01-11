@@ -8,13 +8,14 @@ import re
 import yaml
 import streamlit_authenticator as stauth
 from yaml.loader import SafeLoader 
+from streamlit_option_menu import option_menu
 
 #! basic configurations
 st.set_page_config(
     page_title="Qucik Fibre",                   #! similar to <title> tag
     page_icon=":womans_clothes:",               #! page icon
     layout="wide",                              #! widen-out view of the layout
-    initial_sidebar_state="collapsed")          #! side-bar state when page-load
+    initial_sidebar_state="expanded")          #! side-bar state when page-load
 
 #! clean footer
 hide_default_format = """
@@ -25,10 +26,9 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-# #! user login
-# hashed_passwords = stauth.Hasher(['abc1234', 'def1234']).generate()
-left_col, right_col = st.columns(2)
-with left_col:
+#! sidebar-UAC
+with st.sidebar:
+    st.image('ph.png')
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
@@ -39,8 +39,26 @@ with left_col:
         config['cookie']['expiry_days'],
         config['preauthorized']
     )
-
     authenticator.login('Login', 'main')
+    st.caption('display after authentication')
+    #! account details
+    st.image('user-ph.png')
+    st.write('{user_name}')
+    st.caption('{comp_name}')
+    st.caption('{email}')
+    st.caption("Credit Score: {score}")
+    #! account buttons
+    col1, col2, col3, col4 = st.columns(4, gap='large')
+    col1.button(':mag:', help='Search')
+    col2.button(':male-office-worker:', help='Account')
+    col3.button(':womans_clothes:', help='Colections')
+    # col4.button('Garments')
+    col4.button(':speech_balloon:', help='Chat')
+
+#! user login
+# hashed_passwords = stauth.Hasher(['abc1234', 'def1234']).generate()
+# left_col, right_col = st.columns(2)
+# with left_col:
 
 
 # if st.session_state["authentication_status"]:
@@ -57,10 +75,9 @@ with left_col:
 articles_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
 
 #! an apt heading
-# col1, col2 = st.columns(2, gap='large')
-right_col.image('ph.png')
-right_col.header("Quick Fibre")
-right_col.subheader("Your idea Our creation")
+left_col, right_col = st.columns(2, gap='large')
+left_col.header("Quick Fibre")
+# left_col.caption("Your idea Our creation")
 
 #! column extraction from construction column
 #! function to extractor columns 
@@ -95,20 +112,20 @@ with col1:
         warp_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
         warp_count_select = str(st.select_slider("Count", count_list, help="Count selector: Warp"))
         warp_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
-        warp_ply_check = st.checkbox(f'2/{warp_count_select}', key=1, help=f"Check for doube ply in {warp_count_select} count")
+        warp_ply_check = st.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
         if warp_ply_check:
             warp_value = '2/' + warp_count_select
         else:
             warp_value = warp_count_select
         warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
-        st.write(warp_regex)
+        # st.write(warp_regex)
     same_for_weft = st.checkbox('Same parameters for Weft')
 with col2:
     with st.expander('Select Weft Parameters'):
         weft_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
         weft_count_select = str(st.select_slider("Count", count_list, help="Count selector: Weft"))
         weft_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
-        weft_ply_check = st.checkbox(f'2/{weft_count_select}', key=2, help=f"Check for doube ply in {weft_count_select} count")
+        weft_ply_check = st.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
         if same_for_weft:
             weft_regex = warp_regex
         else:
@@ -117,7 +134,7 @@ with col2:
             else:
                 weft_value = weft_count_select
             weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
-        st.write(weft_regex)
+        # st.write(weft_regex)
 with col3:
     with st.expander('Select Fabric Construction'):
         epi_range = st.slider('EPI range', 50, 210, (60, 150))
@@ -142,37 +159,27 @@ with tab1:
 with tab2:
     df_display = st.dataframe(articles_df)
 
-#! bottom buttons
-col1, col2, col3, col4, col5 = st.columns(5, gap='large')
-col1.button('Search')
-col2.button('Collections')
-col3.button('Account')
-col4.button('Garments')
-col5.button('More')
 st.divider()
 
 #! user account
 col1, col2, col3, col4, col5 = st.columns(5, gap='large')
-col1.image('sap-pic.png')
-col2.write('Name')
-col2.write('Company')
-col2.write('E-mail id')
-col5.metric("Credit Score", 101, 27)
 col1, col2, col3, col4, col5 = st.columns(5, gap='large')
 col1.button('Orders')
 col2.button('Status')
 st.divider()
-col1, col2, col3, col4, col5 = st.columns(5, gap='large')
-col1.button('Bulk')
-col2.button('Yardage')
-col3.button('DeskLoom')
-col4.button('Lab-dip')
-col5.button('Strike-off')
+order_type = option_menu(
+    menu_title=None, 
+    options=['Bulk', 'Yardage', 'Deskloom', 'Lab-dip', 'Stike-off'], 
+    icons=[], 
+    orientation='horizontal')
+order_type
 st.divider()
-col1, col2, col3, col4, col5 = st.columns(5, gap='large')
-col1.button('Hangers')
-col2.button('Stores')
-col3.button('Availablility')
+collect_type = option_menu(
+    menu_title=None, 
+    options=['Hangers', 'Store', 'Availability'], 
+    icons=[], 
+    orientation='horizontal')
+collect_type
 st.divider()
 
 #! product details
