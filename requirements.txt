@@ -12,3 +12,4 @@ deta==1.1.0
 st-annotated-text==4.0.0
 fpdf2==2.7.5
 streamlit-cropper==0.2.2
+PyYAML==6.0.1
