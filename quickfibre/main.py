@@ -28,7 +28,7 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 
 #! sidebar-UAC
 with st.sidebar:
-    st.image('/ph.png')
+    # st.image('ph.png')
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
@@ -42,7 +42,7 @@ with st.sidebar:
     authenticator.login('Login', 'main')
     st.caption('display after authentication')
     #! account details
-    st.image('user-ph.png')
+    # st.image('user-ph.png')
     st.write('{user_name}')
     st.caption('{comp_name}')
     st.caption('{email}')
