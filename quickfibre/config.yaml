@@ -1,0 +1,17 @@
+credentials:
+  usernames:
+    jsmith:
+      email: test1@gmail.com
+      name: Test1
+      password: abc1234 # Placeholder for hashed password of 'abc'
+    rbriggs:
+      email: test2@gmail.com
+      name: Test2
+      password: def1234 # Placeholder for hashed password of 'def'
+cookie:
+  expiry_days: 30
+  key: some_signature_key # Must be string
+  name: some_cookie_name
+preauthorized:
+  emails:
+  - melsby@gmail.com
