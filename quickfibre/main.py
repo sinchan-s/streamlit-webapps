@@ -28,7 +28,7 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 
 #! sidebar-UAC
 with st.sidebar:
-    st.image('ph.png')
+    st.image('/ph.png')
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
