@@ -29,18 +29,18 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 #! sidebar-UAC
 with st.sidebar:
     # st.image('ph.png')
-    with open('config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
+    # with open('config.yaml') as file:
+    #    config = yaml.load(file, Loader=SafeLoader)
 
-    authenticator = stauth.Authenticate(
-        config['credentials'],
-        config['cookie']['name'],
-        config['cookie']['key'],
-        config['cookie']['expiry_days'],
-        config['preauthorized']
-    )
-    authenticator.login('Login', 'main')
-    st.caption('display after authentication')
+    # authenticator = stauth.Authenticate(
+    #   config['credentials'],
+    #   config['cookie']['name'],
+    #   config['cookie']['key'],
+    #   config['cookie']['expiry_days'],
+    #   config['preauthorized']
+    #)
+    #authenticator.login('Login', 'main')
+    st.caption('display after login authentication')
     #! account details
     # st.image('user-ph.png')
     st.write('{user_name}')
