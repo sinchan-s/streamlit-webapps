@@ -56,7 +56,7 @@ st.write(files)
 
 #! sidebar-UAC
 with st.sidebar:
-    st.image('place_h.jpg')
+    st.image('quickfibre\ph.png')
     # with open('config.yaml') as file:
     #    config = yaml.load(file, Loader=SafeLoader)
 
