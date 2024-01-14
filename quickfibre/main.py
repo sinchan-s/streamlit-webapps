@@ -27,11 +27,6 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-cwd = os.getcwd()  # Get the current working directory (cwd)
-files = os.listdir(cwd)  # Get all the files in that directory
-
-st.write(cwd)
-st.write(files)
 
 #! user authentication
 # names = ['Peter', 'John']
