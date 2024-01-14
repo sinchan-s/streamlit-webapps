@@ -57,20 +57,20 @@ st.write(files)
 #! sidebar-UAC
 with st.sidebar:
     st.image('quickfibre/ph.png')
-    # with open('config.yaml') as file:
-    #    config = yaml.load(file, Loader=SafeLoader)
+    with open('quickfibre/config.yaml') as file:
+       config = yaml.load(file, Loader=SafeLoader)
 
-    # authenticator = stauth.Authenticate(
-    #   config['credentials'],
-    #   config['cookie']['name'],
-    #   config['cookie']['key'],
-    #   config['cookie']['expiry_days'],
-    #   config['preauthorized']
-    # )
-    # authenticator.login('Login', 'main')
+    authenticator = stauth.Authenticate(
+      config['credentials'],
+      config['cookie']['name'],
+      config['cookie']['key'],
+      config['cookie']['expiry_days'],
+      config['preauthorized']
+    )
+    authenticator.login('Login', 'main')
     st.caption('display after login authentication')
     #! account details
-    st.image('user-ph.png')
+    st.image('quickfibre/user-ph.png')
     st.write('{user_name}')
     st.caption('{comp_name}')
     st.caption('{email}')
@@ -100,7 +100,7 @@ with st.sidebar:
 
 
 #! reading the source files
-articles_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
+articles_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')
 
 #! an apt heading
 left_col, right_col = st.columns(2, gap='large')
