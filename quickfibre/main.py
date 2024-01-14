@@ -1,9 +1,10 @@
-
-#! important librabries
+#! standard librabries
 import pandas as pd
 import numpy as np
 import streamlit as st
-import re
+import re, pickle
+from pathlib import Path
+
 #! addtional libs
 import yaml
 import streamlit_authenticator as stauth
@@ -26,9 +27,30 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
+#! user authentication
+# names = ['Peter', 'John']
+# usernames = ['ppark', 'jdoe']
+
+# file_path = Path(__file__).parent / "hashed_pw.pkl"
+# with file_path.open("rb") as file:
+#     hashed_passwords = pickle.load(file)
+
+# authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
+#     "quickfibre", "abcdef", cookie_expiry_days=30)
+
+# name, authentication_status, username = authenticator.login("Login", "sidebar")
+
+# if authentication_status == False:
+#     st.error("Username/password is incorrect")
+
+# if authentication_status == None:
+#     st.warning("Please enter your username and password")
+
+# if authentication_status:
+
 #! sidebar-UAC
 with st.sidebar:
-    # st.image('ph.png')
+    st.image('../ph.png')
     # with open('config.yaml') as file:
     #    config = yaml.load(file, Loader=SafeLoader)
 
@@ -38,11 +60,11 @@ with st.sidebar:
     #   config['cookie']['key'],
     #   config['cookie']['expiry_days'],
     #   config['preauthorized']
-    #)
-    #authenticator.login('Login', 'main')
+    # )
+    # authenticator.login('Login', 'main')
     st.caption('display after login authentication')
     #! account details
-    # st.image('user-ph.png')
+    st.image('user-ph.png')
     st.write('{user_name}')
     st.caption('{comp_name}')
     st.caption('{email}')
