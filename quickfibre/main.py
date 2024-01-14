@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-import re, pickle
+import re, pickle, os
 from pathlib import Path
 
 #! addtional libs
@@ -26,6 +26,9 @@ hide_default_format = """
        </style>
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
+
+cwd = os.getcwd()
+st.write(cwd)
 
 #! user authentication
 # names = ['Peter', 'John']
