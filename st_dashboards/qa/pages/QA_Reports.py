@@ -123,13 +123,8 @@ if selected=='Grouping':
         delta_val2 = p_prod
         col3.metric(f":violet[YD Production] : :grey[{df_month}]", f"{yd_prod:,.2f} m", delta=f'{delta_val3:.1f} %')
         delta_val3 = yd_prod
-<<<<<<< HEAD
-        col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{p_q3.sum()*100:,.2f} %")
+        col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{p_q3*100:,.2f} %")
         col3.metric(f":red[YD Q3] : :grey[{df_month}]", f"{yd_q3*100:,.2f} %")
-=======
-        col2.metric(f":red[Print Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{p_q3*100:,.2f} %")
-        col3.metric(f":red[YD Q3] : :grey[{d.split('.')[0].split('-')[1].upper()}]", f"{yd_q3*100:,.2f} %")
->>>>>>> 7c03d41098473973105c2365454d6877e3aae8b1
 
 
 if selected=='Lab':
