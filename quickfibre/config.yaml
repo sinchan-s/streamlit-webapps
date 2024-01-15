@@ -2,16 +2,15 @@ credentials:
   usernames:
     jsmith:
       email: test1@gmail.com
-      name: Test1
-      password: abc1234 # Placeholder for hashed password of 'abc'
+      name: John Smith
+      password: $2b$12$w1GMnANUf5uSL9txOgl.XOMNRewvbkUJ4zUZqVsxOHSG/RTNw2Cxu
     rbriggs:
       email: test2@gmail.com
       name: Test2
-      password: def1234 # Placeholder for hashed password of 'def'
+      password: $2b$12$HsLjEiIXo0jSehKfGNfNiOXRezGdYI3PLVz10QhHk1M7NNX.44KYW
 cookie:
-  expiry_days: 30
-  key: some_signature_key # Must be string
-  name: some_cookie_name
+  expiry_days: 0
+  key: quickf_sign # Must be string
+  name: quickf_cookie
 preauthorized:
-  emails:
-  - melsby@gmail.com
+  emails: melsby@gmail.com
