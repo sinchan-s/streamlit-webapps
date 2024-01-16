@@ -7,6 +7,7 @@ from pathlib import Path
 
 #! addtional libs
 import yaml
+from deta import Deta
 import streamlit_authenticator as stauth
 from yaml.loader import SafeLoader 
 from streamlit_option_menu import option_menu
@@ -27,6 +28,37 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
+
+#! initialize deta Base & Drive
+def load_data():
+    DETA_KEY = st.secrets["DETA_KEY"]
+    deta = Deta(DETA_KEY)
+    db = deta.Base("quickfibre_db")
+    drive = deta.Drive("quickfibre_drive")
+    return db, drive
+
+conn = load_data()
+qf_db = conn[0]
+qf_drive = conn[1]
+
+#*------------------------------------------------------------------------------------------*#
+#*                                       DETA functions                                     *#
+#*------------------------------------------------------------------------------------------*#
+insert_user = lambda username, name, password : qf_db.put({"key": username, "name": name, "password": password})
+
+user_data = lambda key : qf_db.get(key)
+
+all_users_data = lambda : qf_db.fetch().items
+
+update_user = lambda updates, username : qf_db.update(updates, username)
+
+delete_user = lambda username : qf_db.delete(username)
+
+drive_upload = lambda file : qf_drive.put(file.name, data=file)
+
+drive_list = lambda : qf_drive.list()['names']
+
+drive_fetch = lambda fname: qf_drive.get(fname)
 
 #! user authentication
 # names = ['Peter', 'John']
@@ -50,11 +82,11 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 # if authentication_status:
 
 #! sidebar contents
-st.sidebar.image('quickfibre/ph.png')
+st.sidebar.image('ph.png')
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
-with open('quickfibre/config.yaml') as file:
+with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 hashed_pass = stauth.Hasher(['abc1234', 'def1234']).generate()
 # st.write(hashed_pass)
@@ -74,7 +106,7 @@ elif auth_status==None:
 elif auth_status==True:
     #! account details
     with st.sidebar:
-        st.image('quickfibre/user-ph.png')
+        st.image('user-ph.png')
         st.write(f'Welcome, **{name}** !')
         st.caption(f'{username}')
         st.caption('{comp_name}')
@@ -105,8 +137,8 @@ elif auth_status==True:
 
 
     #! reading the source files
-    articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')
-    orders_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')
+    articles_df = pd.read_csv("articles.csv",encoding= 'unicode_escape')
+    orders_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
 
     #! an apt heading
     left_col, right_col = st.columns(2, gap='large')
