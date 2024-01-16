@@ -60,33 +60,12 @@ drive_list = lambda : qf_drive.list()['names']
 
 drive_fetch = lambda fname: qf_drive.get(fname)
 
-#! user authentication
-# names = ['Peter', 'John']
-# usernames = ['ppark', 'jdoe']
-
-# file_path = Path(__file__).parent / "hashed_pw.pkl"
-# with file_path.open("rb") as file:
-#     hashed_passwords = pickle.load(file)
-
-# authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
-#     "quickfibre", "abcdef", cookie_expiry_days=30)
-
-# name, authentication_status, username = authenticator.login("Login", "sidebar")
-
-# if authentication_status == False:
-#     st.error("Username/password is incorrect")
-
-# if authentication_status == None:
-#     st.warning("Please enter your username and password")
-
-# if authentication_status:
-
 #! sidebar contents
-st.sidebar.image('ph.png')
+st.sidebar.image('quickfibre/ph.png')
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
-with open('config.yaml') as file:
+with open('quickfibre/config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 hashed_pass = stauth.Hasher(['abc1234', 'def1234']).generate()
 # st.write(hashed_pass)
@@ -99,6 +78,7 @@ authenticator = stauth.Authenticate(
 )
 name , auth_status, username = authenticator.login('Login', 'sidebar')
 # st.write(name , auth_status, username)
+#! user authentication
 if auth_status==False:
     st.sidebar.error('Please enter correct Username/Password')
 elif auth_status==None:
@@ -106,7 +86,7 @@ elif auth_status==None:
 elif auth_status==True:
     #! account details
     with st.sidebar:
-        st.image('user-ph.png')
+        st.image('quickfibre/user-ph.png')
         st.write(f'Welcome, **{name}** !')
         st.caption(f'{username}')
         st.caption('{comp_name}')
@@ -120,25 +100,9 @@ elif auth_status==True:
         col3.button(':womans_clothes:', help='Colections')
         col4.button(':speech_balloon:', help='Chat')
 
-    #! user login
-    # hashed_passwords = stauth.Hasher(['abc1234', 'def1234']).generate()
-    # left_col, right_col = st.columns(2)
-    # with left_col:
-
-
-    # if st.session_state["authentication_status"]:
-    #     authenticator.logout('Logout', 'main', key='unique_key')
-    #     st.write(f'Welcome *{st.session_state["name"]}*')
-    #     st.title('Some content')
-    # elif st.session_state["authentication_status"] is False:
-    #     st.error('Username/password is incorrect')
-    # elif st.session_state["authentication_status"] is None:
-    #     st.warning('Please enter your username and password')
-
-
     #! reading the source files
-    articles_df = pd.read_csv("articles.csv",encoding= 'unicode_escape')
-    orders_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
+    articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')
+    orders_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')
 
     #! an apt heading
     left_col, right_col = st.columns(2, gap='large')
