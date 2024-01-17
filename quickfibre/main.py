@@ -11,6 +11,7 @@ from deta import Deta
 import streamlit_authenticator as stauth
 from yaml.loader import SafeLoader 
 from streamlit_option_menu import option_menu
+from streamlit_carousel import carousel
 
 #! basic configurations
 st.set_page_config(
@@ -60,6 +61,33 @@ drive_list = lambda : qf_drive.list()['names']
 
 drive_fetch = lambda fname: qf_drive.get(fname)
 
+#! an apt heading
+left_col, right_col = st.columns(2, gap='large')
+left_col.header("Quick Fibre")
+# left_col.caption("Your idea Our creation")
+
+#! products carousel
+test_items = [
+    dict(
+        title="Vardhman Apparels",
+        text="Our inhouse garmenting facility",
+        interval=None,
+        img="https://www.vardhman.com/images/Businesses/Garments/Banner.jpg",
+    ),
+    dict(
+        title="Vardhman Yarns",
+        text="Prime producer of premium quality yarns",
+        img="https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg",
+    ),
+    dict(
+        title="Vardhman Fabrics",
+        text="Vertically integrated fabric suppliers",
+        img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg",
+    ),
+]
+
+carousel(items=test_items, width=1)
+
 #! sidebar contents
 st.sidebar.image('quickfibre/ph.png')
 
@@ -77,8 +105,7 @@ authenticator = stauth.Authenticate(
     preauthorized=config['preauthorized']
 )
 name , auth_status, username = authenticator.login('Login', 'sidebar')
-# st.write(name , auth_status, username)
-#! user authentication
+
 if auth_status==False:
     st.sidebar.error('Please enter correct Username/Password')
 elif auth_status==None:
@@ -104,10 +131,6 @@ elif auth_status==True:
     articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')
     orders_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')
 
-    #! an apt heading
-    left_col, right_col = st.columns(2, gap='large')
-    left_col.header("Quick Fibre")
-    # left_col.caption("Your idea Our creation")
 
     #! column extraction from construction column
     #! function to extractor columns 
