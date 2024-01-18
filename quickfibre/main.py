@@ -107,7 +107,7 @@ authenticator = stauth.Authenticate(
 name , auth_status, username = authenticator.login('Login', 'sidebar')
 
 if auth_status==False:
-    st.sidebar.error('Please enter correct Username/Password')
+    st.sidebar.error('Username/Password is incorrect!!')
 elif auth_status==None:
     st.sidebar.warning('Enter credentials to continue')
 elif auth_status==True:
@@ -116,16 +116,16 @@ elif auth_status==True:
         st.image('quickfibre/user-ph.png')
         st.write(f'Welcome, **{name}** !')
         st.caption(f'{username}')
-        st.caption('{comp_name}')
+        st.caption('{company}')
         st.caption('{email}')
         st.caption("Credit Score: {score}")
-        authenticator.logout('Logout', 'sidebar')
         #! account buttons
         col1, col2, col3, col4 = st.columns(4, gap='large')
         col1.button(':mag:', help='Search')
         col2.button(':male-office-worker:', help='Account')
         col3.button(':womans_clothes:', help='Colections')
         col4.button(':speech_balloon:', help='Chat')
+        authenticator.logout('Logout', 'sidebar')
 
     #! reading the source files
     articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')
