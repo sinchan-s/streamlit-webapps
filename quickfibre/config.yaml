@@ -6,7 +6,7 @@ credentials:
       password: $2b$12$w1GMnANUf5uSL9txOgl.XOMNRewvbkUJ4zUZqVsxOHSG/RTNw2Cxu
     rbriggs:
       email: test2@gmail.com
-      name: Test2
+      name: RB Riggs
       password: $2b$12$HsLjEiIXo0jSehKfGNfNiOXRezGdYI3PLVz10QhHk1M7NNX.44KYW
 cookie:
   expiry_days: 0
