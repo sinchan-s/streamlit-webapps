@@ -63,7 +63,7 @@ drive_fetch = lambda fname: qf_drive.get(fname)
 
 #! an apt heading
 left_col, right_col = st.columns(2, gap='large')
-left_col.header("Quick Fibre")
+left_col.header("QuickFibre")
 # left_col.caption("Your idea Our creation")
 
 
@@ -106,11 +106,11 @@ with col2:
 # col3.image('https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg')
 
 #! sidebar contents
-st.sidebar.image('ph.png')
+st.sidebar.image('quickfibre/ph.png')
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
-with open('config.yaml') as file:
+with open('quickfibre/config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 hashed_pass = stauth.Hasher(['abc1234', 'def1234']).generate()
 # st.write(hashed_pass)
@@ -130,7 +130,7 @@ elif auth_status==None:
 elif auth_status==True:
     #! account details
     with st.sidebar:
-        st.image('user-ph.png')
+        st.image('quickfibre/user-ph.png')
         st.write(f'Welcome, **{name}** !')
         st.caption(f'{username}')
         st.caption('{company}')
@@ -145,8 +145,8 @@ elif auth_status==True:
         authenticator.logout('Logout', 'sidebar')
 
     #! reading the source files
-    articles_df = pd.read_csv("articles.csv",encoding= 'unicode_escape')
-    orders_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
+    articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')
+    orders_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')
 
 
     #! column extraction from construction column
