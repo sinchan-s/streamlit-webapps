@@ -21,13 +21,13 @@ st.set_page_config(
     initial_sidebar_state="expanded")          #! side-bar state when page-load
 
 #! clean footer
-hide_default_format = """
-       <style>
-       #MainMenu {visibility: hidden;}
-       footer {visibility: hidden;}
-       </style>
-       """
-st.markdown(hide_default_format, unsafe_allow_html=True)
+# hide_default_format = """
+#        <style>
+#        #MainMenu {visibility: hidden;}
+#        footer {visibility: hidden;}
+#        </style>
+#        """
+# st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
 #! initialize deta Base & Drive
@@ -66,34 +66,51 @@ left_col, right_col = st.columns(2, gap='large')
 left_col.header("Quick Fibre")
 # left_col.caption("Your idea Our creation")
 
-#! products carousel
-test_items = [
-    dict(
-        title="Vardhman Apparels",
-        text="Our inhouse garmenting facility",
-        interval=None,
-        img="https://www.vardhman.com/images/Businesses/Garments/Banner.jpg",
-    ),
-    dict(
-        title="Vardhman Yarns",
-        text="Prime producer of premium quality yarns",
-        img="https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg",
-    ),
-    dict(
-        title="Vardhman Fabrics",
-        text="Vertically integrated fabric suppliers",
-        img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg",
-    ),
-]
 
-carousel(items=test_items, width=1)
+#! products highlight & nav menu
+col1, col2 = st.columns([5, 1])
+with col1:
+    test_items = [
+        dict(
+            title="Vardhman Apparels",
+            text="Our inhouse garmenting facility",
+            interval=None,
+            img="https://www.vardhman.com/images/Businesses/Garments/Banner.jpg",
+        ),
+        dict(
+            title="Vardhman Yarns",
+            text="Prime producer of premium quality yarns",
+            img="https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg",
+        ),
+        dict(
+            title="Vardhman Fabrics",
+            text="Vertically integrated fabric suppliers",
+            img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg",
+        ),
+    ]
+    carousel(items=test_items, width=1)
+
+with col2:
+    nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
+        icons=['house', 'cloud-upload', "list-task", 'gear'], 
+        menu_icon="cast", default_index=0, orientation="vertical",
+        styles={
+        "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+        "icon": {"color": "#fccc08", "font-size": "15px"}, 
+        "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+        "nav-link-selected": {"background-color": "#008b47"},
+    })
+
+# col1.image('https://www.vardhman.com/images/Businesses/Garments/Banner.jpg')
+# col2.image('https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg')
+# col3.image('https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg')
 
 #! sidebar contents
-st.sidebar.image('quickfibre/ph.png')
+st.sidebar.image('ph.png')
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
-with open('quickfibre/config.yaml') as file:
+with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 hashed_pass = stauth.Hasher(['abc1234', 'def1234']).generate()
 # st.write(hashed_pass)
@@ -113,7 +130,7 @@ elif auth_status==None:
 elif auth_status==True:
     #! account details
     with st.sidebar:
-        st.image('quickfibre/user-ph.png')
+        st.image('user-ph.png')
         st.write(f'Welcome, **{name}** !')
         st.caption(f'{username}')
         st.caption('{company}')
@@ -128,8 +145,8 @@ elif auth_status==True:
         authenticator.logout('Logout', 'sidebar')
 
     #! reading the source files
-    articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')
-    orders_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')
+    articles_df = pd.read_csv("articles.csv",encoding= 'unicode_escape')
+    orders_df = pd.read_csv("sitedata.csv",encoding= 'unicode_escape')
 
 
     #! column extraction from construction column
@@ -160,41 +177,35 @@ elif auth_status==True:
     #*-------------------------------------------------------------------------------------------------------------------------*#
     #! selection criteria
     col1, col2, col3 = st.columns(3)
-    with col1:
-        with st.expander('Select Warp Parameters'):
-            warp_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
-            warp_count_select = str(st.select_slider("Count", count_list, help="Count selector: Warp"))
-            warp_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
-            warp_ply_check = st.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
-            if warp_ply_check:
-                warp_value = '2/' + warp_count_select
-            else:
-                warp_value = warp_count_select
-            warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
-            # st.write(warp_regex)
-        same_for_weft = st.checkbox('Same parameters for Weft')
-    with col2:
-        with st.expander('Select Weft Parameters'):
-            weft_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
-            weft_count_select = str(st.select_slider("Count", count_list, help="Count selector: Weft"))
-            weft_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
-            weft_ply_check = st.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
-            if same_for_weft:
-                weft_regex = warp_regex
-            else:
-                if weft_ply_check:
-                    weft_value = '2/' + weft_count_select
-                else:
-                    weft_value = weft_count_select
-                weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
-            # st.write(weft_regex)
-    with col3:
-        with st.expander('Select Fabric Construction'):
-            epi_range = st.slider('EPI range', 50, 210, (60, 150))
-            ppi_range = st.slider('PPI range', 50, 200, (60, 150))
-            weave_selectbox = st.selectbox("Weave", weave_list, help="Select the fabric weave")
-            effect_selectbox = st.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
-            gsm_range = st.slider('GSM range', 120, 350, (150, 200))
+    warp_fibre_select = col1.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
+    warp_count_select = str(st.select_slider("Count", count_list, help="Count selector: Warp"))
+    warp_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
+    warp_ply_check = st.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
+    if warp_ply_check:
+        warp_value = '2/' + warp_count_select
+    else:
+        warp_value = warp_count_select
+    warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
+    # st.write(warp_regex)
+    same_for_weft = st.checkbox('Same parameters for Weft')
+    weft_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
+    weft_count_select = str(st.select_slider("Count", count_list, help="Count selector: Weft"))
+    weft_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
+    weft_ply_check = st.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
+    if same_for_weft:
+        weft_regex = warp_regex
+    else:
+        if weft_ply_check:
+            weft_value = '2/' + weft_count_select
+        else:
+            weft_value = weft_count_select
+        weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
+    # st.write(weft_regex)
+    epi_range = st.slider('EPI range', 50, 210, (60, 150))
+    ppi_range = st.slider('PPI range', 50, 200, (60, 150))
+    weave_selectbox = st.selectbox("Weave", weave_list, help="Select the fabric weave")
+    effect_selectbox = st.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
+    gsm_range = st.slider('GSM range', 120, 350, (150, 200))
 
     selection_df = article_df[article_df['Construction'].str.contains(weave_selectbox) &
                                 article_df['Construction'].str.contains(effect_dict.get(effect_selectbox))]
@@ -222,15 +233,27 @@ elif auth_status==True:
     st.divider()
     order_type = option_menu(
         menu_title=None, 
-        options=['Bulk', 'Yardage', 'Deskloom', 'Lab-dip', 'Stike-off'], 
+        options=['Bulk', 'Yardage', 'Deskloom', 'Lab-dip', 'Strike-off'], 
         icons=[], 
-        orientation='horizontal')
+        orientation='horizontal',
+        styles={
+        "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+        "icon": {"color": "#fccc08", "font-size": "15px"}, 
+        "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+        "nav-link-selected": {"background-color": "#008b47"},
+    })
     order_type
     st.divider()
     collect_type = option_menu(
         menu_title=None, 
         options=['Hangers', 'Store', 'Availability'], 
         icons=[], 
-        orientation='horizontal')
+        orientation='horizontal',
+        styles={
+        "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+        "icon": {"color": "#fccc08", "font-size": "15px"}, 
+        "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+        "nav-link-selected": {"background-color": "#008b47"},
+    })
     collect_type
     st.divider()
