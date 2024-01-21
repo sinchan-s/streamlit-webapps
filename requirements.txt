@@ -15,3 +15,4 @@ streamlit-cropper==0.2.2
 PyYAML==6.0.1
 streamlit_authenticator==0.2.3
 streamlit-carousel==0.0.4
+streamlit-extras==0.3.6
