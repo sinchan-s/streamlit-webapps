@@ -95,7 +95,7 @@ if selected=='Grouping':
 
     #!----retrieve data file
     qa_file_list = [item for item in drive_files_list if re.findall('qa-',item)]
-    qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[0], key=12)
+    qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[-1], key=12)
     for i,d in enumerate(qa_file_select):
         df_full = pd.read_excel(drive_fetch(d).read(), sheet_name=None)
 
