@@ -13,6 +13,7 @@ import streamlit_authenticator as stauth
 from yaml.loader import SafeLoader 
 from streamlit_option_menu import option_menu
 from streamlit_carousel import carousel
+from streamlit_extras.stateful_button import button 
 
 #! basic configurations
 st.set_page_config(
@@ -122,7 +123,8 @@ elif auth_status==None:
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.subheader("Welcome to the world of possibilities !!\nClick on the side controls to navigate")
+        st.subheader("Welcome to the world of possibilities !!")
+        st.caption("Click on the side controls to navigate")
     with col2:
         nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
             icons=['house', 'cloud-upload', "list-task", 'gear'], 
@@ -134,13 +136,17 @@ elif auth_status==True:
             "nav-link-selected": {"background-color": "#008b47"},
         })
     col1, col2, col3 = st.columns(3, gap='large')
-    if nav_menu=="Home":    
-        col1.write('Vardhman Apparels')
+    if nav_menu=="Home":
         col1.image('https://www.vardhman.com/images/Businesses/Garments/Banner.jpg')
-        col2.write('Vardhman Yarns')
+        col1.write('Vardhman Apparels')
         col2.image('https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg')
-        col3.write('Vardhman Fabrics')
+        col2.write('Vardhman Yarns')
         col3.image('https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg')
+        col3.write('Vardhman Fabrics')
+
+#*------------------------------------------------------------------------------------------*#
+#*                                      Sidebar Controls                                    *#
+#*------------------------------------------------------------------------------------------*#
     #! Sidebar UAC
     with st.sidebar:
         #! user account details
@@ -188,7 +194,25 @@ elif auth_status==True:
     weave_list = ["", 'PLAIN', 'TWILL', 'SATIN', 'DOBBY', 'CVT', 'MATT', 'HBT', 'BKT', 'OXFORD', 'DOUBLE CLOTH', 'BEDFORD CORD', 'RIBSTOP', 'WEFTRIB']
     effect_dict = {'Normal': "", 'Seer Sucker': 'SUCKER', 'Crepe': 'CREPE', 'Butta-Cut': 'FIL-COUPE', 'Crinkle': 'CRINKLE', 'Slub':"MC"}
 
-    #*-------------------------------------------------------------------------------------------------------------------------*#
+#*------------------------------------------------------------------------------------------*#
+#*                                      Variety Section                                     *#
+#*------------------------------------------------------------------------------------------*#
+    if nav_menu=="Variety":
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.button("Yarn Dyed")
+            st.button("RFD")
+        with col2:
+            st.button("Piece Dyed")
+            st.button("Organic")
+        with col3:
+            st.button("Prints")
+            st.button("Recycled")
+
+
+#*------------------------------------------------------------------------------------------*#
+#*                                      Enquiry Section                                     *#
+#*------------------------------------------------------------------------------------------*#
     if nav_menu=="Enquiry":
         #! selection criteria
         col1, col2, col3 = st.columns(3)
@@ -227,7 +251,6 @@ elif auth_status==True:
 
         # selection_df = selection_df[selection_df['gsm'].between(gsm_range[0], gsm_range[1]) & selection_df['epi'].between(epi_range[0], epi_range[1]) & selection_df['ppi'].between(ppi_range[0], ppi_range[1])]
         # selection_df = article_df[article_df['warp'].str.contains('^6[a-zA-Z]*', na=False)]
-        #*-------------------------------------------------------------------------------------------------------------------------*#
 
         #! dataframe display
         tab1, tab2 = st.tabs(['Filtered Data', 'All Data'])
@@ -236,39 +259,39 @@ elif auth_status==True:
             selection_df = selection_df.set_index('K1')
             df_display = st.dataframe(selection_df)
         with tab2:
-            df_display = st.dataframe(articles_df)
+            df_display = st.dataframe(orders_df)
 
-    st.divider()
 
-    #! user account
-    col1, col2, col3, col4, col5 = st.columns(5, gap='large')
-    col1, col2, col3, col4, col5 = st.columns(5, gap='large')
-    col1.button('Orders')
-    col2.button('Status')
-    st.divider()
-    order_type = option_menu(
-        menu_title=None, 
-        options=['Bulk', 'Yardage', 'Deskloom', 'Lab-dip', 'Strike-off'], 
-        icons=[], 
-        orientation='horizontal',
-        styles={
-        "container": {"padding": "0!important", "background-color": "#f1f1f1"},
-        "icon": {"color": "#fccc08", "font-size": "15px"}, 
-        "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
-        "nav-link-selected": {"background-color": "#008b47"},
-    })
-    order_type
-    st.divider()
-    collect_type = option_menu(
-        menu_title=None, 
-        options=['Hangers', 'Store', 'Availability'], 
-        icons=[], 
-        orientation='horizontal',
-        styles={
-        "container": {"padding": "0!important", "background-color": "#f1f1f1"},
-        "icon": {"color": "#fccc08", "font-size": "15px"}, 
-        "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
-        "nav-link-selected": {"background-color": "#008b47"},
-    })
-    collect_type
-    st.divider()
+#*------------------------------------------------------------------------------------------*#
+#*                                      Account Section                                     *#
+#*------------------------------------------------------------------------------------------*#
+    if nav_menu=="Account":
+        if button('Your Orders', key='ord'):
+            col1, col2 = st.columns([2,1], gap='small')
+            # if button('Status', key='stat'):
+            with col1:
+                order_type = option_menu(
+                    menu_title=None, 
+                    options=['Bulk', 'Yardage', 'Deskloom', 'Lab-Dips', 'Strike-off'], 
+                    icons=[], 
+                    orientation='horizontal',
+                    styles={
+                    "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+                    "icon": {"color": "#fccc08", "font-size": "15px"}, 
+                    "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+                    "nav-link-selected": {"background-color": "#008b47"},
+                })
+                order_type
+            with col2:
+                collect_type = option_menu(
+                    menu_title=None, 
+                    options=['Hangers', 'Store', 'Availability'], 
+                    icons=[], 
+                    orientation='horizontal',
+                    styles={
+                    "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+                    "icon": {"color": "#fccc08", "font-size": "15px"}, 
+                    "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+                    "nav-link-selected": {"background-color": "#008b47"},
+                })
+                collect_type
