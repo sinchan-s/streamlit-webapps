@@ -97,11 +97,11 @@ test_items = [
 
 
 #! sidebar contents
-st.sidebar.image('quickfibre/ph.png')  #? location
+st.sidebar.image('quickfibre/images/ph.png')  #? location
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
-with open('quickfibre/config.yaml') as file:   #? location
+with open('quickfibre/data/config.yaml') as file:   #? location
     config = yaml.load(file, Loader=SafeLoader)
 hashed_pass = stauth.Hasher(['abc1234', 'def1234']).generate()
 # st.write(hashed_pass)
@@ -150,7 +150,7 @@ elif auth_status==True:
     #! Sidebar UAC
     with st.sidebar:
         #! user account details
-        st.image('quickfibre/user-ph.png')     #? location
+        st.image('quickfibre/images/user-ph.png')     #? location
         st.write(f'Welcome, **{name}** !')
         st.caption(f'{username}')
         st.caption('{company}')
@@ -165,8 +165,8 @@ elif auth_status==True:
         authenticator.logout('Logout', 'sidebar')
 
     #! reading the source files
-    articles_df = pd.read_csv("quickfibre/articles.csv",encoding= 'unicode_escape')    #? location
-    orders_df = pd.read_csv("quickfibre/sitedata.csv",encoding= 'unicode_escape')      #? location
+    articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    #? location
+    orders_df = pd.read_csv("quickfibre/data/sitedata.csv",encoding= 'unicode_escape')      #? location
 
 
     #! column extraction from construction column
