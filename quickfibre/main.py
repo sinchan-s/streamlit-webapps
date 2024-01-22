@@ -17,7 +17,7 @@ from streamlit_extras.stateful_button import button
 
 #! basic configurations
 st.set_page_config(
-    page_title="Qucik Fibre",                   #! similar to <title> tag
+    page_title="QucikFibre",                   #! similar to <title> tag
     page_icon=":womans_clothes:",               #! page icon
     layout="wide",                              #! widen-out view of the layout
     initial_sidebar_state="expanded")          #! side-bar state when page-load
@@ -166,7 +166,7 @@ elif auth_status==True:
 
     #! reading the source files
     articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    #? location
-    orders_df = pd.read_csv("quickfibre/data/sitedata.csv",encoding= 'unicode_escape')      #? location
+    orders_df = pd.read_csv("quickfibre/data/sitedata2k.csv",encoding= 'unicode_escape')      #? location
 
 
     #! column extraction from construction column
@@ -269,29 +269,36 @@ elif auth_status==True:
         if button('Your Orders', key='ord'):
             col1, col2 = st.columns([2,1], gap='small')
             # if button('Status', key='stat'):
-            with col1:
-                order_type = option_menu(
-                    menu_title=None, 
-                    options=['Bulk', 'Yardage', 'Deskloom', 'Lab-Dips', 'Strike-off'], 
-                    icons=[], 
-                    orientation='horizontal',
-                    styles={
-                    "container": {"padding": "0!important", "background-color": "#f1f1f1"},
-                    "icon": {"color": "#fccc08", "font-size": "15px"}, 
-                    "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
-                    "nav-link-selected": {"background-color": "#008b47"},
-                })
-                order_type
-            with col2:
-                collect_type = option_menu(
-                    menu_title=None, 
-                    options=['Hangers', 'Store', 'Availability'], 
-                    icons=[], 
-                    orientation='horizontal',
-                    styles={
-                    "container": {"padding": "0!important", "background-color": "#f1f1f1"},
-                    "icon": {"color": "#fccc08", "font-size": "15px"}, 
-                    "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
-                    "nav-link-selected": {"background-color": "#008b47"},
-                })
-                collect_type
+            order_type = option_menu(
+                menu_title=None, 
+                options=['Bulk', 'Yardage', 'Deskloom', 'Lab-Dip', 'Strike-off'], 
+                icons=[], 
+                orientation='horizontal',
+                styles={
+                "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+                "icon": {"color": "#fccc08", "font-size": "15px"}, 
+                "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+                "nav-link-selected": {"background-color": "#008b47"},
+            })
+            if order_type=='Bulk':
+                st.dataframe(orders_df[orders_df['Ord. Qty']>=500])
+            if order_type=='Yardage':
+                st.dataframe(orders_df[orders_df['Ord. Qty'].between(200, 500)])
+            if order_type=='Deskloom':
+                st.dataframe(orders_df[orders_df['Ord. Qty']<=200])
+            if order_type=='Lab-Dip':
+                st.dataframe(orders_df[orders_df['Ord. Qty']<=200])
+            if order_type=='Strike-off':
+                st.dataframe(orders_df[orders_df['Ord. Qty']<=200])
+            collect_type = option_menu(
+                menu_title=None, 
+                options=['Hangers', 'Store', 'Availability'], 
+                icons=[], 
+                orientation='horizontal',
+                styles={
+                "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+                "icon": {"color": "#fccc08", "font-size": "15px"}, 
+                "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+                "nav-link-selected": {"background-color": "#008b47"},
+            })
+            collect_type
