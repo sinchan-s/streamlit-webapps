@@ -94,8 +94,6 @@ test_items = [
     ),
 ]
 
-
-
 #! sidebar contents
 st.sidebar.image('quickfibre/images/ph.png')  #? location
 
@@ -115,19 +113,17 @@ authenticator = stauth.Authenticate(
 
 name , auth_status, username = authenticator.login('Login', 'sidebar')
 
-if auth_status==None:
+if auth_status==None or auth_status==False:
     carousel(items=test_items, width=1)
     with st.sidebar:
-        st.warning('Enter correct credentials !!')
+        st.warning('Enter credentials')
         if button("Signup", key='reg'):
             try:
                 if authenticator.register_user('Register user', preauthorization=False):
                     st.success('User registered successfully')
             except Exception as e:
                 st.error(e)
-# elif auth_status==None:
-#     st.sidebar.warning('Enter credentials to continue')
-#     carousel(items=test_items, width=1)
+
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
     with col1:
