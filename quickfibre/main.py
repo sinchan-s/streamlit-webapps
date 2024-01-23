@@ -112,14 +112,22 @@ authenticator = stauth.Authenticate(
     cookie_expiry_days=0,
     preauthorized=config['preauthorized']
 )
+
 name , auth_status, username = authenticator.login('Login', 'sidebar')
 
-if auth_status==False:
-    st.sidebar.error('Username/Password is incorrect!!')
+if auth_status==None:
     carousel(items=test_items, width=1)
-elif auth_status==None:
-    st.sidebar.warning('Enter credentials to continue')
-    carousel(items=test_items, width=1)
+    with st.sidebar:
+        st.warning('Enter correct credentials !!')
+        if button("Signup", key='reg'):
+            try:
+                if authenticator.register_user('Register user', preauthorization=False):
+                    st.success('User registered successfully')
+            except Exception as e:
+                st.error(e)
+# elif auth_status==None:
+#     st.sidebar.warning('Enter credentials to continue')
+#     carousel(items=test_items, width=1)
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
     with col1:
@@ -160,7 +168,7 @@ elif auth_status==True:
         col1, col2, col3, col4 = st.columns(4, gap='large')
         col1.button(':mag:', help='Search')
         col2.button(':male-office-worker:', help='Account')
-        col3.button(':womans_clothes:', help='Colections')
+        col3.button(':womans_clothes:', help='Collections')
         col4.button(':speech_balloon:', help='Chat Support')
         authenticator.logout('Logout', 'sidebar')
 
