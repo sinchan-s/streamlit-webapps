@@ -117,7 +117,8 @@ if auth_status==None or auth_status==False:
     carousel(items=test_items, width=1)
     with st.sidebar:
         st.warning('Enter credentials')
-        if button("Signup", key='reg'):
+        signup_btn = button("Signup", key='reg')
+        if signup_btn:
             try:
                 if authenticator.register_user('Register user', preauthorization=False):
                     st.success('User registered successfully')
@@ -167,11 +168,16 @@ elif auth_status==True:
         col3.button(':womans_clothes:', help='Collections')
         col4.button(':speech_balloon:', help='Chat Support')
         authenticator.logout('Logout', 'sidebar')
+        if button("Reset Password", key='reset'):
+            try:
+                if authenticator.reset_password(username, form_name='Reset Password'):
+                    st.success('Password modified successfully')
+            except Exception as e:
+                st.error(e)
 
     #! reading the source files
     articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    #? location
     orders_df = pd.read_csv("quickfibre/data/sitedata2k.csv",encoding= 'unicode_escape')      #? location
-
 
     #! column extraction from construction column
     #! function to extractor columns 
