@@ -2,16 +2,23 @@ from deta import Deta
 import streamlit as st
 
 #! initialize QuickFibre database & drive
-DETA_KEY = st.secrets["DETA_KEY"]
-deta = Deta(DETA_KEY)
-qf_db = deta.Base("quickfibre_db")
-qf_drive = deta.Drive("quickfibre_drive")
+def load_deta():
+    DETA_KEY = st.secrets["DETA_KEY"]
+    deta = Deta(DETA_KEY)
+    db = deta.Base("quickfibre_db")
+    drive = deta.Drive("quickfibre_drive")
+    return db, drive
+
+deta_connect = load_deta()
+qf_db = deta_connect[0]
+qf_drive = deta_connect[1]
+
 
 #*------------------------------------------------------------------------------------------*#
 #*                                       DETA functions                                     *#
 #*------------------------------------------------------------------------------------------*#
 #? db: user credentials input
-insert_user = lambda username, name, password : qf_db.put({"key": username, "name": name, "password": password})
+insert_user = lambda username, name, email, password : qf_db.put({"key": username, "name": name, "email":email, "password": password})
 
 #? db: get a user data
 user_data = lambda key : qf_db.get(key)
