@@ -1,14 +1,13 @@
 
 #! standard librabries
+import re
 import pandas as pd
 import numpy as np
 import streamlit as st
-import re, pickle, os
-from pathlib import Path
+import database as db
 
 #! addtional libs
 import yaml
-from deta import Deta
 import streamlit_authenticator as stauth
 from yaml.loader import SafeLoader 
 from streamlit_option_menu import option_menu
@@ -32,45 +31,10 @@ st.set_page_config(
 # st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
-#! initialize deta Base & Drive
-def load_data():
-    DETA_KEY = st.secrets["DETA_KEY"]
-    deta = Deta(DETA_KEY)
-    db = deta.Base("quickfibre_db")
-    drive = deta.Drive("quickfibre_drive")
-    return db, drive
-
-conn = load_data()
-qf_db = conn[0]
-qf_drive = conn[1]
-
-#*------------------------------------------------------------------------------------------*#
-#*                                       DETA functions                                     *#
-#*------------------------------------------------------------------------------------------*#
-#? db: user credentials input
-insert_user = lambda username, name, password : qf_db.put({"key": username, "name": name, "password": password})
-
-#? db: get a user data
-user_data = lambda key : qf_db.get(key)
-
-#? db: get all user data
-all_users_data = lambda : qf_db.fetch().items
-
-#? db: update user data
-update_user = lambda updates, username : qf_db.update(updates, username)
-
-#? db: delete user data
-delete_user = lambda username : qf_db.delete(username)
-
-drive_upload = lambda file : qf_drive.put(file.name, data=file)
-
-drive_list = lambda : qf_drive.list()['names']
-
-drive_fetch = lambda fname: qf_drive.get(fname)
-
 #! an apt heading
 left_col, right_col = st.columns(2, gap='large')
 left_col.header("QuickFibre")
+db.load_deta()
 # left_col.caption("Your idea Our creation")
 
 
@@ -95,28 +59,32 @@ test_items = [
 ]
 
 #! sidebar contents
-st.sidebar.image('quickfibre/images/ph.png')  #? location
+st.sidebar.image('quickfibre/images/ph.png')  
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
-with open('quickfibre/data/config.yaml') as file:   #? location
-    config = yaml.load(file, Loader=SafeLoader)
-hashed_pass = stauth.Hasher(['abc1234', 'def1234']).generate()
-# st.write(hashed_pass)
-authenticator = stauth.Authenticate(
-    credentials=config['credentials'],
-    cookie_name=config['cookie']['name'],
-    key=config['cookie']['key'],
-    cookie_expiry_days=0,
-    preauthorized=config['preauthorized']
-)
+users = db.all_users_data()
+
+usernames = [user["key"] for user in users]
+names = [user["name"] for user in users]
+emails = [user["email"] for user in users]
+hashed_passwords = [user["password"] for user in users]
+
+check = {}
+for uname, name, email, pword in zip(usernames, names, emails, hashed_passwords):
+    check[uname] = {"name": name, "email": email, "password": pword}
+credentials = {"usernames": check}
+# st.write(credentials)
+
+authenticator = stauth.Authenticate(credentials=credentials, key="qfibre_sign",
+    cookie_name="qfibre_auth_cookie", cookie_expiry_days=0, preauthorized="check@email.com")
 
 name , auth_status, username = authenticator.login('Login', 'sidebar')
 
 if auth_status==None or auth_status==False:
     carousel(items=test_items, width=1)
     with st.sidebar:
-        st.warning('Enter credentials')
+        st.warning('Enter username & password !')
         signup_btn = button("Signup", key='reg')
         if signup_btn:
             try:
@@ -155,18 +123,18 @@ elif auth_status==True:
     #! Sidebar UAC
     with st.sidebar:
         #! user account details
-        st.image('quickfibre/images/user-ph.png')     #? location
+        st.image('quickfibre/images/user-ph.png')     
         st.write(f'Welcome, **{name}** !')
-        st.caption(f'{username}')
-        st.caption('{company}')
-        st.caption('{email}')
+        st.caption(f'@{username}')
+        st.caption('-{company}')
+        st.caption(f'Email: {credentials["usernames"][username]["email"]}')
         st.caption("Credit Score: {score}")
         #! account buttons
         col1, col2, col3, col4 = st.columns(4, gap='large')
-        col1.button(':mag:', help='Search')
-        col2.button(':male-office-worker:', help='Account')
-        col3.button(':womans_clothes:', help='Collections')
-        col4.button(':speech_balloon:', help='Chat Support')
+        user_search = col1.button(':mag:', help='Search')
+        user_account = col2.button(':male-office-worker:', help='Account')
+        user_collect = col3.button(':womans_clothes:', help='Collections')
+        user_chat = col4.button(':speech_balloon:', help='Chat Support')
         authenticator.logout('Logout', 'sidebar')
         if button("Reset Password", key='reset'):
             try:
@@ -176,8 +144,8 @@ elif auth_status==True:
                 st.error(e)
 
     #! reading the source files
-    articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    #? location
-    orders_df = pd.read_csv("quickfibre/data/sitedata2k.csv",encoding= 'unicode_escape')      #? location
+    articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    
+    orders_df = pd.read_csv("quickfibre/data/sitedata2k.csv",encoding= 'unicode_escape')      
 
     #! column extraction from construction column
     #! function to extractor columns 
