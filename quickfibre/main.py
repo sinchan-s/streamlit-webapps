@@ -61,7 +61,7 @@ test_items = [
 #! sidebar contents
 with st.sidebar:
     st.image('quickfibre/images/ph.png')
-    if st.button("Refresh"):
+    if st.button(":repeat:"):
         st.rerun()
 
 #! user account control
@@ -88,7 +88,8 @@ if auth_status==None or auth_status==False:
     carousel(items=test_items, width=1)
     with st.sidebar:
         st.warning('Enter username & password !')
-        signup_btn = button("Signup", key='reg')
+        col1, col2 = st.columns(2, gap='large')
+        with col1: signup_btn = button("Signup", key='reg')
         if signup_btn:
             try:
                 register_user = authenticator.register_user('Register user', preauthorization=False)
@@ -96,7 +97,16 @@ if auth_status==None or auth_status==False:
                     st.success('User registered successfully')
             except Exception as e:
                 st.error(e)
-        # st.write(register_user)
+        with col2: forgot_pass = button("Forgot Password", key='forgot_pass')
+        if forgot_pass:
+            try:
+                username_of_forgotten_password, email_of_forgotten_password, new_random_password = authenticator.forgot_password('Forgot Password')
+                if username_of_forgotten_password:
+                    st.success('New password to be sent securely')
+                else:
+                    st.error('Username not found')
+            except Exception as e:
+                st.error(e)
 
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
@@ -141,10 +151,19 @@ elif auth_status==True:
         user_collect = col3.button(':womans_clothes:', help='Collections')
         user_chat = col4.button(':speech_balloon:', help='Chat Support')
         authenticator.logout('Logout', 'sidebar')
-        if button("Reset Password", key='reset'):
+        col1, col2 = st.columns(2, gap='large')
+        with col1: pass_reset = button("Reset Password", key='reset')
+        if pass_reset:
             try:
                 if authenticator.reset_password(username, form_name='Reset Password'):
                     st.success('Password modified successfully')
+            except Exception as e:
+                st.error(e)
+        with col2: update_details = button("Update details", key='update_details')
+        if update_details:
+            try:
+                if authenticator.update_user_details(username, 'Update Details'):
+                    st.success('Entries updated successfully')
             except Exception as e:
                 st.error(e)
 
