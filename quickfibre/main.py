@@ -88,10 +88,12 @@ if auth_status==None or auth_status==False:
         signup_btn = button("Signup", key='reg')
         if signup_btn:
             try:
-                if authenticator.register_user('Register user', preauthorization=False):
+                register_user = authenticator.register_user('Register user', preauthorization=False)
+                if register_user:
                     st.success('User registered successfully')
             except Exception as e:
                 st.error(e)
+        st.write(register_user)
 
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
