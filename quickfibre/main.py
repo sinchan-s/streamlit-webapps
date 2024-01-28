@@ -93,7 +93,7 @@ if auth_status==None or auth_status==False:
                     st.success('User registered successfully')
             except Exception as e:
                 st.error(e)
-        st.write(register_user)
+        # st.write(register_user)
 
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
