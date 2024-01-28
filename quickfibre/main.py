@@ -22,13 +22,13 @@ st.set_page_config(
     initial_sidebar_state="expanded")          #! side-bar state when page-load
 
 #! clean footer
-# hide_default_format = """
-#        <style>
-#        #MainMenu {visibility: hidden;}
-#        footer {visibility: hidden;}
-#        </style>
-#        """
-# st.markdown(hide_default_format, unsafe_allow_html=True)
+hide_default_format = """
+       <style>
+       #MainMenu {visibility: hidden;}
+       footer {visibility: hidden;}
+       </style>
+       """
+st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
 #! an apt heading
@@ -59,7 +59,10 @@ test_items = [
 ]
 
 #! sidebar contents
-st.sidebar.image('quickfibre/images/ph.png')  
+with st.sidebar:
+    st.image('quickfibre/images/ph.png')
+    if st.button("Refresh"):
+        st.rerun()
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
