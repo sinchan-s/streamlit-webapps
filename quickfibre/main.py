@@ -191,13 +191,19 @@ elif auth_status==True:
     if nav_menu=="Variety":
         col1, col2, col3 = st.columns(3)
         with col1:
+            st.markdown('<img src="https://img1.exportersindia.com/product_images/bc-full/dir_102/3054382/yarn-dyed-fabrics-1182473.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
             st.button("Yarn Dyed")
-            st.button("RFD")
+            st.markdown('<img src="https://dineshexports.com/wp-content/uploads/2021/03/FC-R6C-scaled.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
+            st.button("RFD / White")
         with col2:
+            st.markdown('<img src="https://image.made-in-china.com/202f0j00NMifhGWnywoy/100-Polyester-Microfiber-Dyed-Fabric-for-Hometextile.webp" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
             st.button("Piece Dyed")
+            st.markdown('<img src="https://www.sustainme.in/cdn/shop/articles/o_1_1400x.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
             st.button("Organic")
         with col3:
+            st.markdown('<img src="https://d1jsd7iv7h2l7v.cloudfront.net/wp-content/uploads/2021/08/Sky-Blue-Floral-Print-on-Poly-Twill-Dress-Material-Fabric-16366-2.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
             st.button("Prints")
+            st.markdown('<img src="https://genwoo.sg/cdn/shop/articles/recycled-fabric-scaled.webp" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
             st.button("Recycled")
 
 #*------------------------------------------------------------------------------------------*#
