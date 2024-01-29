@@ -30,39 +30,28 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-
 #! an apt heading
 left_col, right_col = st.columns(2, gap='large')
-left_col.header("QuickFibre")
+left_col.title("QuickFibre")
 db.load_deta()
-# left_col.caption("Your idea Our creation")
-
 
 #! products highlight & nav menu
 test_items = [
-    dict(
-        title="Vardhman Apparels",
+    dict(title="Vardhman Apparels",
         text="Our inhouse garmenting facility",
         interval=None,
-        img="https://www.vardhman.com/images/Businesses/Garments/Banner.jpg",
-    ),
-    dict(
-        title="Vardhman Yarns",
+        img="https://www.vardhman.com/images/Businesses/Garments/Banner.jpg"),
+    dict(title="Vardhman Yarns",
         text="Prime producer of premium quality yarns",
-        img="https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg",
-    ),
-    dict(
-        title="Vardhman Fabrics",
+        img="https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg"),
+    dict(title="Vardhman Fabrics",
         text="Vertically integrated fabric suppliers",
-        img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg",
-    ),
+        img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg"),
 ]
 
 #! sidebar contents
 with st.sidebar:
     st.image('quickfibre/images/ph.png')
-    if st.button(":repeat:"):
-        st.rerun()
 
 #! user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
@@ -111,7 +100,7 @@ if auth_status==None or auth_status==False:
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.subheader("Welcome to the world of possibilities !!")
+        st.header("Welcome to the world of possibilities !!")
         st.caption("Click on the side controls to navigate")
     with col2:
         nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
@@ -139,8 +128,7 @@ elif auth_status==True:
     with st.sidebar:
         #! user account details
         st.image('quickfibre/images/user-ph.png')     
-        st.write(f'Welcome, **{name}** !')
-        st.caption(f'@{username}')
+        st.write(f'Welcome, **{name}**(@{username}) !')
         st.caption('-{company}')
         st.caption(f'Email: {credentials["usernames"][username]["email"]}')
         st.caption("Credit Score: {score}")
@@ -151,6 +139,7 @@ elif auth_status==True:
         user_collect = col3.button(':womans_clothes:', help='Collections')
         user_chat = col4.button(':speech_balloon:', help='Chat Support')
         authenticator.logout('Logout', 'sidebar')
+        st.divider()
         col1, col2 = st.columns(2, gap='large')
         with col1: pass_reset = button("Reset Password", key='reset')
         if pass_reset:
@@ -211,45 +200,47 @@ elif auth_status==True:
             st.button("Prints")
             st.button("Recycled")
 
-
 #*------------------------------------------------------------------------------------------*#
 #*                                      Enquiry Section                                     *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Enquiry":
         #! selection criteria
         col1, col2, col3 = st.columns(3)
-        warp_fibre_select = col1.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
-        warp_count_select = str(col1.select_slider("Count", count_list, help="Count selector: Warp"))
-        warp_spin_select = col1.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
-        warp_ply_check = col1.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
-        if warp_ply_check:
-            warp_value = '2/' + warp_count_select
-        else:
-            warp_value = warp_count_select
-        warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
-        # st.write(warp_regex)
-        same_for_weft = col1.checkbox('Same parameters for Weft')
-        weft_fibre_select = col2.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
-        weft_count_select = str(col2.select_slider("Count", count_list, help="Count selector: Weft"))
-        weft_spin_select = col2.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
-        weft_ply_check = col2.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
-        if same_for_weft:
-            weft_regex = warp_regex
-        else:
-            if weft_ply_check:
-                weft_value = '2/' + weft_count_select
+        with col1:
+            st.markdown("**Warp Parameters**")
+            warp_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
+            warp_count_select = str(st.select_slider("Count", count_list, help="Count selector: Warp"))
+            warp_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
+            warp_ply_check = st.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
+            if warp_ply_check:
+                warp_value = '2/' + warp_count_select
             else:
-                weft_value = weft_count_select
-            weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
-        # st.write(weft_regex)
-        epi_range = col3.slider('EPI range', 50, 210, (60, 150))
-        ppi_range = col3.slider('PPI range', 50, 200, (60, 150))
-        weave_selectbox = col3.selectbox("Weave", weave_list, help="Select the fabric weave")
-        effect_selectbox = col3.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
-        gsm_range = col3.slider('GSM range', 120, 350, (150, 200))
+                warp_value = warp_count_select
+            warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
+            same_for_weft = st.checkbox('Same parameters for Weft')
+        with col2:
+            st.markdown("**Weft Parameters**")
+            weft_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
+            weft_count_select = str(st.select_slider("Count", count_list, help="Count selector: Weft"))
+            weft_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
+            weft_ply_check = st.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
+            if same_for_weft:
+                weft_regex = warp_regex
+            else:
+                if weft_ply_check:
+                    weft_value = '2/' + weft_count_select
+                else:
+                    weft_value = weft_count_select
+                weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
+        with col3:
+            st.markdown("**Construction**")
+            epi_range = st.slider('EPI range', 50, 210, (60, 150))
+            ppi_range = st.slider('PPI range', 50, 200, (60, 150))
+            weave_selectbox = st.selectbox("Weave", weave_list, help="Select the fabric weave")
+            effect_selectbox = st.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
+            gsm_range = st.slider('GSM range', 120, 350, (150, 200))
 
-        selection_df = article_df[article_df['Construction'].str.contains(weave_selectbox) &
-                                    article_df['Construction'].str.contains(effect_dict.get(effect_selectbox))]
+        selection_df = article_df[article_df['Construction'].str.contains(weave_selectbox) & article_df['Construction'].str.contains(effect_dict.get(effect_selectbox))]
 
         # selection_df = selection_df[selection_df['gsm'].between(gsm_range[0], gsm_range[1]) & selection_df['epi'].between(epi_range[0], epi_range[1]) & selection_df['ppi'].between(ppi_range[0], ppi_range[1])]
         # selection_df = article_df[article_df['warp'].str.contains('^6[a-zA-Z]*', na=False)]
@@ -259,9 +250,9 @@ elif auth_status==True:
         with tab1:
             pass
             selection_df = selection_df.set_index('K1')
-            df_display = st.dataframe(selection_df)
+            df_display = st.dataframe(selection_df, use_container_width=True)
         with tab2:
-            df_display = st.dataframe(orders_df)
+            df_display = st.dataframe(orders_df, use_container_width=True)
 
 
 #*------------------------------------------------------------------------------------------*#
