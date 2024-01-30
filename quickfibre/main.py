@@ -280,15 +280,15 @@ elif auth_status==True:
                 "nav-link-selected": {"background-color": "#008b47"},
             })
             if order_type=='Bulk':
-                st.dataframe(orders_df[orders_df['Ord. Qty']>=500])
+                st.dataframe(orders_df[orders_df['Ord. Qty']>=500].T)
             if order_type=='Yardage':
-                st.dataframe(orders_df[orders_df['Ord. Qty'].between(200, 500)])
+                st.dataframe(orders_df[orders_df['Ord. Qty'].between(200, 500)].T)
             if order_type=='Deskloom':
-                st.dataframe(orders_df[orders_df['Ord. Qty']<=200])
+                st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
             if order_type=='Lab-Dip':
-                st.dataframe(orders_df[orders_df['Ord. Qty']<=200])
+                st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
             if order_type=='Strike-off':
-                st.dataframe(orders_df[orders_df['Ord. Qty']<=200])
+                st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
             collect_type = option_menu(
                 menu_title=None, 
                 options=['Hangers', 'Store', 'Availability'], 
