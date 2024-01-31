@@ -177,3 +177,4 @@ pyrightconfig.json
 
 *.pdf
 upload_to_db.py
+*.yaml
