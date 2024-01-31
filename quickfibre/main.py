@@ -138,6 +138,8 @@ elif auth_status==True:
         user_account = col2.button(':male-office-worker:', help='Account')
         user_collect = col3.button(':womans_clothes:', help='Collections')
         user_chat = col4.button(':speech_balloon:', help='Chat Support')
+        user_addresses = col1.button(':factory:', help='Addresses')
+        user_transact = col2.button(':currency_exchange:', help='Transactions')
         authenticator.logout('Logout', 'sidebar')
         st.divider()
         col1, col2 = st.columns(2, gap='large')
@@ -191,20 +193,20 @@ elif auth_status==True:
     if nav_menu=="Variety":
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown('<img src="https://img1.exportersindia.com/product_images/bc-full/dir_102/3054382/yarn-dyed-fabrics-1182473.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
-            st.button("Yarn Dyed")
-            st.markdown('<img src="https://dineshexports.com/wp-content/uploads/2021/03/FC-R6C-scaled.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
-            st.button("RFD / White")
+            st.markdown('<a href="#"><img src="https://img1.exportersindia.com/product_images/bc-full/dir_102/3054382/yarn-dyed-fabrics-1182473.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
+            st.write("Yarn Dyed")
+            st.markdown('<a href="#"><img src="https://dineshexports.com/wp-content/uploads/2021/03/FC-R6C-scaled.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
+            st.write("RFD / White")
         with col2:
-            st.markdown('<img src="https://image.made-in-china.com/202f0j00NMifhGWnywoy/100-Polyester-Microfiber-Dyed-Fabric-for-Hometextile.webp" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
-            st.button("Piece Dyed")
-            st.markdown('<img src="https://www.sustainme.in/cdn/shop/articles/o_1_1400x.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
-            st.button("Organic")
+            st.markdown('<a href="#"><img src="https://image.made-in-china.com/202f0j00NMifhGWnywoy/100-Polyester-Microfiber-Dyed-Fabric-for-Hometextile.webp" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
+            st.write("Piece Dyed")
+            st.markdown('<a href="#"><img src="https://www.sustainme.in/cdn/shop/articles/o_1_1400x.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
+            st.write("Organic")
         with col3:
-            st.markdown('<img src="https://d1jsd7iv7h2l7v.cloudfront.net/wp-content/uploads/2021/08/Sky-Blue-Floral-Print-on-Poly-Twill-Dress-Material-Fabric-16366-2.jpg" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
-            st.button("Prints")
-            st.markdown('<img src="https://genwoo.sg/cdn/shop/articles/recycled-fabric-scaled.webp" height=100 width=150 style="border: 2px solid orange">',unsafe_allow_html=True)
-            st.button("Recycled")
+            st.markdown('<a href="#"><img src="https://d1jsd7iv7h2l7v.cloudfront.net/wp-content/uploads/2021/08/Sky-Blue-Floral-Print-on-Poly-Twill-Dress-Material-Fabric-16366-2.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
+            st.write("Prints")
+            st.markdown('<a href="#"><img src="https://genwoo.sg/cdn/shop/articles/recycled-fabric-scaled.webp" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
+            st.write("Recycled")
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      Enquiry Section                                     *#
@@ -267,7 +269,6 @@ elif auth_status==True:
     if nav_menu=="Account":
         if button('Your Orders', key='ord'):
             col1, col2 = st.columns([2,1], gap='small')
-            # if button('Status', key='stat'):
             order_type = option_menu(
                 menu_title=None, 
                 options=['Bulk', 'Yardage', 'Deskloom', 'Lab-Dip', 'Strike-off'], 
@@ -289,15 +290,5 @@ elif auth_status==True:
                 st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
             if order_type=='Strike-off':
                 st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
-            collect_type = option_menu(
-                menu_title=None, 
-                options=['Hangers', 'Store', 'Availability'], 
-                icons=[], 
-                orientation='horizontal',
-                styles={
-                "container": {"padding": "0!important", "background-color": "#f1f1f1"},
-                "icon": {"color": "#fccc08", "font-size": "15px"}, 
-                "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
-                "nav-link-selected": {"background-color": "#008b47"},
-            })
-            collect_type
+        if button('Hangers', key='hang'):
+            st.write("Availabilty/Status")
