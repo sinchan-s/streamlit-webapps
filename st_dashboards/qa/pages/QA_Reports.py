@@ -125,7 +125,15 @@ if selected=='Grouping':
         delta_val3 = yd_prod
         col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{p_q3*100:,.2f} %")
         col3.metric(f":red[YD Q3] : :grey[{df_month}]", f"{yd_q3*100:,.2f} %")
-        col1.bar_chart(pd.DataFrame([total_prod, p_prod, yd_prod]))
+        st.write(np.random.randn(20, 3))
+    #     compiled_data =pd.DataFrame(
+    #         {
+    #             "col1": ['Production', 'Q3']*2,
+    #             "col2": [[p_prod, yd_prod], [p_q3, yd_q3]],
+    #             "col3":["#FF2255", "#5522FF"]*2
+    #         }
+    #     )
+    # col1.bar_chart(data=compiled_data, x="col1", y="col2", color="col3")
 
 
 if selected=='Lab':
