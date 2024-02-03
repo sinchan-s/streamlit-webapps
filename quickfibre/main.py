@@ -71,14 +71,14 @@ credentials = {"usernames": check}
 authenticator = stauth.Authenticate(credentials=credentials, key="qfibre_sign",
     cookie_name="qfibre_auth_cookie", cookie_expiry_days=0, preauthorized="check@email.com")
 
-name , auth_status, username = authenticator.login('Login', 'sidebar')
+name , auth_status, username = authenticator.login('Account Login', 'sidebar')
 
 if auth_status==None or auth_status==False:
     carousel(items=test_items, width=1)
     with st.sidebar:
         st.warning('Enter username & password !')
         col1, col2 = st.columns(2, gap='large')
-        with col1: signup_btn = button("Signup", key='reg')
+        with col1: signup_btn = button("New User Register", key='reg')
         if signup_btn:
             try:
                 register_user = authenticator.register_user('Register user', preauthorization=False)
@@ -104,7 +104,7 @@ elif auth_status==True:
         st.caption("Click on the side controls to navigate")
     with col2:
         nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
-            icons=['house', 'cloud-upload', "list-task", 'gear'], 
+            icons=['house-fill', 'flower3', "grid", 'person-fill'], 
             menu_icon="cast", default_index=0, orientation="vertical",
             styles={
             "container": {"padding": "0!important", "background-color": "#f1f1f1"},
