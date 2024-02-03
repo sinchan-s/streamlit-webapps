@@ -1,6 +1,7 @@
 import os, io, time, re
 import streamlit as st
 import pandas as pd
+import numpy as np
 import seaborn as sns
 from deta import Deta
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
@@ -93,47 +94,49 @@ with st.sidebar:
 #! Tab-1
 if selected=='Grouping':
 
+    # st.write(os.getcwd()+'\st_dashboards\qa\files')
     #!----retrieve data file
     qa_file_list = [item for item in drive_files_list if re.findall('qa-',item)]
     qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[-1], key=12)
+    workbooks = []
     for i,d in enumerate(qa_file_select):
-        df_full = pd.read_excel(drive_fetch(d).read(), sheet_name=None)
+        st.toast(f"Analyzing '{d}' ..........")
+        # workbooks.append(pd.read_excel('st_dashboards/qa/files/'+d, sheet_name='Summary'))
+        workbooks.append(pd.read_excel(drive_fetch(d).read(), sheet_name='Summary'))
+        st.toast(f"Loaded '{d}' !!")
 
     with st.expander('File Preview', expanded=False):
-        st.write(df_full['Summary'])
-        # st.write(df_full)
+        st.write(workbooks)
     #!-----columnized file data display
     col1, col2, col3 = st.columns(3, gap='large')
     delta_val1, delta_val2, delta_val3 = 0, 0, 0
-    print_vals, yd_vals = {}, {}    
+    print_production_vals, yd_production_vals = [], []    
     for i,d in enumerate(qa_file_select):
-        df_summ = df_full['Summary']
+        summary_sheet = workbooks[i]
         df_month = d.split('.')[0].split('-')[1].upper()
-        p_prod = df_summ.iloc[5,3]
-        p_q3 = df_summ.iloc[17:20,6].sum()+df_summ.iloc[21,6]
-        yd_prod = df_summ.iloc[5,7]
-        yd_q3 = df_summ.iloc[25,6]+df_summ.iloc[26,6]
-        total_prod = p_prod + yd_prod
+        print_prod = summary_sheet.iloc[5,3]
+        print_production_vals.append(print_prod)
+        print_q3 = summary_sheet.iloc[17:20,6].sum()+summary_sheet.iloc[21,6]
+        yd_prod = summary_sheet.iloc[5,7]
+        yd_production_vals.append(yd_prod)
+        yd_q3 = summary_sheet.iloc[25,6]+summary_sheet.iloc[26,6]
+        total_prod = print_prod + yd_prod
         delta_val1 = (total_prod - delta_val1)*100/delta_val1 if delta_val1 != 0 else 0
-        delta_val2 = (p_prod - delta_val2)*100/delta_val2 if delta_val2 != 0 else 0
+        delta_val2 = (print_prod - delta_val2)*100/delta_val2 if delta_val2 != 0 else 0
         delta_val3 = (yd_prod - delta_val3)*100/delta_val3 if delta_val3 != 0 else 0
         col1.metric(f":blue[Total Production] : :grey[{df_month}]", f"{total_prod:,.2f} m", delta=f'{delta_val1:#.1f} %')
         delta_val1 = total_prod
-        col2.metric(f":orange[Print Production] : :grey[{df_month}]", f"{p_prod:,.2f} m", delta=f'{delta_val2:.1f} %')
-        delta_val2 = p_prod
+        col2.metric(f":orange[Print Production] : :grey[{df_month}]", f"{print_prod:,.2f} m", delta=f'{delta_val2:.1f} %')
+        delta_val2 = print_prod
         col3.metric(f":violet[YD Production] : :grey[{df_month}]", f"{yd_prod:,.2f} m", delta=f'{delta_val3:.1f} %')
         delta_val3 = yd_prod
-        col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{p_q3*100:,.2f} %")
+        col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{print_q3*100:,.2f} %")
         col3.metric(f":red[YD Q3] : :grey[{df_month}]", f"{yd_q3*100:,.2f} %")
-        st.write(np.random.randn(20, 3))
-    #     compiled_data =pd.DataFrame(
-    #         {
-    #             "col1": ['Production', 'Q3']*2,
-    #             "col2": [[p_prod, yd_prod], [p_q3, yd_q3]],
-    #             "col3":["#FF2255", "#5522FF"]*2
-    #         }
-    #     )
-    # col1.bar_chart(data=compiled_data, x="col1", y="col2", color="col3")
+    compiled_production_data =pd.DataFrame([print_production_vals, yd_production_vals],  columns=["Print", "Yarn-Dyed"])
+    compiled_production_data
+    compiled_q3_data =pd.DataFrame([[print_q3*100, yd_q3*100]],  columns=["Print", "Yarn-Dyed"])
+    col1.bar_chart(data=compiled_production_data, color=["#FF2255", "#5522FF"])
+    col2.bar_chart(data=compiled_q3_data, color=["#FF2255", "#5522FF"])
 
 
 if selected=='Lab':
