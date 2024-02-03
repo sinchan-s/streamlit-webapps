@@ -142,7 +142,7 @@ if selected=='Grouping':
     col1.subheader("Monthly Production")
     col1.bar_chart(data=compiled_production_data, color=["#FF2255", "#5522FF"])
     col2.subheader("Monthly Q3")
-    col2.bar_chart(data=compiled_q3_data.mul(100), color=["#FF2255", "#5522FF"])
+    col2.line_chart(data=compiled_q3_data.mul(100), color=["#FF2255", "#5522FF"])
 
 
 if selected=='Lab':
