@@ -111,7 +111,7 @@ if selected=='Grouping':
     delta_val1, delta_val2, delta_val3 = 0, 0, 0
     print_production, yd_production, months, print_q3_list, yd_q3_list = [], [], [], [], []
     for i,d in enumerate(qa_file_select):
-        st.toast(f"Analyzing '{d}' ..........")
+        st.toast(f"Analyzing.......'{d}'")
         workbooks.append(pd.read_excel(drive_fetch(d).read(), sheet_name='Summary'))
         summary_sheet = workbooks[i]
         df_month = d.split('.')[0].split('-')[1].upper()
