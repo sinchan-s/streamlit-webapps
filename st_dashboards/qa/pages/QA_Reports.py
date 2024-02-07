@@ -2,7 +2,7 @@ import os, io, time, re
 import streamlit as st
 import pandas as pd
 import numpy as np
-import seaborn as sns
+import plotly.graph_objects as go
 from deta import Deta
 from streamlit_option_menu import option_menu  #pip install streamlit-option-menu
 from annotated_text import annotated_text, annotation   #pip install st-annotated-text
@@ -139,16 +139,21 @@ if selected=='Grouping':
         st.toast(f"Loaded '{d}' !!")
     compiled_production_data =pd.DataFrame({'Print':print_production, 'Yarn-Dyed':yd_production}, index=months)
     compiled_q3_data =pd.DataFrame({"Print":print_q3_list, "Yarn Dyed":yd_q3_list}, index=months)
-    col1.subheader("Monthly Production")
-    col1.bar_chart(data=compiled_production_data, color=["#FF2255", "#5522FF"])
-    col2.subheader("Monthly Q3")
-    col2.line_chart(data=compiled_q3_data.mul(100), color=["#FF2255", "#5522FF"])
+    st.subheader("Monthly Production")
+    production_compiled = go.Figure(data=[
+        go.Bar(name='Print', x=months, y=print_production),
+        go.Bar(name='Yarn-Dyed', x=months, y=yd_production)
+    ])
+    production_compiled.update_layout(barmode='stack')
+    st.plotly_chart(production_compiled)
+    # col1.bar_chart(data=compiled_production_data, color=["#FF2255", "#5522FF"])
+    st.subheader("Monthly Q3")
+    st.line_chart(data=compiled_q3_data.mul(100), color=["#FF2255", "#5522FF"])
 
 
 if selected=='Lab':
     #!----upload data file
     pass
-    
 if selected=='Inspection':
     #!----upload data file
     pass
