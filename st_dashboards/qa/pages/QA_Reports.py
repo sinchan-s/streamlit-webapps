@@ -136,20 +136,51 @@ if selected=='Grouping':
         # delta_val3 = yd_prod
         # col2.metric(f":red[Print Q3] : :grey[{df_month}]", f"{print_q3*100:,.2f} %")
         # col3.metric(f":red[YD Q3] : :grey[{df_month}]", f"{yd_q3*100:,.2f} %")
+    # compiled_production_data =pd.DataFrame({'Print':print_production, 'Yarn-Dyed':yd_production}, index=months)
+    # compiled_q3_data =pd.DataFrame({"Print":print_q3_list, "Yarn Dyed":yd_q3_list}, index=months)
         st.toast(f"Loaded '{d}' !!")
-    compiled_production_data =pd.DataFrame({'Print':print_production, 'Yarn-Dyed':yd_production}, index=months)
-    compiled_q3_data =pd.DataFrame({"Print":print_q3_list, "Yarn Dyed":yd_q3_list}, index=months)
-    st.subheader("Monthly Production")
-    production_compiled = go.Figure(data=[
+    compiled_production_fig = go.Figure(data=[
         go.Bar(name='Print', x=months, y=print_production),
         go.Bar(name='Yarn-Dyed', x=months, y=yd_production)
     ])
-    production_compiled.update_layout(barmode='stack')
-    st.plotly_chart(production_compiled)
-    # col1.bar_chart(data=compiled_production_data, color=["#FF2255", "#5522FF"])
-    st.subheader("Monthly Q3")
-    st.line_chart(data=compiled_q3_data.mul(100), color=["#FF2255", "#5522FF"])
-
+    compiled_production_fig.update_layout(
+        title='Monthly Production',
+        xaxis=dict(
+            title='Months',
+            titlefont_size=16,
+            tickfont_size=14,),
+        yaxis=dict(
+            title='Million meters',
+            titlefont_size=16,
+            tickfont_size=14),
+        legend=dict(
+            # x=0,
+            # y=4500000,
+            ),
+            barmode='stack',
+    )
+    col1.plotly_chart(compiled_production_fig, use_container_width=True)
+    compiled_q3_fig = go.Figure()
+    compiled_q3_fig.add_trace(go.Scatter(
+        x=months, y=list(map(lambda x: x * 100, print_q3_list)), name='Print', connectgaps=True))
+    compiled_q3_fig.add_trace(go.Scatter(
+        x=months, y=list(map(lambda x: x * 100, yd_q3_list)), name='Yarn-Dyed', connectgaps=True))
+    compiled_q3_fig.update_layout(
+        title='Monthly Q3',
+        xaxis=dict(
+            title='Months',
+            titlefont_size=16,
+            tickfont_size=14,),
+        yaxis=dict(
+            title='%',
+            titlefont_size=16,
+            tickfont_size=14),
+        # legend=dict(
+        #     x=0,
+        #     y=2.5,
+        #     ),
+    )
+    col2.plotly_chart(compiled_q3_fig, use_container_width=True)
 
 if selected=='Lab':
     #!----upload data file
