@@ -18,14 +18,14 @@ st.set_page_config(
 )
 
 #! clean streamlit styling
-hide_default_format = """
-       <style>
-       #MainMenu {visibility: hidden;}
-       footer {visibility: hidden;}
-       header {visibility: hidden;}
-       </style>
-       """
-st.markdown(hide_default_format, unsafe_allow_html=True)
+# hide_default_format = """
+#        <style>
+#        #MainMenu {visibility: hidden;}
+#        footer {visibility: hidden;}
+#        header {visibility: hidden;}
+#        </style>
+#        """
+# st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
 #! title, subtitle & global variables
@@ -112,6 +112,7 @@ if selected=='CUR':
 
     #!------------graph display
     cur_data_list = st.selectbox("Choose data: ", xls_drive.list()['names'])
+    st.dataframe(pd.read_excel(drive_fetch(cur_data_list).read(), sheet_name='EDPCurReport'))
     cur_main_chart = st.bar_chart()
     col1, col2, col3 = st.columns(3, gap="large")
     col1.write('DisplayC')
