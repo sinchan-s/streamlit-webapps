@@ -15,8 +15,8 @@ import database as db
 incomes = ["Salary", "Dividend", "Invest Return"]
 expenses = ['Food', 'Loan', 'CC Bill', 'Others']
 currency = "₹"
-page_title = "Income & Expense tracker"
-page_icon = ":money_with_wings:"
+page_title = "Expenz"
+page_icon = ":credit_card:"
 layout = "centered"
 
 #! intro
@@ -34,14 +34,14 @@ def get_all_periods():
     return periods
 
 #! clean streamlit styling
-hide_default_format = """
-       <style>
-       #MainMenu {visibility: hidden;}
-       footer {visibility: hidden;}
-       header {visibility: hidden;}
-       </style>
-       """
-st.markdown(hide_default_format, unsafe_allow_html=True)
+# hide_default_format = """
+#        <style>
+#        #MainMenu {visibility: hidden;}
+#        footer {visibility: hidden;}
+#        header {visibility: hidden;}
+#        </style>
+#        """
+# st.markdown(hide_default_format, unsafe_allow_html=True)
 
 #! nav menu
 selected = option_menu(
@@ -248,3 +248,15 @@ if selected == 'My Wallet Viewer':
     st.plotly_chart(fig2, use_container_width=True)
     fig3 = genSankey(df, cat_cols=['category_id','wallet_id'], value_cols='amount',title='Income flow')
     st.plotly_chart(fig3, use_container_width=True)
+
+col1, col2, col3, col4, col5 = st.columns(5)
+col1.button(":chart:", help="Investment")
+col2.button(":bus:", help="Transportation")
+col3.button(":shirt:", help="Clothes")
+col4.button(":iphone:", help="Recharge")
+col5.button(":gift:", help="Gift")
+col1.button(":shopping_trolley:", help="Shopping")
+col2.button(":closed_book:", help="Book")
+col3.button(":carrot:", help="Carrot")
+col4.button(":train:", help="Transportation")
+col5.button(":medical_symbol:", help="Medicals")
