@@ -56,17 +56,21 @@ if selected == 'Transaction entry':
     st.header(f'Enter your daily transactions')
     with st.form('entry_form', clear_on_submit=True):
         col1, col2 = st.columns(2)
-        col1.selectbox("Select Month:", months, key="month")
-        col2.selectbox("Select Year:", years, key="year")
+        col1.date_input(label="Date")
+        col2.time_input(label="Time")
         "---"
-        with st.expander("Income"):
-            for income in incomes:
-                st.number_input(f'{income}:', min_value=0, format="%i", step=10, key=income)
-        with st.expander("Expenses"):
-            for expense in expenses:
-                st.number_input(f'{expense}:', min_value=0, format="%i", step=10, key=expense)
-        with st.expander("Comment"):
-            comment = st.text_area("", placeholder="Enter a comment here....")
+        transact_type = option_menu(
+            menu_title=None, 
+            options=['Income', 'Expense', 'Transfer'],
+            icons=['arrow-down-circle', 'arrow-up-circle', 'arrow-repeat'],
+            orientation='horizontal')
+        transact_amount = st.number_input('Amount', min_value=0, format="%i", step=10, key='transact_amt')
+        transact_description = st.text_area("Description", placeholder="Short description")
+        if transact_type == 'Income' or transact_type == 'Expense':
+            transact_category = st.selectbox('Category', ['Investment', 'Salary'])
+        if transact_type == 'Transfer':
+            primary_account = st.selectbox('From Account', ['Kotak Bank', 'SBI Bank', 'UCO Bank', 'Paytm Bank', 'Cash'])
+            secondary_account = st.selectbox('To Account', ['Kotak Bank', 'SBI Bank', 'UCO Bank', 'Paytm Bank', 'Cash'])
         "---"
         submitted = st.form_submit_button("Save Data")
         if submitted:
