@@ -66,11 +66,16 @@ if selected == 'Transaction entry':
             orientation='horizontal')
         transact_amount = st.number_input('Amount', min_value=0, format="%i", step=10, key='transact_amt')
         transact_description = st.text_area("Description", placeholder="Short description")
-        if transact_type == 'Income' or transact_type == 'Expense':
+        if st.toggle('Transact Type', value=True):
+            st.write("Income")
             transact_category = st.selectbox('Category', ['Investment', 'Salary'])
-        if transact_type == 'Transfer':
+        else:
+            st.write("Expense")
             primary_account = st.selectbox('From Account', ['Kotak Bank', 'SBI Bank', 'UCO Bank', 'Paytm Bank', 'Cash'])
             secondary_account = st.selectbox('To Account', ['Kotak Bank', 'SBI Bank', 'UCO Bank', 'Paytm Bank', 'Cash'])
+
+        # if transact_type == 'Income' or transact_type == 'Expense':
+        # if transact_type == 'Transfer':
         "---"
         submitted = st.form_submit_button("Save Data")
         if submitted:
