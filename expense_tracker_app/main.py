@@ -54,7 +54,7 @@ selected = option_menu(
 #! input & save periods
 if selected == 'Transaction entry':
     st.header(f'Enter your daily transactions')
-    with st.form('entry_form', clear_on_submit=True):
+    with st.expander("___", expanded=True):
         col1, col2 = st.columns(2)
         col1.date_input(label="Date")
         col2.time_input(label="Time")
@@ -66,23 +66,20 @@ if selected == 'Transaction entry':
             orientation='horizontal')
         transact_amount = st.number_input('Amount', min_value=0, format="%i", step=10, key='transact_amt')
         transact_description = st.text_area("Description", placeholder="Short description")
-        if st.toggle('Transact Type', value=True):
-            st.write("Income")
+        if transact_type == 'Income' or transact_type == 'Expense':
             transact_category = st.selectbox('Category', ['Investment', 'Salary'])
-        else:
-            st.write("Expense")
+        if transact_type == 'Transfer':
             primary_account = st.selectbox('From Account', ['Kotak Bank', 'SBI Bank', 'UCO Bank', 'Paytm Bank', 'Cash'])
             secondary_account = st.selectbox('To Account', ['Kotak Bank', 'SBI Bank', 'UCO Bank', 'Paytm Bank', 'Cash'])
 
-        # if transact_type == 'Income' or transact_type == 'Expense':
-        # if transact_type == 'Transfer':
         "---"
-        submitted = st.form_submit_button("Save Data")
+        submitted = st.button("Save Data")
         if submitted:
             period = str(st.session_state["year"]) + "_" + str(st.session_state["month"])
             incomes = {income: st.session_state[income] for income in incomes}
             expenses = {expense: st.session_state[expense] for expense in expenses}
-            db.insert_period(period, incomes, expenses, comment)
+            # db.insert_period(period, incomes, expenses, comment)
+            st.write(f"{period}\n{incomes}\n{expenses}")
             st.success('Data saved!')
 
 #! plotting
