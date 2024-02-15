@@ -56,8 +56,8 @@ if selected == 'Transaction entry':
     st.header(f'Enter your daily transactions')
     with st.expander("___", expanded=True):
         col1, col2 = st.columns(2)
-        col1.date_input(label="Date")
-        col2.time_input(label="Time")
+        dt = col1.date_input(label="Date")
+        tm = col2.time_input(label="Time")
         "---"
         transact_type = option_menu(
             menu_title=None, 
@@ -75,12 +75,13 @@ if selected == 'Transaction entry':
         "---"
         submitted = st.button("Save Data")
         if submitted:
-            period = str(st.session_state["year"]) + "_" + str(st.session_state["month"])
-            incomes = {income: st.session_state[income] for income in incomes}
-            expenses = {expense: st.session_state[expense] for expense in expenses}
+            # period = str(dt) + "_" + str(tm)
+            # st.write(period)
+            # incomes = {income: st.session_state[income] for income in incomes}
+            # expenses = {expense: st.session_state[expense] for expense in expenses}
             # db.insert_period(period, incomes, expenses, comment)
-            st.write(f"{period}\n{incomes}\n{expenses}")
-            st.success('Data saved!')
+            st.write(f"{dt}\n{tm}\n{transact_amount}\n{transact_description}\n{transact_category}")
+            st.toast('Data saved!')
 
 #! plotting
 if selected == 'Visualize expense':
