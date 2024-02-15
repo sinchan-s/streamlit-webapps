@@ -1,4 +1,4 @@
-import os, io, time, re
+import io, time, re
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -93,8 +93,6 @@ with st.sidebar:
 #*----------------------------------------------------------------------------*#
 #! Tab-1
 if selected=='Grouping':
-
-    # st.write(os.getcwd()+'\st_dashboards\qa\files')
     #!----retrieve data file
     qa_file_list = [item for item in drive_files_list if re.findall('qa-',item)]
     qa_file_select = st.multiselect('Select files:', qa_file_list, default=qa_file_list[-1], key=12)
