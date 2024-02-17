@@ -46,13 +46,19 @@ def get_all_periods():
 #! nav menu
 selected = option_menu(
     menu_title=None, 
-    options=['Transaction entry', 'Visualize expense', 'My Wallet Viewer'],
-    icons=['pencil-fill', 'bar-chart-fill', 'wallet2'],
-    orientation='horizontal')
+    options=['  ', '   ', ' '],
+    icons=['pencil-fill', 'bar-chart-fill', 'credit-card-fill'],
+    orientation='horizontal',
+    styles={
+            "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+            "icon": {"color": "#0502ad", "font-size": "15px"}, 
+            "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+            "nav-link-selected": {"background-color": "#00c284"},
+        })
 
 
 #! input & save periods
-if selected == 'Transaction entry':
+if selected == '  ':
     st.header(f'Enter your daily transactions')
     with st.expander("___", expanded=True):
         col1, col2 = st.columns(2)
@@ -61,9 +67,15 @@ if selected == 'Transaction entry':
         "---"
         transact_type = option_menu(
             menu_title=None, 
-            options=['Income', 'Expense', 'Transfer'],
-            icons=['arrow-down-circle', 'arrow-up-circle', 'arrow-repeat'],
-            orientation='horizontal')
+            options=['Income', 'Transfer', 'Expense'],
+            icons=[' ', ' ', ' '],
+            orientation='horizontal',
+            styles={
+                    "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+                    "icon": {"color": "#0502ad", "font-size": "15px"}, 
+                    "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
+                    "nav-link-selected": {"background-color": "#e6a637"},
+                    })
         transact_amount = st.number_input('Amount', min_value=0, format="%i", step=10, key='transact_amt')
         transact_description = st.text_area("Description", placeholder="Short description")
         if transact_type == 'Income' or transact_type == 'Expense':
@@ -84,7 +96,7 @@ if selected == 'Transaction entry':
             st.toast('Data saved!')
 
 #! plotting
-if selected == 'Visualize expense':
+if selected == '   ':
     st.header("Period-wise Visualization")
     with st.form("saved_periods"):
         period = st.selectbox("Select Period:", get_all_periods())
@@ -121,7 +133,7 @@ if selected == 'Visualize expense':
             st.plotly_chart(fig, use_container_width=True)
 
 #! my wallet
-if selected == 'My Wallet Viewer':
+if selected == ' ':
     st.header("Date-wise Visualization")
     
     #! my wallet db access
