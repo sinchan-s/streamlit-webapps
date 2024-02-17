@@ -1,15 +1,6 @@
 [theme]
-# primary accent color for interactive elements
-primaryColor = "#26ad4a"
-
-# background color for maincontent area
-backgroundColor = "#130224"
-
-# background color for sidebar & most interactive widgets
-secondaryBackgroundColor = "#946e6a"
-
-# color for all text color
-textColor = "#ffffff"
-
-# font family for text
-font = "sans serif"
+primaryColor="green"
+backgroundColor="pink"
+secondaryBackgroundColor="#F0F2F6"
+textColor="#CCCCCC"
+font="serif"
