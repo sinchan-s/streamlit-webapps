@@ -1,4 +1,4 @@
-import calendar
+import math
 import sqlite3
 import datetime
 from datetime import datetime
@@ -20,12 +20,13 @@ page_icon = ":credit_card:"
 layout = "centered"
 
 #! intro
-st.set_page_config(page_title=page_title, page_icon=page_icon, layout=layout)
+st.set_page_config(page_title=page_title, page_icon=page_icon, layout=layout, menu_items={
+        "Get Help": 'mailto:john@example.com',
+        "Report a bug": "mailto:john@example.com",
+        "About": '* **Daily Expense tracking on the go app**'})
 st.title(page_title + " " + page_icon)
 
 #! dropdown for date
-years = [datetime.today().year, datetime.today().year + 1]
-months = list(calendar.month_name[1:])
 
 #! database interface
 def get_all_periods():
@@ -62,16 +63,18 @@ if selected == '  ':
     st.header(f'Enter your daily transactions')
     with st.expander("___", expanded=True):
         col1, col2 = st.columns(2)
-        dt = col1.date_input(label="Date")
-        tm = col2.time_input(label="Time")
+        calender_date = col1.date_input(label="Date")
+        clock_time = col2.time_input(label="Time")
+        # key = str(math.ceil(datetime.now().timestamp()))
+        key = datetime.timestamp(calender_date)
+        st.write(key)
         "---"
         transact_type = option_menu(
             menu_title=None, 
             options=['Income', 'Transfer', 'Expense'],
             icons=[' ', ' ', ' '],
             orientation='horizontal',
-            styles={
-                    "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+            styles={"container": {"padding": "0!important", "background-color": "#f1f1f1"},
                     "icon": {"color": "#0502ad", "font-size": "15px"}, 
                     "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
                     "nav-link-selected": {"background-color": "#e6a637"},
@@ -87,12 +90,12 @@ if selected == '  ':
         "---"
         submitted = st.button("Save Data")
         if submitted:
-            # period = str(dt) + "_" + str(tm)
+            # period = str(calender_date) + "_" + str(tm)
             # st.write(period)
             # incomes = {income: st.session_state[income] for income in incomes}
             # expenses = {expense: st.session_state[expense] for expense in expenses}
             # db.insert_period(period, incomes, expenses, comment)
-            st.write(f"{dt}\n{tm}\n{transact_amount}\n{transact_description}\n{transact_category}")
+            st.write(f"{calender_date}\n{clock_time}\n{transact_amount}\n{transact_description}\n{transact_category}")
             st.toast('Data saved!')
 
 #! plotting
