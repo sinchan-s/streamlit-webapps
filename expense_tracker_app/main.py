@@ -23,7 +23,7 @@ layout = "centered"
 st.set_page_config(page_title=page_title, page_icon=page_icon, layout=layout, menu_items={
         "Get Help": 'mailto:sinchan.tex@outlook.com',
         "Report a bug": "mailto:sinchan.tex@outlook.com",
-        "About": '* **Daily Expense tracking on the go app**'})
+        "About": '**Daily Expense tracking on the go app**'})
 st.title(page_title + " " + page_icon)
 
 #! dropdown for date
