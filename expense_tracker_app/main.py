@@ -57,7 +57,6 @@ selected = option_menu(
             "nav-link-selected": {"background-color": "#00c284"},
         })
 
-
 #! input & save periods
 if selected == '  ':
     st.header(f'Enter your daily transactions')
@@ -66,8 +65,8 @@ if selected == '  ':
         calender_date = col1.date_input(label="Date")
         clock_time = col2.time_input(label="Time")
         # key = str(math.ceil(datetime.now().timestamp()))
-        key = datetime.timestamp(calender_date)
-        st.write(key)
+        # key = datetime.timestamp(calender_date)
+        st.write(datetime.timestamp(datetime.strptime(str(calender_date),"%Y-%m-%d")))
         "---"
         transact_type = option_menu(
             menu_title=None, 
