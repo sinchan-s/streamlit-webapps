@@ -47,8 +47,8 @@ def get_all_periods():
 #! nav menu
 selected = option_menu(
     menu_title=None, 
-    options=['  ', '   ', ' '],
-    icons=['pencil-fill', 'bar-chart-fill', 'credit-card-fill'],
+    options=['Entry', 'Statistic', 'Transaction'],
+    icons=['pencil-fill', 'bar-chart-fill', 'arrow-left-right'],
     orientation='horizontal',
     styles={
             "container": {"padding": "0!important", "background-color": "#f1f1f1"},
@@ -58,19 +58,19 @@ selected = option_menu(
         })
 
 #! input & save periods
-if selected == '  ':
+if selected == 'Entry':
     st.header(f'Enter your daily transactions')
     with st.expander("___", expanded=True):
         col1, col2 = st.columns(2)
         calender_date = col1.date_input(label="Date")
         clock_time = col2.time_input(label="Time")
-        key = int(datetime.strptime(str(calender_date)+" "+str(clock_time),"%Y-%m-%d %H:%M:%S").timestamp())
+        key = int(datetime.strptime(str(calender_date)+str(clock_time),"%Y-%m-%d%H:%M:%S").timestamp())
         # st.write(key)
         "---"
         transact_type = option_menu(
             menu_title=None, 
             options=['Income', 'Transfer', 'Expense'],
-            icons=[' ', ' ', ' '],
+            icons=['arrow-down', 'arrow-repeat', 'arrow-up'],
             orientation='horizontal',
             styles={"container": {"padding": "0!important", "background-color": "#f1f1f1"},
                     "icon": {"color": "#0502ad", "font-size": "15px"}, 
@@ -97,7 +97,7 @@ if selected == '  ':
             st.toast('Data saved!')
 
 #! plotting
-if selected == '   ':
+if selected == 'Statistic':
     st.header("Period-wise Visualization")
     with st.form("saved_periods"):
         period = st.selectbox("Select Period:", get_all_periods())
@@ -133,12 +133,12 @@ if selected == '   ':
             fig.update_layout(margin=dict(l=15, r=15, t=25, b=25))
             st.plotly_chart(fig, use_container_width=True)
 
-#! my wallet
-if selected == ' ':
+#! transaction db
+if selected == 'Transaction':
     st.header("Date-wise Visualization")
     
     #! my wallet db access
-    dbfile = 'ignore/wallet-database.db'
+    dbfile = 'expense_tracker_app/ignore/wallet-database.db'
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
     table_list = [a for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
@@ -269,15 +269,15 @@ if selected == ' ':
     fig3 = genSankey(df, cat_cols=['category_id','wallet_id'], value_cols='amount',title='Income flow')
     st.plotly_chart(fig3, use_container_width=True)
 
-with st.expander("Category"):
-    col1, col2, col3, col4, col5 = st.columns(5)
-    col1.button(":chart:", help="Investment")
-    col2.button(":bus:", help="Transportation")
-    col3.button(":shirt:", help="Clothes")
-    col4.button(":iphone:", help="Recharge")
-    col5.button(":gift:", help="Gift")
-    col1.button(":shopping_trolley:", help="Shopping")
-    col2.button(":closed_book:", help="Book")
-    col3.button(":carrot:", help="Carrot")
-    col4.button(":train:", help="Transportation")
-    col5.button(":medical_symbol:", help="Medicals")
+# with st.expander("Category"):
+#     col1, col2, col3, col4, col5 = st.columns(5)
+#     col1.button(":chart:", help="Investment")
+#     col2.button(":bus:", help="Transportation")
+#     col3.button(":shirt:", help="Clothes")
+#     col4.button(":iphone:", help="Recharge")
+#     col5.button(":gift:", help="Gift")
+#     col1.button(":shopping_trolley:", help="Shopping")
+#     col2.button(":closed_book:", help="Book")
+#     col3.button(":carrot:", help="Carrot")
+#     col4.button(":train:", help="Transportation")
+#     col5.button(":medical_symbol:", help="Medicals")
