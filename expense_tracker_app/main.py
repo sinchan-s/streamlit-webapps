@@ -64,9 +64,8 @@ if selected == '  ':
         col1, col2 = st.columns(2)
         calender_date = col1.date_input(label="Date")
         clock_time = col2.time_input(label="Time")
-        # key = str(math.ceil(datetime.now().timestamp()))
-        # key = datetime.timestamp(calender_date)
-        st.write(datetime.timestamp(datetime.strptime(str(calender_date),"%Y-%m-%d")))
+        key = int(datetime.strptime(str(calender_date)+" "+str(clock_time),"%Y-%m-%d %H:%M:%S").timestamp())
+        # st.write(key)
         "---"
         transact_type = option_menu(
             menu_title=None, 
