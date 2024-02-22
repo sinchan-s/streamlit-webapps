@@ -59,7 +59,7 @@ selected = option_menu(
 
 #! input & save periods
 if selected == 'Entry':
-    st.header(f'Enter your daily transactions')
+    st.subheader(f'Enter your transactions')
     with st.expander("___", expanded=True):
         col1, col2 = st.columns(2)
         calender_date = col1.date_input(label="Date")
@@ -98,7 +98,7 @@ if selected == 'Entry':
 
 #! plotting
 if selected == 'Statistic':
-    st.header("Period-wise Visualization")
+    st.subheader("Period-wise Visualization")
     with st.form("saved_periods"):
         period = st.selectbox("Select Period:", get_all_periods())
         submitted = st.form_submit_button("Plot period")
@@ -135,18 +135,21 @@ if selected == 'Statistic':
 
 #! transaction db
 if selected == 'Transaction':
-    st.header("Date-wise Visualization")
+    st.subheader("Transactions history")
     
     #! my wallet db access
     dbfile = 'expense_tracker_app/ignore/wallet-database.db'
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
-    table_list = [a for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
+    table_list = [a[0] for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
+    with st.expander("Data view", expanded=False):
+        selected_table = st.selectbox("Select a table to view inside:", table_list)
+        tables_df = st.dataframe(pd.read_sql_query(f'SELECT * FROM {selected_table}', con))
     transaction_df = pd.read_sql_query('SELECT * FROM trans', con)          #? all transactions table
-    df = transaction_df.copy()
     walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)            #? all wallet ids table
     category_df = pd.read_sql_query('SELECT * FROM category', con)          #? all category ids table
     subcategory_df = pd.read_sql_query('SELECT * FROM subcategory', con)    #? all subcategory ids table
+    df = transaction_df.copy()
     con.close()
 
     #! data pre-processing
