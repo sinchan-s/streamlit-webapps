@@ -142,13 +142,16 @@ if selected == 'Transaction':
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
     table_list = [a[0] for a in cur.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
-    with st.expander("Data view", expanded=False):
+    with st.expander("Data view expander ", expanded=False):
         selected_table = st.selectbox("Select a table to view inside:", table_list)
         tables_df = st.dataframe(pd.read_sql_query(f'SELECT * FROM {selected_table}', con))
-    transaction_df = pd.read_sql_query('SELECT * FROM trans', con)          #? all transactions table
-    walletId_df = pd.read_sql_query('SELECT * FROM wallet', con)            #? all wallet ids table
-    category_df = pd.read_sql_query('SELECT * FROM category', con)          #? all category ids table
-    subcategory_df = pd.read_sql_query('SELECT * FROM subcategory', con)    #? all subcategory ids table
+    table_df_list = list()
+    for i, table in enumerate(table_list):
+        table_df = table + '_df'
+        table_df = pd.read_sql_query(f'SELECT * FROM {table_list[i]}', con)
+        table_df_list.append(table_df)
+    # st.write(table_df_list[12])
+    transaction_df = pd.read_sql_query(f'SELECT * FROM {table_list[12]}', con)          #? all transactions table
     df = transaction_df.copy()
     con.close()
 
@@ -161,22 +164,22 @@ if selected == 'Transaction':
     df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
 
     #! categorization of exp-inc
-    category_df.at[0, 'name'] = 'Bills'
-    category_df.at[1, 'name'] = 'Clothing'
-    category_df.at[2, 'name'] = 'Education'
-    category_df.at[5, 'name'] = 'Food'
-    category_df.at[6, 'name'] = 'Gifts'
-    category_df.at[7, 'name'] = 'Medicine'
-    category_df.at[10, 'name'] = 'Shopping'
-    category_df.at[11, 'name'] = 'Transportation'
-    category_df.at[12, 'name'] = 'Travel'
-    category_df.at[13, 'name'] = 'Others'
-    category_df.at[14, 'name'] = 'Adjustments'
-    category_df.at[21, 'name'] = 'Investment returns'
-    category_df.at[23, 'name'] = 'Salary'
-    category_df.at[25, 'name'] = 'Received: Others'
-    category_df.at[26, 'name'] = 'Adjustment'
-    category_df.at[32, 'name'] = 'Received: Cash'
+    # category_df.at[0, 'name'] = 'Bills'
+    # category_df.at[1, 'name'] = 'Clothing'
+    # category_df.at[2, 'name'] = 'Education'
+    # category_df.at[5, 'name'] = 'Food'
+    # category_df.at[6, 'name'] = 'Gifts'
+    # category_df.at[7, 'name'] = 'Medicine'
+    # category_df.at[10, 'name'] = 'Shopping'
+    # category_df.at[11, 'name'] = 'Transportation'
+    # category_df.at[12, 'name'] = 'Travel'
+    # category_df.at[13, 'name'] = 'Others'
+    # category_df.at[14, 'name'] = 'Adjustments'
+    # category_df.at[21, 'name'] = 'Investment returns'
+    # category_df.at[23, 'name'] = 'Salary'
+    # category_df.at[25, 'name'] = 'Received: Others'
+    # category_df.at[26, 'name'] = 'Adjustment'
+    # category_df.at[32, 'name'] = 'Received: Cash'
 
     #! replace wallet-id with wallet-name & category-id with category-name
     df['wallet_id'] = df['wallet_id'].replace(list(set(walletId_df['id'])), list(walletId_df['name']))
