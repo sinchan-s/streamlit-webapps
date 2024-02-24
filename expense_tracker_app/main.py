@@ -57,7 +57,7 @@ selected = option_menu(
             "nav-link-selected": {"background-color": "#00c284"},
         })
 
-#! input & save periods
+#! Menu-item: Entry
 if selected == 'Entry':
     st.subheader(f'Enter your transactions')
     with st.expander("___", expanded=True):
@@ -96,7 +96,7 @@ if selected == 'Entry':
             st.write(f"{calender_date}\n{clock_time}\n{transact_amount}\n{transact_description}\n{transact_category}")
             st.toast('Data saved!')
 
-#! plotting
+#! Menu-item: Statistic
 if selected == 'Statistic':
     st.subheader("Period-wise Visualization")
     with st.form("saved_periods"):
@@ -133,7 +133,7 @@ if selected == 'Statistic':
             fig.update_layout(margin=dict(l=15, r=15, t=25, b=25))
             st.plotly_chart(fig, use_container_width=True)
 
-#! transaction db
+#! Menu-item: Transaction
 if selected == 'Transaction':
     st.subheader("Transactions history")
     
@@ -150,10 +150,12 @@ if selected == 'Transaction':
         table_df = table + '_df'
         table_df = pd.read_sql_query(f'SELECT * FROM {table_list[i]}', con)
         table_df_list.append(table_df)
-    # st.write(table_df_list[12])
     transaction_df = pd.read_sql_query(f'SELECT * FROM {table_list[12]}', con)          #? all transactions table
     df = transaction_df.copy()
     con.close()
+    st.write(table_df_list[13])
+
+    st.write(table_df_list[12].merge(table_df_list[13], left_on='wallet_id', right_on='id', suffixes=('_left', '_right')))
 
     #! data pre-processing
     df['amount'] = df['amount'].div(100).round(2)
@@ -182,8 +184,8 @@ if selected == 'Transaction':
     # category_df.at[32, 'name'] = 'Received: Cash'
 
     #! replace wallet-id with wallet-name & category-id with category-name
-    df['wallet_id'] = df['wallet_id'].replace(list(set(walletId_df['id'])), list(walletId_df['name']))
-    df['transfer_wallet_id'] = df['transfer_wallet_id'].replace(list(set(walletId_df['id'])), list(walletId_df['name'].str.upper()))
+    df['wallet_id'] = df['wallet_id'].replace(list(set(wallet_df['id'])), list(wallet_df['name']))
+    df['transfer_wallet_id'] = df['transfer_wallet_id'].replace(list(set(wallet_df['id'])), list(wallet_df['name'].str.upper()))
     df['category_id'] = df['category_id'].replace(list(set(category_df['id'])), list(category_df['name']))
     df['subcategory_id'] = df['subcategory_id'].replace(list(set(subcategory_df['id'])), list(subcategory_df['name']))
     transfer_df = df[df['category_id'] == 0]
