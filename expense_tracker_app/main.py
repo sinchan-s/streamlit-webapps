@@ -153,9 +153,13 @@ if selected == 'Transaction':
     transaction_df = pd.read_sql_query(f'SELECT * FROM {table_list[12]}', con)          #? all transactions table
     df = transaction_df.copy()
     con.close()
+
     st.write(table_df_list[13])
 
-    st.write(table_df_list[12].merge(table_df_list[13], left_on='wallet_id', right_on='id', suffixes=('_left', '_right')))
+    trans_merge1 = table_df_list[12].merge(table_df_list[13], left_on='wallet_id', right_on='id', suffixes=('_trans', '_wallet'))
+    trans_merge2 = trans_merge1.merge(table_df_list[6], left_on='category_id', right_on='id', suffixes=('_merge1', '_catgry'))
+
+    st.write(trans_merge2)
 
     #! data pre-processing
     df['amount'] = df['amount'].div(100).round(2)
