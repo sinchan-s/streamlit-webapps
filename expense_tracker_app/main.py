@@ -154,10 +154,12 @@ if selected == 'Transaction':
     df = transaction_df.copy()
     con.close()
 
-    st.write(table_df_list[13])
+    category_df = table_df_list[6]
+    wallet_df = table_df_list[13]
 
-    trans_merge1 = table_df_list[12].merge(table_df_list[13], left_on='wallet_id', right_on='id', suffixes=('_trans', '_wallet'))
-    trans_merge2 = trans_merge1.merge(table_df_list[6], left_on='category_id', right_on='id', suffixes=('_merge1', '_catgry'))
+    transaction_df['type'] = transaction_df['type'].replace([0, 1, 2],['income', 'expense', 'transfer'])
+    trans_merge1 = transaction_df.merge(wallet_df, left_on='wallet_id', right_on='id', suffixes=('_trans', '_wallet'))
+    trans_merge2 = trans_merge1.merge(category_df, left_on='category_id', right_on='id', suffixes=('_merge1', '_catgry'))
 
     st.write(trans_merge2)
 
