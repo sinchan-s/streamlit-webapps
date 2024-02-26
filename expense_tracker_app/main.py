@@ -145,28 +145,28 @@ if selected == 'Transaction':
     with st.expander("Data view expander ", expanded=False):
         selected_table = st.selectbox("Select a table to view inside:", table_list)
         tables_df = st.dataframe(pd.read_sql_query(f'SELECT * FROM {selected_table}', con))
-    table_df_list = list()
+    table_dfs_name = list()
+    table_dfs_list = list()
     for i, table in enumerate(table_list):
         table_df = table + '_df'
+        table_dfs_name.append(table_df)
         table_df = pd.read_sql_query(f'SELECT * FROM {table_list[i]}', con)
-        table_df_list.append(table_df)
-    transaction_df = pd.read_sql_query(f'SELECT * FROM {table_list[12]}', con)          #? all transactions table
-    df = transaction_df.copy()
+        table_dfs_list.append(table_df)
     con.close()
 
-    category_df = table_df_list[6]
-    wallet_df = table_df_list[13]
+    #! dataframes declaration
+    df_declaration = lambda name: table_dfs_list[table_dfs_name.index(name)]
 
-    transaction_df['type'] = transaction_df['type'].replace([0, 1, 2],['income', 'expense', 'transfer'])
-    trans_merge1 = transaction_df.merge(wallet_df, left_on='wallet_id', right_on='id', suffixes=('_trans', '_wallet'))
-    trans_merge2 = trans_merge1.merge(category_df, left_on='category_id', right_on='id', suffixes=('_merge1', '_catgry'))
-
-    st.write(trans_merge2)
+    transaction_df = df_declaration('trans_df')          #? all transactions table
+    category_df = df_declaration('category_df')
+    wallet_df = df_declaration('wallet_df')
+    subcategory_df = df_declaration('subcategory_df')
+    df = transaction_df.copy()
 
     #! data pre-processing
     df['amount'] = df['amount'].div(100).round(2)
     df['trans_amount'] = df['trans_amount'].div(100).round(2)
-    df['type'] = df['type'].replace([0, 1, 2], ['inc', 'exp', 'tran'])
+    df['type'] = df['type'].replace([0, 1, 2], ['income', 'expense', 'transfer'])
     df.drop(['id', 'fee_id', 'account_id', 'debt_id', 'debt_trans_id', 'memo'], axis = 1, inplace = True)
     df['date_time'] = pd.to_datetime(df["date_time"], unit='ms').dt.date
     df = df[['date_time', 'type', 'amount', 'wallet_id', 'category_id', 'transfer_wallet_id', 'trans_amount', 'subcategory_id', 'note']]
@@ -197,7 +197,7 @@ if selected == 'Transaction':
     transfer_df = df[df['category_id'] == 0]
     # expenses_df = df[df['amount'] == 1]
     df = df[df['category_id'] != 0]
-    # st.dataframe(expenses_df)
+    # st.dataframe(df)
 
     #! selectors
     # from_date_selector = st.date_input('From date:', datetime.date(2020, 1, 1))
