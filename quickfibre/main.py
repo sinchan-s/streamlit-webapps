@@ -17,7 +17,7 @@ from streamlit_extras.stateful_button import button
 #! basic configurations
 st.set_page_config(
     page_title="QucikFibre",                   #! similar to <title> tag
-    page_icon=":womans_clothes:",               #! page icon
+    page_icon=":four_leaf_clover:",               #! page icon
     layout="wide",                              #! widen-out view of the layout
     initial_sidebar_state="expanded")          #! side-bar state when page-load
 
@@ -32,7 +32,7 @@ st.markdown(hide_default_format, unsafe_allow_html=True)
 
 #! an apt heading
 left_col, right_col = st.columns(2, gap='large')
-left_col.title("QuickFibre")
+left_col.title(":four_leaf_clover: QuickFibre")
 db.load_deta()
 
 #! products highlight & nav menu
@@ -49,11 +49,8 @@ test_items = [
         img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg"),
 ]
 
-#! sidebar contents
-with st.sidebar:
-    st.image('quickfibre/images/ph.png')
 
-#! user account control
+#! UAC - user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
 users = db.all_users_data()
 
@@ -101,13 +98,13 @@ elif auth_status==True:
     col1, col2 = st.columns([4, 1])
     with col1:
         st.header("Welcome to the world of possibilities !!")
-        st.caption("Click on the side controls to navigate")
+        st.caption("Click on menu items to navigate")
     with col2:
         nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
             icons=['house-fill', 'flower3', "grid", 'person-fill'], 
-            menu_icon="cast", default_index=0, orientation="vertical",
+            menu_icon="list", default_index=0, orientation="vertical",
             styles={
-            "container": {"padding": "0!important", "background-color": "#f1f1f1"},
+            "container": {"padding": "0!important", "background-color": "#f0f0f0"},
             "icon": {"color": "#fccc08", "font-size": "15px"}, 
             "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
             "nav-link-selected": {"background-color": "#008b47"},
@@ -127,6 +124,7 @@ elif auth_status==True:
     #! Sidebar UAC
     with st.sidebar:
         #! user account details
+        st.image('quickfibre/images/ph-0.png')
         st.image('quickfibre/images/user-ph.png')     
         st.write(f'Welcome, **{name}**(@{username}) !')
         st.caption('-{company}')
@@ -290,5 +288,21 @@ elif auth_status==True:
                 st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
             if order_type=='Strike-off':
                 st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
-        if button('Hangers', key='hang'):
-            st.write("Availabilty/Status")
+        with st.expander("**Order Activities**", expanded=True):
+            order_select = st.selectbox("Select order:", orders_df['Doc No'])
+            
+            left_col, right_col = st.columns(2, gap='large')
+            with left_col:
+                if button('Availability/Status', key='avail'):
+                    ord_avail = st.selectbox("Check for:", ['Order Status', 'Hangers', 'Feasibility', 'Developments', 'Fabric Availability'])
+                    # if ord_avail=='Order Status':
+                    #     st.write(f"Dispatch remaining: {orders_df.loc[orders_df['Doc No']==order_select]['Bal to Dispatch'][0]} m")
+                    #     st.write(f"Expected delivery: {orders_df.loc[orders_df['Doc No']==order_select]['Doc Date'][0].split(' ')[0]}")
+                    # else:
+                    #     pass
+            with right_col:
+                if button('Activities', key='activ'):
+                    activities = ['Dispatch details', 'Packing List', 'Inspection Report', 'Head Ends deatils', 'External Test Report(FPT)', 'Internal Test report(ITR)', 'Organic Certificates', 'GOTS Certificates', 'BCI Certificates', 'Lenzing Certificates', 'OCS Certificates', 'Lot Details', 'Shade Cards', 'FSC Certificates', 'GI Certificates', 'Compliances', 'Garments Compliances']
+                    activity_select = st.selectbox("Select file to download:", activities)
+                    st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
+                
