@@ -296,8 +296,12 @@ elif auth_status==True:
                 if button('Availability/Status', key='avail'):
                     ord_avail = st.selectbox("Check for:", ['Order Status', 'Hangers', 'Feasibility', 'Developments', 'Fabric Availability'])
                     if ord_avail=='Order Status':
-                        st.write(f"Dispatch remaining: {orders_df.loc[orders_df['Doc No']==order_select]['Bal to Dispatch'][0]} m")
-                        st.write(f"Expected delivery: {orders_df.loc[orders_df['Doc No']==order_select]['Doc Date'][0].split(' ')[0]}")
+                        try:
+                            st.write(f"Dispatch remaining: {orders_df.loc[orders_df['Doc No']==order_select]['Bal to Dispatch'][0]} m")
+                            st.write(f"Expected delivery: {orders_df.loc[orders_df['Doc No']==order_select]['Doc Date'][0].split(' ')[0]}")
+                        except:
+                            st.write(f"Dispatch remaining: 0 m")
+                            st.write(f"Expected delivery: 2024-03-28")
                     else:
                         pass
             with right_col:
