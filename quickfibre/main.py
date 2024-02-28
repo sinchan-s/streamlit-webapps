@@ -295,13 +295,13 @@ elif auth_status==True:
             with left_col:
                 if button('Availability/Status', key='avail'):
                     ord_avail = st.selectbox("Check for:", ['Order Status', 'Hangers', 'Feasibility', 'Developments', 'Fabric Availability'])
-                    # if ord_avail=='Order Status':
-                    #     st.write(f"Dispatch remaining: {orders_df.loc[orders_df['Doc No']==order_select]['Bal to Dispatch'][0]} m")
-                    #     st.write(f"Expected delivery: {orders_df.loc[orders_df['Doc No']==order_select]['Doc Date'][0].split(' ')[0]}")
-                    # else:
-                    #     pass
+                    if ord_avail=='Order Status':
+                        st.write(f"Dispatch remaining: {orders_df.loc[orders_df['Doc No']==order_select]['Bal to Dispatch'][0]} m")
+                        st.write(f"Expected delivery: {orders_df.loc[orders_df['Doc No']==order_select]['Doc Date'][0].split(' ')[0]}")
+                    else:
+                        pass
             with right_col:
-                if button('Activities', key='activ'):
+                if button('Reports/Certificates', key='activ'):
                     activities = ['Dispatch details', 'Packing List', 'Inspection Report', 'Head Ends deatils', 'External Test Report(FPT)', 'Internal Test report(ITR)', 'Organic Certificates', 'GOTS Certificates', 'BCI Certificates', 'Lenzing Certificates', 'OCS Certificates', 'Lot Details', 'Shade Cards', 'FSC Certificates', 'GI Certificates', 'Compliances', 'Garments Compliances']
                     activity_select = st.selectbox("Select file to download:", activities)
                     st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
