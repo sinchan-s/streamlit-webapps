@@ -1,15 +1,15 @@
 
 #! standard librabries
-import re
+import re, random
 import pandas as pd
 import numpy as np
 import streamlit as st
 import database as db
+import datetime
 
 #! addtional libs
-import yaml
+from annotated_text import annotated_text, annotation
 import streamlit_authenticator as stauth
-from yaml.loader import SafeLoader 
 from streamlit_option_menu import option_menu
 from streamlit_carousel import carousel
 from streamlit_extras.stateful_button import button 
@@ -37,14 +37,14 @@ db.load_deta()
 
 #! products highlight & nav menu
 test_items = [
-    dict(title="Vardhman Apparels",
+    dict(title="Apparels",
         text="Our inhouse garmenting facility",
         interval=None,
         img="https://www.vardhman.com/images/Businesses/Garments/Banner.jpg"),
-    dict(title="Vardhman Yarns",
+    dict(title="Yarns",
         text="Prime producer of premium quality yarns",
         img="https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg"),
-    dict(title="Vardhman Fabrics",
+    dict(title="Fabrics",
         text="Vertically integrated fabric suppliers",
         img="https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg"),
 ]
@@ -75,8 +75,8 @@ if auth_status==None or auth_status==False:
     with st.sidebar:
         st.warning('Enter username & password !')
         col1, col2 = st.columns(2, gap='large')
-        with col1: signup_btn = button("New User Register", key='reg')
-        if signup_btn:
+        with col1: user_register_btn = button("New User Register", key='reg')
+        if user_register_btn:
             try:
                 register_user = authenticator.register_user('Register user', preauthorization=False)
                 if register_user:
@@ -109,14 +109,6 @@ elif auth_status==True:
             "nav-link": {"color": "black","font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#bfbfbf"},
             "nav-link-selected": {"background-color": "#008b47"},
         })
-    col1, col2, col3 = st.columns(3, gap='large')
-    if nav_menu=="Home":
-        col1.image('https://www.vardhman.com/images/Businesses/Garments/Banner.jpg')
-        col1.write('Vardhman Apparels')
-        col2.image('https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg')
-        col2.write('Vardhman Yarns')
-        col3.image('https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg')
-        col3.write('Vardhman Fabrics')
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      Sidebar Controls                                    *#
@@ -132,12 +124,14 @@ elif auth_status==True:
         st.caption("Credit Score: {score}")
         #! account buttons
         col1, col2, col3, col4 = st.columns(4, gap='large')
-        user_search = col1.button(':mag:', help='Search')
-        user_account = col2.button(':male-office-worker:', help='Account')
-        user_collect = col3.button(':womans_clothes:', help='Collections')
-        user_chat = col4.button(':speech_balloon:', help='Chat Support')
-        user_addresses = col1.button(':factory:', help='Addresses')
-        user_transact = col2.button(':currency_exchange:', help='Transactions')
+        with col1:
+            user_search = st.button(':mag:', help='Search')
+            user_addresses = st.button(':factory:', help='Addresses')
+        with col2:
+            user_account = st.button(':male-office-worker:', help='Account')
+            user_transact = button(':currency_exchange:', key='transact', help='Transactions')
+        with col3: user_collect = st.button(':womans_clothes:', help='Collections')
+        with col4: user_chat = st.button(':speech_balloon:', help='Chat Support')
         authenticator.logout('Logout', 'sidebar')
         st.divider()
         col1, col2 = st.columns(2, gap='large')
@@ -184,6 +178,39 @@ elif auth_status==True:
     fibre_dict = {'All':"", 'Viscose':"VIS", 'Modal':"MOD", 'CVC':"CVC", 'Polyester':"PET", 'PC-Blend':"PC", 'Nylon':"NYL", 'Spandex/Lycra':"SPX", 'Lyocell':"LYC", 'Organic Cotton':"OG", 'Recycled Cotton':"RECY", 'Multi-Count':"MC"}
     weave_list = ["", 'PLAIN', 'TWILL', 'SATIN', 'DOBBY', 'CVT', 'MATT', 'HBT', 'BKT', 'OXFORD', 'DOUBLE CLOTH', 'BEDFORD CORD', 'RIBSTOP', 'WEFTRIB']
     effect_dict = {'Normal': "", 'Seer Sucker': 'SUCKER', 'Crepe': 'CREPE', 'Butta-Cut': 'FIL-COUPE', 'Crinkle': 'CRINKLE', 'Slub':"MC"}
+
+#*------------------------------------------------------------------------------------------*#
+#*                                  Account buttons control                                 *#
+#*------------------------------------------------------------------------------------------*#
+    if user_transact:
+        with st.expander(label="**Transactions**", expanded=True):
+            left_col, right_col = st.columns(2, gap='small')
+            with left_col: st.selectbox("Search by Order", orders_df['Doc No'])
+            with right_col:
+                today = datetime.datetime.now()
+                next_year = today.year + 1
+                feb_28 = datetime.date(today.year, 2, 28)
+                mar_17 = datetime.date(today.year, 3, 17)
+                st.date_input("Search by Date", (feb_28, datetime.date(today.year, 3, 7)),feb_28, mar_17, format="DD/MM/YYYY",)
+            # st.dataframe(orders_df.loc[orders_df['Doc No']==order_select])
+            pay_amt = np.random.randint(100000, 1000000)
+            pay_status_list = ['paid', 'unpaid', 'in-process', 'unsuccessful']
+            st.image('quickfibre/images/transaction.jpg')
+            # st.write(random.choices(pay_status_list, k=16))
+            # st.write(orders_df.shape[0])
+            # st.dataframe(pay_amt)
+            
+#*------------------------------------------------------------------------------------------*#
+#*                                        Home Section                                      *#
+#*------------------------------------------------------------------------------------------*#
+    if nav_menu=="Home":
+        col1, col2, col3 = st.columns(3, gap='large')
+        col1.image('https://www.vardhman.com/images/Businesses/Garments/Banner.jpg')
+        col1.write('Apparels')
+        col2.image('https://www.vardhman.com/images/Businesses/Yarns/Banner.jpg')
+        col2.write('Yarns')
+        col3.image('https://www.vardhman.com/images/Businesses/Fabrics/Banner.jpg')
+        col3.write('Fabrics')
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      Variety Section                                     *#
