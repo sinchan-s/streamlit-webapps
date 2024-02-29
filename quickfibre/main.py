@@ -150,6 +150,9 @@ elif auth_status==True:
             except Exception as e:
                 st.error(e)
 
+#*------------------------------------------------------------------------------------------*#
+#*                                      Test dataframe                                      *#
+#*------------------------------------------------------------------------------------------*#
     #! reading the source files
     articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    
     orders_df = pd.read_csv("quickfibre/data/sitedata2k.csv",encoding= 'unicode_escape')      
@@ -193,15 +196,23 @@ elif auth_status==True:
                 mar_17 = datetime.date(today.year, 3, 17)
                 st.date_input("Search by Date", (feb_28, datetime.date(today.year, 3, 7)),feb_28, mar_17, format="DD/MM/YYYY",)
             # st.dataframe(orders_df.loc[orders_df['Doc No']==order_select])
-            pay_amt = np.random.randint(100000, 1000000)
-            pay_status_list = ['paid', 'unpaid', 'in-process', 'unsuccessful']
-            st.image('quickfibre/images/transaction.jpg')
-            # st.write(random.choices(pay_status_list, k=16))
-            # st.write(orders_df.shape[0])
-            # st.dataframe(pay_amt)
+            row_count = orders_df.shape[0]
+            pay_amt = np.random.randint(100000, 1000000, size=row_count)
+            pay_status = ['Paid', 'Unpaid', 'Unsuccessful']
+            pay_type = ['UPI', 'NEFT', 'RTGS', 'Unavailable']
+            pay_ai_check = ['✓', 'X', '↻']
+            # st.image('quickfibre/images/transaction.jpg')
+            transact_dict = {'Order ID': orders_df['Doc No'],
+                            'Date': orders_df['Doc Date'],
+                            'Mode': random.choices(pay_type, k=row_count),
+                            'Status':random.choices(pay_status, k=row_count),
+                            'Amount (₹)': random.choices(pay_amt, k=row_count),
+                            'Verification': random.choices(pay_ai_check, k=row_count),
+                            }
+            st.dataframe(pd.DataFrame(transact_dict), use_container_width=True)
             
 #*------------------------------------------------------------------------------------------*#
-#*                                        Home Section                                      *#
+#*                                        Home Menu                                         *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Home":
         col1, col2, col3 = st.columns(3, gap='large')
@@ -213,7 +224,7 @@ elif auth_status==True:
         col3.write('Fabrics')
 
 #*------------------------------------------------------------------------------------------*#
-#*                                      Variety Section                                     *#
+#*                                      Variety Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Variety":
         col1, col2, col3 = st.columns(3)
@@ -234,44 +245,45 @@ elif auth_status==True:
             st.write("Recycled")
 
 #*------------------------------------------------------------------------------------------*#
-#*                                      Enquiry Section                                     *#
+#*                                      Enquiry Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Enquiry":
         #! selection criteria
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown("**Warp Parameters**")
-            warp_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
-            warp_count_select = str(st.select_slider("Count", count_list, help="Count selector: Warp"))
-            warp_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
-            warp_ply_check = st.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
-            if warp_ply_check:
-                warp_value = '2/' + warp_count_select
-            else:
-                warp_value = warp_count_select
-            warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
-            same_for_weft = st.checkbox('Same parameters for Weft')
-        with col2:
-            st.markdown("**Weft Parameters**")
-            weft_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
-            weft_count_select = str(st.select_slider("Count", count_list, help="Count selector: Weft"))
-            weft_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
-            weft_ply_check = st.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
-            if same_for_weft:
-                weft_regex = warp_regex
-            else:
-                if weft_ply_check:
-                    weft_value = '2/' + weft_count_select
+        with st.container(height=200):
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown("**Warp Parameters**")
+                warp_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in warp")
+                warp_count_select = str(st.select_slider("Count", count_list, help="Count selector: Warp"))
+                warp_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of warp")
+                warp_ply_check = st.checkbox(f'Doube ply: {warp_count_select} Ne', key=1, help=f"Check for doube ply in {warp_count_select} Ne")
+                if warp_ply_check:
+                    warp_value = '2/' + warp_count_select
                 else:
-                    weft_value = weft_count_select
-                weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
-        with col3:
-            st.markdown("**Construction**")
-            epi_range = st.slider('EPI range', 50, 210, (60, 150))
-            ppi_range = st.slider('PPI range', 50, 200, (60, 150))
-            weave_selectbox = st.selectbox("Weave", weave_list, help="Select the fabric weave")
-            effect_selectbox = st.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
-            gsm_range = st.slider('GSM range', 120, 350, (150, 200))
+                    warp_value = warp_count_select
+                warp_regex = '^'+warp_value+spin_dict.get(warp_spin_select)
+                same_for_weft = st.checkbox('Same parameters for Weft')
+            with col2:
+                st.markdown("**Weft Parameters**")
+                weft_fibre_select = st.selectbox("Fibre", list(fibre_dict), help="Dropdown list of fibres used in weft")
+                weft_count_select = str(st.select_slider("Count", count_list, help="Count selector: Weft"))
+                weft_spin_select = st.selectbox("Spinning technology", list(spin_dict),  help="Spinning technology of weft")
+                weft_ply_check = st.checkbox(f'Doube ply: {weft_count_select} Ne', key=2, help=f"Check for doube ply in {weft_count_select} Ne")
+                if same_for_weft:
+                    weft_regex = warp_regex
+                else:
+                    if weft_ply_check:
+                        weft_value = '2/' + weft_count_select
+                    else:
+                        weft_value = weft_count_select
+                    weft_regex = '^'+weft_value+spin_dict.get(weft_spin_select)
+            with col3:
+                st.markdown("**Construction**")
+                epi_range = st.slider('EPI range', 50, 210, (60, 150))
+                ppi_range = st.slider('PPI range', 50, 200, (60, 150))
+                weave_selectbox = st.selectbox("Weave", weave_list, help="Select the fabric weave")
+                effect_selectbox = st.selectbox("Effect", list(effect_dict), help="Select any special effect on fabric")
+                gsm_range = st.slider('GSM range', 120, 350, (150, 200))
 
         selection_df = article_df[article_df['Construction'].str.contains(weave_selectbox) & article_df['Construction'].str.contains(effect_dict.get(effect_selectbox))]
 
@@ -289,7 +301,7 @@ elif auth_status==True:
 
 
 #*------------------------------------------------------------------------------------------*#
-#*                                      Account Section                                     *#
+#*                                      Account Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Account":
         if button('Your Orders', key='ord'):
