@@ -16,10 +16,10 @@ from streamlit_extras.stateful_button import button
 
 #! basic configurations
 st.set_page_config(
-    page_title="QucikFibre",                   #! similar to <title> tag
-    page_icon=":four_leaf_clover:",               #! page icon
-    layout="wide",                              #! widen-out view of the layout
-    initial_sidebar_state="expanded")          #! side-bar state when page-load
+    page_title="QucikFibre",                   #? similar to <title> tag
+    page_icon=":four_leaf_clover:",               #? page icon
+    layout="wide",                              #? widen-out view of the layout
+    initial_sidebar_state="expanded")          #? side-bar state when page-load
 
 #! clean footer
 hide_default_format = """
@@ -52,6 +52,7 @@ test_items = [
 
 #! UAC - user account control
 # https://blog.streamlit.io/streamlit-authenticator-part-1-adding-an-authentication-component-to-your-app/
+#! fetch all users data from database
 users = db.all_users_data()
 
 usernames = [user["key"] for user in users]
@@ -59,19 +60,24 @@ names = [user["name"] for user in users]
 emails = [user["email"] for user in users]
 hashed_passwords = [user["password"] for user in users]
 
+#! consolidating user credentials
 check = {}
 for uname, name, email, pword in zip(usernames, names, emails, hashed_passwords):
     check[uname] = {"name": name, "email": email, "password": pword}
 credentials = {"usernames": check}
-# st.write(credentials)
 
+#! authentication object
 authenticator = stauth.Authenticate(credentials=credentials, key="qfibre_sign",
     cookie_name="qfibre_auth_cookie", cookie_expiry_days=0, preauthorized="check@email.com")
 
+#! display user login
 name , auth_status, username = authenticator.login('Account Login', 'sidebar')
 
+#! user-auth: if fails or none
 if auth_status==None or auth_status==False:
+    #! image carousel to show
     carousel(items=test_items, width=1)
+    #! sidebar items: new_user_register, forgot_password
     with st.sidebar:
         st.warning('Enter username & password !')
         col1, col2 = st.columns(2, gap='large')
@@ -94,11 +100,14 @@ if auth_status==None or auth_status==False:
             except Exception as e:
                 st.error(e)
 
+#! user-auth: if succeeds
 elif auth_status==True:
     col1, col2 = st.columns([4, 1])
+    #! main heading & detail
     with col1:
         st.header("Welcome to the world of possibilities !!")
         st.caption("Click on menu items to navigate")
+    #! vertical navbar
     with col2:
         nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
             icons=['house-fill', 'flower3', "grid", 'person-fill'], 
@@ -113,9 +122,9 @@ elif auth_status==True:
 #*------------------------------------------------------------------------------------------*#
 #*                                      Sidebar Controls                                    *#
 #*------------------------------------------------------------------------------------------*#
-    #! Sidebar UAC
+    #! sidebar user account control
     with st.sidebar:
-        #! user account details
+        #! user details
         st.image('quickfibre/images/ph-0.png')
         st.image('quickfibre/images/user-ph.png')     
         st.write(f'Welcome, **{name}**(@{username}) !')
@@ -185,6 +194,7 @@ elif auth_status==True:
 #*------------------------------------------------------------------------------------------*#
 #*                                  Account buttons control                                 *#
 #*------------------------------------------------------------------------------------------*#
+#! Transaction button control
     if user_transact:
         with st.expander(label="**Transactions**", expanded=True):
             left_col, right_col = st.columns(2, gap='small')
