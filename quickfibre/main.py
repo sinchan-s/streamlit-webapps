@@ -197,6 +197,7 @@ elif auth_status==True:
 #! Transaction button control
     if user_transact:
         with st.expander(label="**Transactions**", expanded=True):
+            st.caption("AI-based record tracking system")
             left_col, right_col = st.columns(2, gap='small')
             with left_col: st.selectbox("Search by Order", orders_df['Doc No'])
             with right_col:
@@ -210,7 +211,7 @@ elif auth_status==True:
             pay_amt = np.random.randint(100000, 1000000, size=row_count)
             pay_status = ['Paid', 'Unpaid', 'Unsuccessful']
             pay_type = ['UPI', 'NEFT', 'RTGS', 'Unavailable']
-            pay_ai_check = ['✓', 'X', '↻']
+            pay_ai_check = ['✓ (verified)', 'X (not verified)', '↻ (in-process)']
             # st.image('quickfibre/images/transaction.jpg')
             transact_dict = {'Order ID': orders_df['Doc No'],
                             'Date': orders_df['Doc Date'],
