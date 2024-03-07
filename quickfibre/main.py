@@ -352,6 +352,7 @@ elif auth_status==True:
                         except:
                             st.write(f"Dispatch remaining: 0 m")
                             st.write(f"Expected delivery: 2024-03-28")
+                            
                     else:
                         pass
             with right_col:
