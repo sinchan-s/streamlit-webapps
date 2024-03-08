@@ -131,18 +131,20 @@ elif auth_status==True:
         st.caption('-{company}')
         st.caption(f'Email: {credentials["usernames"][username]["email"]}')
         st.caption("Credit Score: {score}")
-        #! account buttons
+        #! account buttons - 6 buttons
         col1, col2, col3, col4 = st.columns(4, gap='large')
         with col1:
-            user_search = st.button(':mag:', help='Search')
-            user_addresses = st.button(':factory:', help='Addresses')
+            user_search = st.button(':mag:', help='Search') #?button-1
+            user_addresses = st.button(':factory:', help='Addresses') #?button-2
         with col2:
-            user_account = st.button(':male-office-worker:', help='Account')
-            user_transact = button(':currency_exchange:', key='transact', help='Transactions')
-        with col3: user_collect = st.button(':womans_clothes:', help='Collections')
-        with col4: user_chat = st.button(':speech_balloon:', help='Chat Support')
+            user_account = st.button(':male-office-worker:', help='Account') #?button-3
+            user_transact = button(':currency_exchange:', key='transact', help='Transactions') #?button-4
+        with col3: user_collect = st.button(':womans_clothes:', help='Collections') #?button-5
+        with col4: user_chat = st.button(':speech_balloon:', help='Chat Support') #?button-6
+        #! logout button
         authenticator.logout('Logout', 'sidebar')
         st.divider()
+        #! password reset & update details button
         col1, col2 = st.columns(2, gap='large')
         with col1: pass_reset = button("Reset Password", key='reset')
         if pass_reset:
@@ -352,7 +354,6 @@ elif auth_status==True:
                         except:
                             st.write(f"Dispatch remaining: 0 m")
                             st.write(f"Expected delivery: 2024-03-28")
-                            
                     else:
                         pass
             with right_col:
