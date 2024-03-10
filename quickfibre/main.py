@@ -196,24 +196,33 @@ elif auth_status==True:
 #*------------------------------------------------------------------------------------------*#
 #*                                  Account buttons control                                 *#
 #*------------------------------------------------------------------------------------------*#
+#! Search button control
+#! Account button control
+#! Collections button control
+#! Chat-support button control
+#! Address button control
 #! Transaction button control
     if user_transact:
         with st.expander(label="**Transactions**", expanded=True):
-            st.caption("AI-based record tracking system")
-            left_col, right_col = st.columns(2, gap='small')
-            with left_col: st.selectbox("Search by Order", orders_df['Doc No'])
-            with right_col:
-                today = datetime.datetime.now()
-                next_year = today.year + 1
-                feb_28 = datetime.date(today.year, 2, 28)
-                mar_17 = datetime.date(today.year, 3, 17)
-                st.date_input("Search by Date", (feb_28, datetime.date(today.year, 3, 7)),feb_28, mar_17, format="DD/MM/YYYY",)
-            # st.dataframe(orders_df.loc[orders_df['Doc No']==order_select])
             row_count = orders_df.shape[0]
+            pay_type = ['NEFT', 'UPI', 'RTGS', 'Unavailable']
             pay_amt = np.random.randint(100000, 1000000, size=row_count)
             pay_status = ['Paid', 'Unpaid', 'Unsuccessful']
-            pay_type = ['UPI', 'NEFT', 'RTGS', 'Unavailable']
             pay_ai_check = ['✓ (verified)', 'X (not verified)', '↻ (in-process)']
+            today = datetime.datetime.now()
+            next_year = today.year + 1
+            feb_28 = datetime.date(today.year, 2, 28)
+            mar_17 = datetime.date(today.year, 3, 17)
+            st.caption("AI-based order verification system")
+            if st.toggle("Search by options"):
+                left_col, right_col = st.columns(2, gap='small')
+                with left_col:
+                    search_by_order = st.selectbox("Order No.", orders_df['Doc No'])
+                    search_by_status = st.selectbox("Status", pay_status)
+                with right_col:
+                    st.date_input("Date", (feb_28, datetime.date(today.year, 3, 7)),feb_28, mar_17, format="DD/MM/YYYY",)
+                    search_by_mode = st.selectbox("Mode", pay_type)
+            # st.dataframe(orders_df.loc[orders_df['Doc No']==order_select])
             # st.image('quickfibre/images/transaction.jpg')
             transact_dict = {'Order ID': orders_df['Doc No'],
                             'Date': orders_df['Doc Date'],
@@ -222,7 +231,15 @@ elif auth_status==True:
                             'Amount (₹)': random.choices(pay_amt, k=row_count),
                             'Verification': random.choices(pay_ai_check, k=row_count),
                             }
-            st.dataframe(pd.DataFrame(transact_dict), use_container_width=True)
+            transact_df = pd.DataFrame(transact_dict)
+            # transact_select_df = transact_select_df[transact_select_df['gsm'].between(gsm_range[0], gsm_range[1]) & transact_select_df['epi'].between(epi_range[0], epi_range[1]) & transact_select_df['ppi'].between(ppi_range[0], ppi_range[1])]
+            try:
+                transact_select_df = transact_df[transact_df['Order ID'].str.contains(search_by_order, na=False) &
+                                            transact_df['Mode'].str.contains(search_by_mode, na=False) |
+                                            transact_df['Status'].str.contains(search_by_status, na=False)]
+            except:
+                transact_select_df = transact_df
+            st.dataframe(transact_select_df, use_container_width=True)
             
 #*------------------------------------------------------------------------------------------*#
 #*                                        Home Menu                                         *#
