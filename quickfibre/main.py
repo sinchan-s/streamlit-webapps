@@ -229,8 +229,7 @@ elif auth_status==True:
                             'Mode': random.choices(pay_type, k=row_count),
                             'Status':random.choices(pay_status, k=row_count),
                             'Amount (₹)': random.choices(pay_amt, k=row_count),
-                            'Verification': random.choices(pay_ai_check, k=row_count),
-                            }
+                            'Verification': random.choices(pay_ai_check, k=row_count)}
             transact_df = pd.DataFrame(transact_dict)
             # transact_select_df = transact_select_df[transact_select_df['gsm'].between(gsm_range[0], gsm_range[1]) & transact_select_df['epi'].between(epi_range[0], epi_range[1]) & transact_select_df['ppi'].between(ppi_range[0], ppi_range[1])]
             try:
