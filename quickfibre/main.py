@@ -144,8 +144,8 @@ elif auth_status==True:
         #! logout button
         authenticator.logout('Logout', 'sidebar')
         st.divider()
-        #! password reset & update details button
         col1, col2 = st.columns(2, gap='large')
+        #! password reset button
         with col1: pass_reset = button("Reset Password", key='reset')
         if pass_reset:
             try:
@@ -153,6 +153,7 @@ elif auth_status==True:
                     st.success('Password modified successfully')
             except Exception as e:
                 st.error(e)
+        #! update details button
         with col2: update_details = button("Update details", key='update_details')
         if update_details:
             try:
@@ -168,8 +169,7 @@ elif auth_status==True:
     articles_df = pd.read_csv("quickfibre/data/articles.csv",encoding= 'unicode_escape')    
     orders_df = pd.read_csv("quickfibre/data/sitedata2k.csv",encoding= 'unicode_escape')      
 
-    #! column extraction from construction column
-    #! function to extractor columns 
+    #! column extraction from construction column function to extractor columns 
     def col_ext(df_file):
         columns_list = list(map(str.lower, df_file.columns))
         if 'Construction' in columns_list:
@@ -184,7 +184,6 @@ elif auth_status==True:
         return df_file
 
     article_df = col_ext(articles_df)
-    # st.dataframe(article_df)
 
     #! dropdown lists & dicts
     spin_dict = {'All': "", 'Carded':'K', 'Carded Compact': 'K.COM', 'Combed': 'C', 'Combed Compact': 'C.COM', 'Vortex':'VOR', 'Open-End':'OE'}
@@ -201,7 +200,7 @@ elif auth_status==True:
 #! Collections button control
 #! Chat-support button control
 #! Address button control
-#! Transaction button control
+    #! Transaction button control
     if user_transact:
         with st.expander(label="**Transactions**", expanded=True):
             row_count = orders_df.shape[0]
@@ -239,11 +238,12 @@ elif auth_status==True:
             except:
                 transact_select_df = transact_df
             st.dataframe(transact_select_df, use_container_width=True)
-            
+
 #*------------------------------------------------------------------------------------------*#
 #*                                        Home Menu                                         *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Home":
+        #! home page carousel
         col1, col2, col3 = st.columns(3, gap='large')
         col1.image('https://www.vardhman.com/images/Businesses/Garments/Banner.jpg')
         col1.write('Apparels')
@@ -256,6 +256,7 @@ elif auth_status==True:
 #*                                      Variety Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Variety":
+        #! fabric variety options
         col1, col2, col3 = st.columns(3)
         with col1:
             st.markdown('<a href="#"><img src="https://img1.exportersindia.com/product_images/bc-full/dir_102/3054382/yarn-dyed-fabrics-1182473.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
@@ -277,8 +278,9 @@ elif auth_status==True:
 #*                                      Enquiry Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Enquiry":
-        #! selection criteria
-        with st.container(height=200):
+        #! fabric selection criteria
+        with st.container(height=400):
+            st.write("**_Fabric Specs selection_**")
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.markdown("**Warp Parameters**")
@@ -377,4 +379,3 @@ elif auth_status==True:
                     activities = ['Dispatch details', 'Packing List', 'Inspection Report', 'Head Ends deatils', 'External Test Report(FPT)', 'Internal Test report(ITR)', 'Organic Certificates', 'GOTS Certificates', 'BCI Certificates', 'Lenzing Certificates', 'OCS Certificates', 'Lot Details', 'Shade Cards', 'FSC Certificates', 'GI Certificates', 'Compliances', 'Garments Compliances']
                     activity_select = st.selectbox("Select file to download:", activities)
                     st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
-                
