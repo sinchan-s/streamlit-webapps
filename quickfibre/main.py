@@ -321,7 +321,7 @@ elif auth_status==True:
         # selection_df = selection_df[selection_df['gsm'].between(gsm_range[0], gsm_range[1]) & selection_df['epi'].between(epi_range[0], epi_range[1]) & selection_df['ppi'].between(ppi_range[0], ppi_range[1])]
         # selection_df = article_df[article_df['warp'].str.contains('^6[a-zA-Z]*', na=False)]
 
-        #! dataframe display
+        #! filtered & all data - dataframe display
         tab1, tab2 = st.tabs(['Filtered Data', 'All Data'])
         with tab1:
             pass
