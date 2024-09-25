@@ -128,7 +128,7 @@ elif auth_status==True:
         st.image('quickfibre/images/ph.jpeg')
         st.image('quickfibre/images/user-f1.png')     
         st.write(f'Welcome, **{name}**(@{username}) !')
-        st.caption('-{company}')
+        st.caption('Vardhman')
         st.caption(f'Email: {credentials["usernames"][username]["email"]}')
         st.caption("Credit Score: {score}")
         #! account buttons - 6 buttons
