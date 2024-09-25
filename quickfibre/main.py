@@ -110,7 +110,7 @@ elif auth_status==True:
     #! vertical navbar
     with col2:
         nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account", "quickAI"], 
-            icons=['house-fill', 'flower3', "grid", 'person-fill', 'crosshair'], 
+            icons=['house-fill', 'flower1', "grid", 'person-fill', 'flower2'], 
             menu_icon="list", default_index=0, orientation="vertical",
             styles={
             "container": {"padding": "0!important", "background-color": "#f0f0f0"},
