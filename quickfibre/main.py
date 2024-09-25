@@ -109,8 +109,8 @@ elif auth_status==True:
         st.caption("Click on menu items to navigate")
     #! vertical navbar
     with col2:
-        nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account"], 
-            icons=['house-fill', 'flower3', "grid", 'person-fill'], 
+        nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account", "quickAI"], 
+            icons=['house-fill', 'flower3', "grid", 'person-fill', 'crosshair'], 
             menu_icon="list", default_index=0, orientation="vertical",
             styles={
             "container": {"padding": "0!important", "background-color": "#f0f0f0"},
@@ -379,3 +379,12 @@ elif auth_status==True:
                     activities = ['Dispatch details', 'Packing List', 'Inspection Report', 'Head Ends deatils', 'External Test Report(FPT)', 'Internal Test report(ITR)', 'Organic Certificates', 'GOTS Certificates', 'BCI Certificates', 'Lenzing Certificates', 'OCS Certificates', 'Lot Details', 'Shade Cards', 'FSC Certificates', 'GI Certificates', 'Compliances', 'Garments Compliances']
                     activity_select = st.selectbox("Select file to download:", activities)
                     st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
+
+#*------------------------------------------------------------------------------------------*#
+#*                                      quickAI Menu                                        *#
+#*------------------------------------------------------------------------------------------*#
+    if nav_menu=="quickAI":
+        st.button('Customer Categorization', help='cc')
+        st.button('Trend Analysis', help='ta')
+        st.button('Personalized Marketting', help='pm')
+        st.button('Route Optimization', help='ro')
