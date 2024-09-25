@@ -125,8 +125,8 @@ elif auth_status==True:
     #! sidebar user account control
     with st.sidebar:
         #! user details
-        st.image('quickfibre/images/ph-0.png')
-        st.image('quickfibre/images/user-ph.png')     
+        st.image('quickfibre/images/ph.png')
+        st.image('quickfibre/images/user-f1.png')     
         st.write(f'Welcome, **{name}**(@{username}) !')
         st.caption('-{company}')
         st.caption(f'Email: {credentials["usernames"][username]["email"]}')
