@@ -109,7 +109,7 @@ elif auth_status==True:
         st.caption("Click on menu items to navigate")
     #! vertical navbar
     with col2:
-        nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account", "quickAI"], 
+        nav_menu = option_menu(None, ["Home", "Variety", "Enquiry", "Account", "QuickAI"], 
             icons=['house-fill', 'flower1', "grid", 'person-fill', 'flower2'], 
             menu_icon="list", default_index=0, orientation="vertical",
             styles={
@@ -381,7 +381,7 @@ elif auth_status==True:
                     st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
 
 #*------------------------------------------------------------------------------------------*#
-#*                                      quickAI Menu                                        *#
+#*                                      QuickAI Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="QuickAI":
         if button('Customer Categorization', key='cc'):
