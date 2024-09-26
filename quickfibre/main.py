@@ -383,8 +383,11 @@ elif auth_status==True:
 #*------------------------------------------------------------------------------------------*#
 #*                                      quickAI Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
-    if nav_menu=="quickAI":
-        st.button('Customer Categorization', help='cc')
-        st.button('Trend Analysis', help='ta')
-        st.button('Personalized Marketting', help='pm')
-        st.button('Route Optimization', help='ro')
+    if nav_menu=="QuickAI":
+        if button('Customer Categorization', key='cc'):
+            st.image('quickfibre/images/cs.jpg')
+        if button('Trend Analysis', key='ta'):
+            st.image('quickfibre/images/ta.jpg')
+        st.button('Personalized Marketting', key='pm')
+        if button('Route Optimization', key='ro'):
+            st.image('quickfibre/images/order-fill.jpg')
