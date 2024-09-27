@@ -1,6 +1,6 @@
 
 #! standard librabries
-import re, random
+import re, random, datetime
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -256,23 +256,42 @@ elif auth_status==True:
 #*                                      Variety Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="Variety":
+        curr_date = datetime.date.today()
         #! fabric variety options
         col1, col2, col3 = st.columns(3)
         with col1:
             st.markdown('<a href="#"><img src="https://img1.exportersindia.com/product_images/bc-full/dir_102/3054382/yarn-dyed-fabrics-1182473.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
-            st.write("Yarn Dyed")
+            if button("Yarn Dyed", key='yd'):
+                st.write("MOQ: <some value>")
+                st.write("MCQ: <some value>")
+                st.write(f"Ready Date: {curr_date}")
             st.markdown('<a href="#"><img src="https://dineshexports.com/wp-content/uploads/2021/03/FC-R6C-scaled.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
-            st.write("RFD / White")
+            if button("RFD / White", key='rfd'):
+                st.write("MOQ: <some value>")
+                st.write("MCQ: <some value>")
+                st.write(f"Ready Date: {curr_date}")
         with col2:
             st.markdown('<a href="#"><img src="https://image.made-in-china.com/202f0j00NMifhGWnywoy/100-Polyester-Microfiber-Dyed-Fabric-for-Hometextile.webp" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
-            st.write("Piece Dyed")
+            if button("Piece Dyed", key='pd'):
+                st.write("MOQ: <some value>")
+                st.write("MCQ: <some value>")
+                st.write(f"Ready Date: {curr_date}")
             st.markdown('<a href="#"><img src="https://www.sustainme.in/cdn/shop/articles/o_1_1400x.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
-            st.write("Organic")
+            if button("Organic", key='org'):
+                st.write("MOQ: <some value>")
+                st.write("MCQ: <some value>")
+                st.write(f"Ready Date: {curr_date}")
         with col3:
             st.markdown('<a href="#"><img src="https://d1jsd7iv7h2l7v.cloudfront.net/wp-content/uploads/2021/08/Sky-Blue-Floral-Print-on-Poly-Twill-Dress-Material-Fabric-16366-2.jpg" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
-            st.write("Prints")
+            if button("Prints", key='pri'):
+                st.write("MOQ: <some value>")
+                st.write("MCQ: <some value>")
+                st.write(f"Ready Date: {curr_date}")
             st.markdown('<a href="#"><img src="https://genwoo.sg/cdn/shop/articles/recycled-fabric-scaled.webp" height=100 width=150 style="border: 2px solid orange"></a>',unsafe_allow_html=True)
-            st.write("Recycled")
+            if button("Recycled", key='rec'):
+                st.write("MOQ: <some value>")
+                st.write("MCQ: <some value>")
+                st.write(f"Ready Date: {curr_date}")
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      Enquiry Menu                                        *#
