@@ -381,8 +381,8 @@ elif auth_status==True:
                     activity_select = st.selectbox("Select file to download:", activities)
                     st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
                     st.button('Invoice', key='inv')
-            with st.expander("**Auto PI generator**", expanded=True):
-                st.button('Download Performa Invoice')
+        with st.expander("**Auto PI generator**", expanded=True):
+            st.button('Download Performa Invoice')
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      QuickAI Menu                                        *#
