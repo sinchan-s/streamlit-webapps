@@ -360,10 +360,9 @@ elif auth_status==True:
                 st.dataframe(orders_df[orders_df['Ord. Qty']<=200].T)
         with st.expander("**Order Activities**", expanded=True):
             order_select = st.selectbox("Select order:", orders_df['Doc No'])
-            
             left_col, right_col = st.columns(2, gap='large')
             with left_col:
-                if button('Availability/Status', key='avail'):
+                if button('Material Tracking', key='mattrac'):
                     ord_avail = st.selectbox("Check for:", ['Order Status', 'Hangers', 'Feasibility', 'Developments', 'Fabric Availability'])
                     if ord_avail=='Order Status':
                         try:
@@ -376,18 +375,36 @@ elif auth_status==True:
                         pass
             with right_col:
                 if button('Reports/Certificates', key='activ'):
+                    # st.button('Fabric Test Report', key='ftr')
+                    # st.button('Inspection Report', key='ir')
                     activities = ['Dispatch details', 'Packing List', 'Inspection Report', 'Head Ends deatils', 'External Test Report(FPT)', 'Internal Test report(ITR)', 'Organic Certificates', 'GOTS Certificates', 'BCI Certificates', 'Lenzing Certificates', 'OCS Certificates', 'Lot Details', 'Shade Cards', 'FSC Certificates', 'GI Certificates', 'Compliances', 'Garments Compliances']
                     activity_select = st.selectbox("Select file to download:", activities)
                     st.download_button(label=f"Download", data='quickfibre/dummy.pdf', file_name='dummy.pdf')
+                    st.button('Invoice', key='inv')
+            with st.expander("**Auto PI generator**", expanded=True):
+                st.button('Download Performa Invoice')
 
 #*------------------------------------------------------------------------------------------*#
 #*                                      QuickAI Menu                                        *#
 #*------------------------------------------------------------------------------------------*#
     if nav_menu=="QuickAI":
-        if button('Customer Categorization', key='cc'):
-            st.image('quickfibre/images/cs.jpg')
-        if button('Trend Analysis', key='ta'):
-            st.image('quickfibre/images/ta.jpg')
-        st.button('Personalized Marketting', key='pm')
-        if button('Route Optimization', key='ro'):
-            st.image('quickfibre/images/order-fill.jpg')
+        col1, col2 = st.columns(2, gap='large')
+        with col1:    
+            if button('Customer Categorization', key='cc'):
+                st.image('quickfibre/images/cs.jpg')
+            if button('Trend Analysis', key='ta'):
+                st.image('quickfibre/images/ta.jpg')
+            st.button('Personalized Marketting', key='pm')
+            st.button('Order: Profit-Loss analysis', key='opla')
+            if button('Route Optimization', key='ro'):
+                st.image('quickfibre/images/order-fill.jpg')
+        with col2:
+            if button('Competitive Intelligence', key='ci'):
+                pass
+                # st.image('quickfibre/images/cs.jpg')
+            if button('Supplier Evaluation', key='se'):
+                pass
+                # st.image('quickfibre/images/ta.jpg')
+            st.button('Optimal Stock Levels', key='opl')
+            st.button('Demand Forecasting', key='df')
+            
